@@ -1,0 +1,45 @@
+version: 2
+jobs:
+  build:
+    working_directory: /app
+    docker:
+      - image: docker:17.10.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/app.tar
+      - run:
+          name: Set decidim version
+          command: |
+            export DECIDIM_VERSION=`cat decidim-version.txt`
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
+      - run:
+          name: Build docker images
+          command: ./build
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/decidim.tar decidim/decidim:latest
+            docker save -o /caches/decidim-dev.tar decidim/decidim:latest-dev
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/decidim.tar
+            - /caches/decidim-dev.tar
+      - deploy:
+          name: Push application Docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+              docker push decidim/decidim:$DECIDIM_VERSION
+              docker push decidim/decidim:$DECIDIM_VERSION-dev
+            fi
