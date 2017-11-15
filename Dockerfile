@@ -11,7 +11,7 @@ RUN apk add --update git
 
 RUN apk add --update ruby-dev build-base \
     libxml2-dev libxslt-dev pcre-dev libffi-dev \
-    postgresql-dev
+    postgresql-dev openssl-dev
 
 RUN apk add --update imagemagick
 RUN apk add --update tzdata
