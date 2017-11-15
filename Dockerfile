@@ -1,6 +1,4 @@
-ARG ruby_version=2.4.2
-
-FROM ruby:${ruby_version}-alpine
+FROM ruby:2.4.2-alpine
 MAINTAINER info@codegram.com
 
 ARG decidim_version
