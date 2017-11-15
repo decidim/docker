@@ -40,17 +40,6 @@ jobs:
                          -t decidim/decidim:dev-latest \
                          --cache-from=decidim/decidim:dev-latest .
 
-      - run:
-          name: Save Docker image layer cache
-          command: |
-            mkdir -p /caches
-            docker save -o /caches/decidim.tar decidim/decidim:latest
-            docker save -o /caches/decidim-dev.tar decidim/decidim:latest-dev
-      - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
-          paths:
-            - /caches/decidim.tar
-            - /caches/decidim-dev.tar
       - deploy:
           name: Push application Docker image
           command: |
@@ -62,6 +51,18 @@ jobs:
               docker push decidim/decidim:$DECIDIM_VERSION-$CIRCLE_SHA1
               docker push decidim/decidim:latest
               docker push decidim/decidim:$DECIDIM_VERSION-dev
-              docker push decidim/decidim:$DECIDIM_VERSION-dev-CIRCLE_SHA1
+              docker push decidim/decidim:$DECIDIM_VERSION-dev-$CIRCLE_SHA1
               docker push decidim/decidim:dev-latest
             fi
+
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/decidim.tar decidim/decidim:latest
+            docker save -o /caches/decidim-dev.tar decidim/decidim:latest-dev
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/decidim.tar
+            - /caches/decidim-dev.tar
