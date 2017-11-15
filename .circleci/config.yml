@@ -11,19 +11,19 @@ jobs:
           keys:
             - v1-{{ .Branch }}
           paths:
-            - /caches/app.tar
-      - run:
-          name: Set decidim version
-          command: |
-            export DECIDIM_VERSION=`cat decidim-version.txt`
+            - /caches/decidim.tar
+            - /caches/decidim-dev.tar
       - run:
           name: Load Docker image layer cache
           command: |
             set +o pipefail
-            docker load -i /caches/app.tar | true
+            docker load -i /caches/decidim.tar | true
+            docker load -i /caches/decidim-dev.tar | true
       - run:
           name: Build docker images
           command: |
+            export DECIDIM_VERSION=`cat decidim-version.txt`
+
             docker build -f Dockerfile \
                          --build-arg decidim_version=$DECIDIM_VERSION \
                          -t decidim/decidim:$CIRCLE_SHA1 \
@@ -52,6 +52,8 @@ jobs:
       - deploy:
           name: Push application Docker image
           command: |
+            export DECIDIM_VERSION=`cat decidim-version.txt`
+
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker push decidim/decidim:$DECIDIM_VERSION
