@@ -9,7 +9,7 @@ ENV LC_ALL C.UTF-8
 
 RUN apt-get install -y git imagemagick wget
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs
 
 WORKDIR /app
