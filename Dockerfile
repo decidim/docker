@@ -1,4 +1,4 @@
-FROM ruby:2.4.2-alpine3.6
+FROM ruby:2.4.2-alpine
 MAINTAINER info@codegram.com
 
 ARG decidim_version
@@ -12,9 +12,9 @@ WORKDIR /app
 RUN apk add --update nodejs
 RUN apk add --update git
 
-RUN apk add --update ruby-dev build-base \
+RUN apk add --update build-base \
     libxml2-dev libxslt-dev pcre-dev libffi-dev \
-    postgresql-dev openssl-dev
+    postgresql-dev
 
 RUN apk add --update \
     libstdc++ tzdata bash ca-certificates
