@@ -16,3 +16,5 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 RUN gem install decidim-dev -v $DECIDIM_VERSION
+
+ENTRYPOINT ["/bin/bash -c"]

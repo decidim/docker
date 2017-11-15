@@ -17,3 +17,4 @@ RUN apk add --update imagemagick
 RUN apk add --update tzdata
 
 RUN gem install decidim:$DECIDIM_VERSION
+ENTRYPOINT ["decidim"]
