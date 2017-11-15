@@ -23,7 +23,7 @@ jobs:
             docker load -i /caches/app.tar | true
       - run:
           name: Build docker images
-          command: ./build
+          command: /bin/bash build
       - run:
           name: Save Docker image layer cache
           command: |
