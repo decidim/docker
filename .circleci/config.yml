@@ -27,16 +27,16 @@ jobs:
 
             docker build -f Dockerfile \
                          --build-arg decidim_version=$DECIDIM_VERSION \
-                         -t decidim/decidim:$CIRCLE_SHA1 \
+                         -t decidim/decidim:$DECIDIM_VERSION-$CIRCLE_SHA1 \
                          -t decidim/decidim:$DECIDIM_VERSION \
                          -t decidim/decidim:latest \
                          --cache-from=decidim/decidim:latest .
 
             docker build -f Dockerfile-dev \
                          --build-arg decidim_version=$DECIDIM_VERSION \
-                         --build-arg base_image_tag=$CIRCLE_SHA1 \
-                         -t decidim/decidim:$CIRCLE_SHA1-dev \
+                         --build-arg base_image_tag=$DECIDIM_VERSION-$CIRCLE_SHA1 \
                          -t decidim/decidim:$DECIDIM_VERSION-dev \
+                         -t decidim/decidim:$DECIDIM_VERSION-dev-$CIRCLE_SHA1 \
                          -t decidim/decidim:latest-dev \
                          --cache-from=decidim/decidim:latest-dev .
 
@@ -59,9 +59,9 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker push decidim/decidim:$DECIDIM_VERSION
-              docker push decidim/decidim:$CIRCLE_SHA1
+              docker push decidim/decidim:$DECIDIM_VERSION-CIRCLE_SHA1
               docker push decidim/decidim:latest
               docker push decidim/decidim:$DECIDIM_VERSION-dev
-              docker push decidim/decidim:$CIRCLE_SHA1-dev
+              docker push decidim/decidim:$DECIDIM_VERSION-dev-CIRCLE_SHA1-dev
               docker push decidim/decidim:latest-dev
             fi
