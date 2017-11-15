@@ -60,7 +60,7 @@ jobs:
           command: |
             mkdir -p /caches
             docker save -o /caches/decidim.tar decidim/decidim:latest
-            docker save -o /caches/decidim-dev.tar decidim/decidim:latest-dev
+            docker save -o /caches/decidim-dev.tar decidim/decidim:dev-latest
       - save_cache:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
