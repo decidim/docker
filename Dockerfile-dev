@@ -6,7 +6,6 @@ MAINTAINER info@codegram.com
 ARG decidim_version
 ENV DECIDIM_VERSION=$decidim_version
 
-RUN apk add --update curl bash
 RUN apk add --update chromium chromium-chromedriver
 RUN apk add --update openssl
 
@@ -17,4 +16,4 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 
 RUN gem install decidim-dev -v $DECIDIM_VERSION
 
-ENTRYPOINT ["/bin/bash -c"]
+ENTRYPOINT []
