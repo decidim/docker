@@ -6,7 +6,8 @@ jobs:
       - image: docker:17.10.0-ce-git
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 17.10.0-ce
       - restore_cache:
           keys:
             - v1-{{ .Branch }}
@@ -33,6 +34,7 @@ jobs:
 
             docker build -f Dockerfile-dev \
                          --build-arg decidim_version=$DECIDIM_VERSION \
+                         --build-arg base_image_tag=$CIRCLE_SHA1 \
                          -t decidim/decidim:$CIRCLE_SHA1-dev \
                          -t decidim/decidim:$DECIDIM_VERSION-dev \
                          -t decidim/decidim:latest-dev \

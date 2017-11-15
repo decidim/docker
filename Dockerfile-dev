@@ -1,6 +1,6 @@
-ARG decidim_version
+ARG base_image_tag
 
-FROM decidim/decidim:$decidim_version
+FROM decidim/decidim:$base_image_tag
 MAINTAINER info@codegram.com
 
 ARG decidim_version
