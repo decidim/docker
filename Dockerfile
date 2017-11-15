@@ -1,6 +1,8 @@
 FROM ruby:2.4.2-alpine
 MAINTAINER info@codegram.com
 
+WORKDIR /app
+
 ARG decidim_version
 ENV DECIDIM_VERSION $decidim_version
 
