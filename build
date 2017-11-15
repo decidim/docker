@@ -1,3 +1,0 @@
-#!/bin/bash
-docker build -f Dockerfile --build-arg decidim_version=$DECIDIM_VERSION -t decidim/decidim:$DECIDIM_VERSION -t decidim/decidim:latest --cache-from=decidim/decidim:latest .
-docker build -f Dockerfile-dev --build-arg decidim_version=$DECIDIM_VERSION -t decidim/decidim:$DECIDIM_VERSION-dev -t decidim/decidim:latest-dev --cache-from=decidim/decidim:latest-dev .

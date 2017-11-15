@@ -23,7 +23,21 @@ jobs:
             docker load -i /caches/app.tar | true
       - run:
           name: Build docker images
-          command: /bin/bash build
+          command: |
+            docker build -f Dockerfile \
+                         --build-arg decidim_version=$DECIDIM_VERSION \
+                         -t decidim/decidim:$CIRCLE_SHA1 \
+                         -t decidim/decidim:$DECIDIM_VERSION \
+                         -t decidim/decidim:latest \
+                         --cache-from=decidim/decidim:latest .
+
+            docker build -f Dockerfile-dev \
+                         --build-arg decidim_version=$DECIDIM_VERSION \
+                         -t decidim/decidim:$CIRCLE_SHA1-dev \
+                         -t decidim/decidim:$DECIDIM_VERSION-dev \
+                         -t decidim/decidim:latest-dev \
+                         --cache-from=decidim/decidim:latest-dev .
+
       - run:
           name: Save Docker image layer cache
           command: |
@@ -41,5 +55,9 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker push decidim/decidim:$DECIDIM_VERSION
+              docker push decidim/decidim:$CIRCLE_SHA1
+              docker push decidim/decidim:latest
               docker push decidim/decidim:$DECIDIM_VERSION-dev
+              docker push decidim/decidim:$CIRCLE_SHA1-dev
+              docker push decidim/decidim:latest-dev
             fi
