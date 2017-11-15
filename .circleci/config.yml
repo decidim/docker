@@ -38,7 +38,7 @@ jobs:
                          -t decidim/decidim:$DECIDIM_VERSION-dev \
                          -t decidim/decidim:$DECIDIM_VERSION-dev-$CIRCLE_SHA1 \
                          -t decidim/decidim:dev-latest \
-                         --cache-from=decidim/decidim:dev-latest -.
+                         --cache-from=decidim/decidim:dev-latest .
 
       - run:
           name: Save Docker image layer cache
