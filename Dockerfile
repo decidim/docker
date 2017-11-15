@@ -12,6 +12,8 @@ WORKDIR /app
 RUN apk add --update nodejs
 RUN apk add --update git
 
+RUN npm install -g yarn
+
 RUN apk add --update ruby-dev build-base \
     libxml2-dev libxslt-dev pcre-dev libffi-dev \
     postgresql-dev openssl-dev
