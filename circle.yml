@@ -22,6 +22,7 @@ jobs:
           name: Build docker images
           shell: /bin/bash
           command: |
+            set -e
             cat versions.txt | sort -r -n | while read version; do
               docker build -f Dockerfile \
                           --build-arg decidim_version=$version \
@@ -50,6 +51,7 @@ jobs:
           name: Push application Docker image
           shell: /bin/bash
           command: |
+            set -e
             if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker push decidim/decidim:latest
