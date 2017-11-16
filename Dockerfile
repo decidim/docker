@@ -2,8 +2,6 @@ FROM ruby:2.4.2
 MAINTAINER info@codegram.com
 ARG decidim_version
 
-WORKDIR /app
-
 RUN apt-get install -y git imagemagick wget
 
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - \
