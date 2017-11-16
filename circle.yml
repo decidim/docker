@@ -24,7 +24,7 @@ jobs:
           command: |
             cat versions.txt | sort -r -n | while read version; do
               docker build -f Dockerfile \
-                          --build-arg decidim_version=$version
+                          --build-arg decidim_version=$version \
                           -t decidim/decidim:$RELEASE_TAG \
                           -t decidim/decidim:$RELEASE_TAG-$CIRCLE_SHA1 \
                           -t decidim/decidim:latest \
@@ -32,7 +32,7 @@ jobs:
 
               docker build -f Dockerfile-dev \
                           --build-arg base_image_tag=$RELEASE_TAG-$CIRCLE_SHA1 \
-                          --build-arg decidim_version=$version
+                          --build-arg decidim_version=$version \
                           -t decidim/decidim:$RELEASE_TAG-dev \
                           -t decidim/decidim:$RELEASE_TAG-dev-$CIRCLE_SHA1 \
                           -t decidim/decidim:latest-dev \
