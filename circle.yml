@@ -10,7 +10,8 @@ jobs:
           version: 17.10.0-ce
       - restore_cache:
           keys:
-            - v1-{{ .Branch }}
+            - {{ .Branch }}
+            - master
           paths:
             - /caches/images.tar
       - run:
@@ -29,7 +30,7 @@ jobs:
       - run:
           name: Build docker images
           command: |
-            export RELEASE_TAG=`cat release_tag`
+            export RELEASE_TAG=$(cat release_tag)
 
             docker build -f Dockerfile \
                          -t decidim/decidim:$RELEASE_TAG \
@@ -54,7 +55,7 @@ jobs:
       - deploy:
           name: Push application Docker image
           command: |
-            export RELEASE_TAG=`cat release_tag`
+            export RELEASE_TAG=$(cat release_tag)
 
             if [[ "${RELEASE_TAG}" == "latest" || "${RELEASE_TAG}" =~ ^v([0-9]\.?)+$ ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
@@ -66,10 +67,12 @@ jobs:
       - run:
           name: Save Docker image layer cache
           command: |
+            export RELEASE_TAG=$(cat release_tag)
+
             mkdir -p /caches
-            docker save -o /caches/images.tar decidim/decidim:latest \
-                                              decidim/decidim:latest-dev \
-                                              decidim/decidim:latest-deploy
+            docker save -o /caches/images.tar decidim/decidim:$RELEASE_TAG \
+                                              decidim/decidim:$RELEASE_TAG-dev \
+                                              decidim/decidim:$RELEASE_TAG-deploy
       - save_cache:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
