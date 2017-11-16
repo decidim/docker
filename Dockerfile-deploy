@@ -1,0 +1,16 @@
+ARG base_image_tag=latest
+
+FROM decidim/decidim:$base_image_tag
+MAINTAINER info@codegram.com
+
+ENV WEB_CONCURRENCY=5
+ENV MAX_THREADS=5
+
+RUN gem install passenger
+RUN passenger-config install-standalone-runtime
+
+ONBUILD bundle install
+ONBUILD bundle exec rake assets:precompile
+
+ENTRYPOINT ["bundle exec"]
+CMD passenger start --max-pool-size $WEB_CONCURRENCY --concurrency-model thread --thread-count $MAX_THREADS
