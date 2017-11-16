@@ -9,6 +9,9 @@ ENV MAX_THREADS=5
 RUN gem install passenger
 RUN passenger-config install-standalone-runtime
 
+ONBUILD COPY Gemfile Gemfile.lock .
+ONBUILD bundle install
+ONBUILD COPY . .
 ONBUILD bundle install
 ONBUILD bundle exec rake assets:precompile
 
