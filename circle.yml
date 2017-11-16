@@ -20,7 +20,7 @@ jobs:
             docker load -i /caches/images.tar | true
       - run:
           name: Set decidim version
-          run: |
+          command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               echo 'latest' > release_tag
             else
