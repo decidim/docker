@@ -6,8 +6,10 @@ ENV LC_ALL C.UTF-8
 
 RUN apt-get install -y git imagemagick wget
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get install -y nodejs
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - \
+    && apt-get install -y nodejs=8.9.1-1nodesource1
+
+RUN npm install -g yarn@v1.3.2
 
 WORKDIR /app
 COPY Gemfile .

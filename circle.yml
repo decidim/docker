@@ -12,15 +12,12 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 17.10.0-ce
-      - restore_cache:
-          keys:
-            - images-{{ .Branch }}
-            - images-master
       - run:
-          name: Load Docker image layer cache
+          name: Pull images
           command: |
-            set +o pipefail
-            docker load -i /caches/images.tar | true
+            docker pull decidim/decidim:latest
+            docker pull decidim/decidim:latest-dev
+            docker pull decidim/decidim:latest-deploy
       - run:
           name: Set decidim version
           command: |
@@ -68,17 +65,3 @@ jobs:
               docker push decidim/decidim:$RELEASE_TAG-dev
               docker push decidim/decidim:$RELEASE_TAG-deploy
             fi
-
-      - run:
-          name: Save Docker image layer cache
-          command: |
-            export RELEASE_TAG=$(cat release_tag)
-
-            mkdir -p /caches
-            docker save -o /caches/images.tar decidim/decidim:$RELEASE_TAG \
-                                              decidim/decidim:$RELEASE_TAG-dev \
-                                              decidim/decidim:$RELEASE_TAG-deploy
-      - save_cache:
-          key: images-{{ .Branch }}
-          paths:
-            - /caches/images.tar
