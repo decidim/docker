@@ -15,9 +15,9 @@ jobs:
       - run:
           name: Pull images
           command: |
-            docker pull decidim/decidim:latest
-            docker pull decidim/decidim:latest-dev
-            docker pull decidim/decidim:latest-deploy
+            docker pull decidim/decidim:latest || true
+            docker pull decidim/decidim:latest-dev || true
+            docker pull decidim/decidim:latest-deploy || true
       - run:
           name: Set decidim version
           command: |
