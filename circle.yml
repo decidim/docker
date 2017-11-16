@@ -10,8 +10,8 @@ jobs:
           version: 17.10.0-ce
       - restore_cache:
           keys:
-            - {{ .Branch }}
-            - master
+            - images-{{ .Branch }}
+            - images-master
       - run:
           name: Load Docker image layer cache
           command: |
@@ -72,6 +72,6 @@ jobs:
                                               decidim/decidim:$RELEASE_TAG-dev \
                                               decidim/decidim:$RELEASE_TAG-deploy
       - save_cache:
-          key: {{ .Branch }}
+          key: images-{{ .Branch }}
           paths:
             - /caches/images.tar
