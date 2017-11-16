@@ -7,8 +7,14 @@ ENV RAILS_ENV=production
 ENV WEB_CONCURRENCY=5
 ENV MAX_THREADS=5
 
-RUN gem install passenger
-RUN passenger-config install-standalone-runtime
+RUN apt-get install -y dirmngr gnupg
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 561F9B9CAC40B2F7
+RUN apt-get install -y apt-transport-https ca-certificates
+
+RUN sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger xenial main > /etc/apt/sources.list.d/passenger.list'
+RUN apt-get update
+
+RUN apt-get install -y passenger
 
 ONBUILD COPY Gemfile Gemfile.lock ./
 ONBUILD RUN bundle install
@@ -16,5 +22,5 @@ ONBUILD COPY . .
 ONBUILD RUN bundle install
 ONBUILD RUN bundle exec rake assets:precompile
 
-ENTRYPOINT ["bundle exec"]
+ENTRYPOINT []
 CMD passenger start --max-pool-size $WEB_CONCURRENCY --concurrency-model thread --thread-count $MAX_THREADS
