@@ -21,38 +21,42 @@ jobs:
             docker load -i /caches/decidim.tar | true
             docker load -i /caches/decidim-dev.tar | true
       - run:
+          name: Set decidim version
+          run: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              echo 'latest' > release_tag
+            else
+              echo $CIRCLE_BRANCH > release_tag
+            fi
+      - run:
           name: Build docker images
           command: |
-            export DECIDIM_VERSION=`cat decidim-version.txt`
+            export RELEASE_TAG=`cat release_tag`
 
             docker build -f Dockerfile \
-                         --build-arg decidim_version=$DECIDIM_VERSION \
-                         -t decidim/decidim:$DECIDIM_VERSION-$CIRCLE_SHA1 \
-                         -t decidim/decidim:$DECIDIM_VERSION \
+                         --build-arg decidim_version=$RELEASE_TAG \
+                         -t decidim/decidim:$RELEASE_TAG-$CIRCLE_SHA1 \
+                         -t decidim/decidim:$RELEASE_TAG \
                          -t decidim/decidim:latest \
                          --cache-from=decidim/decidim:latest .
 
             docker build -f Dockerfile-dev \
-                         --build-arg decidim_version=$DECIDIM_VERSION \
-                         --build-arg base_image_tag=$DECIDIM_VERSION-$CIRCLE_SHA1 \
-                         -t decidim/decidim:$DECIDIM_VERSION-dev \
-                         -t decidim/decidim:$DECIDIM_VERSION-dev-$CIRCLE_SHA1 \
+                         --build-arg decidim_version=$RELEASE_TAG \
+                         --build-arg base_image_tag=$RELEASE_TAG-$CIRCLE_SHA1 \
+                         -t decidim/decidim:$RELEASE_TAG-dev \
+                         -t decidim/decidim:$RELEASE_TAG-dev-$CIRCLE_SHA1 \
                          -t decidim/decidim:dev-latest \
                          --cache-from=decidim/decidim:dev-latest .
 
       - deploy:
           name: Push application Docker image
           command: |
-            export DECIDIM_VERSION=`cat decidim-version.txt`
+            export RELEASE_TAG=`cat release_tag`
 
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            if [[ "${RELEASE_TAG}" == "latest" || "${RELEASE_TAG}" =~ ^v([0-9]\.?)+$ ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
-              docker push decidim/decidim:$DECIDIM_VERSION
-              docker push decidim/decidim:$DECIDIM_VERSION-$CIRCLE_SHA1
-              docker push decidim/decidim:latest
-              docker push decidim/decidim:$DECIDIM_VERSION-dev
-              docker push decidim/decidim:$DECIDIM_VERSION-dev-$CIRCLE_SHA1
-              docker push decidim/decidim:dev-latest
+              docker push decidim/decidim:$RELEASE_TAG
+              docker push decidim/decidim:dev-$RELEASE_TAG
             fi
 
       - run:

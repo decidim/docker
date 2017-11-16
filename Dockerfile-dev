@@ -3,9 +3,6 @@ ARG base_image_tag
 FROM decidim/decidim:$base_image_tag
 MAINTAINER info@codegram.com
 
-ARG decidim_version
-ENV DECIDIM_VERSION=$decidim_version
-
 RUN apt-get update \
   && apt-get install -y unzip
 
@@ -28,6 +25,6 @@ RUN CHROMEDRIVER_RELEASE=$(curl --location --fail --retry 3 http://chromedriver.
   && rm /tmp/chromedriver_linux64.zip \
   && chromedriver --version
 
-RUN gem install decidim-dev -v $DECIDIM_VERSION
+RUN bundle install
 
 ENTRYPOINT []
