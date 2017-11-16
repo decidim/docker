@@ -5,64 +5,63 @@ jobs:
     docker:
       - image: docker:17.10.0-ce-git
     steps:
+      - run:
+          name: Install Bash
+          command: |
+            apk add --no-cache bash
       - checkout
       - setup_remote_docker:
           version: 17.10.0-ce
-      - restore_cache:
-          keys:
-            - v1-{{ .Branch }}
-          paths:
-            - /caches/decidim.tar
-            - /caches/decidim-dev.tar
       - run:
-          name: Load Docker image layer cache
+          name: Pull images
           command: |
-            set +o pipefail
-            docker load -i /caches/decidim.tar | true
-            docker load -i /caches/decidim-dev.tar | true
+            docker pull decidim/decidim:latest || true
+            docker pull decidim/decidim:latest-dev || true
+            docker pull decidim/decidim:latest-deploy || true
+      - run:
+          name: Set decidim version
+          command: |
+            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
+              echo 'latest' > release_tag
+            else
+              echo $CIRCLE_BRANCH > release_tag
+            fi
+
+            echo Set tag: $(cat release_tag)
       - run:
           name: Build docker images
           command: |
-            export DECIDIM_VERSION=`cat decidim-version.txt`
+            export RELEASE_TAG=$(cat release_tag)
 
             docker build -f Dockerfile \
-                         --build-arg decidim_version=$DECIDIM_VERSION \
-                         -t decidim/decidim:$DECIDIM_VERSION-$CIRCLE_SHA1 \
-                         -t decidim/decidim:$DECIDIM_VERSION \
+                         -t decidim/decidim:$RELEASE_TAG \
+                         -t decidim/decidim:$RELEASE_TAG-$CIRCLE_SHA1 \
                          -t decidim/decidim:latest \
                          --cache-from=decidim/decidim:latest .
 
             docker build -f Dockerfile-dev \
-                         --build-arg decidim_version=$DECIDIM_VERSION \
-                         --build-arg base_image_tag=$DECIDIM_VERSION-$CIRCLE_SHA1 \
-                         -t decidim/decidim:$DECIDIM_VERSION-dev \
-                         -t decidim/decidim:$DECIDIM_VERSION-dev-$CIRCLE_SHA1 \
-                         -t decidim/decidim:dev-latest \
-                         --cache-from=decidim/decidim:dev-latest .
+                         --build-arg base_image_tag=$RELEASE_TAG-$CIRCLE_SHA1 \
+                         -t decidim/decidim:$RELEASE_TAG-dev \
+                         -t decidim/decidim:$RELEASE_TAG-dev-$CIRCLE_SHA1 \
+                         -t decidim/decidim:latest-dev \
+                         --cache-from=decidim/decidim:latest-dev .
 
-      - deploy:
-          name: Push application Docker image
-          command: |
-            export DECIDIM_VERSION=`cat decidim-version.txt`
-
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              docker login -u $DOCKER_USER -p $DOCKER_PASS
-              docker push decidim/decidim:$DECIDIM_VERSION
-              docker push decidim/decidim:$DECIDIM_VERSION-$CIRCLE_SHA1
-              docker push decidim/decidim:latest
-              docker push decidim/decidim:$DECIDIM_VERSION-dev
-              docker push decidim/decidim:$DECIDIM_VERSION-dev-$CIRCLE_SHA1
-              docker push decidim/decidim:dev-latest
-            fi
+            docker build -f Dockerfile-deploy \
+                         --build-arg base_image_tag=$RELEASE_TAG-$CIRCLE_SHA1 \
+                         -t decidim/decidim:$RELEASE_TAG-deploy \
+                         -t decidim/decidim:$RELEASE_TAG-deploy-$CIRCLE_SHA1 \
+                         -t decidim/decidim:latest-deploy \
+                         --cache-from=decidim/decidim:latest-deploy .
 
       - run:
-          name: Save Docker image layer cache
+          name: Push application Docker image
+          shell: /bin/bash
           command: |
-            mkdir -p /caches
-            docker save -o /caches/decidim.tar decidim/decidim:latest
-            docker save -o /caches/decidim-dev.tar decidim/decidim:dev-latest
-      - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
-          paths:
-            - /caches/decidim.tar
-            - /caches/decidim-dev.tar
+            export RELEASE_TAG=$(cat release_tag)
+
+            if [[ "${RELEASE_TAG}" == "latest" || "${RELEASE_TAG}" =~ ^v[0-9\.]+$ ]]; then
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+              docker push decidim/decidim:$RELEASE_TAG
+              docker push decidim/decidim:$RELEASE_TAG-dev
+              docker push decidim/decidim:$RELEASE_TAG-deploy
+            fi
