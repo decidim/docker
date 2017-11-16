@@ -3,6 +3,8 @@ ARG base_image_tag=latest
 FROM decidim/decidim:$base_image_tag
 MAINTAINER info@codegram.com
 
+ARG decidim_version
+
 RUN apt-get update \
   && apt-get install -y unzip
 
@@ -26,6 +28,6 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-RUN bundle install
+RUN gem install decidim-dev:$version
 
 ENTRYPOINT []
