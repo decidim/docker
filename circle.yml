@@ -25,6 +25,8 @@ jobs:
             else
               echo $CIRCLE_BRANCH > release_tag
             fi
+
+            echo Set tag: $(cat release_tag)
       - run:
           name: Build docker images
           command: |
@@ -55,7 +57,7 @@ jobs:
           command: |
             export RELEASE_TAG=$(cat release_tag)
 
-            if [[ "${RELEASE_TAG}" == "latest" || "${RELEASE_TAG}" =~ ^v([0-9]\.?)+$ ]]; then
+            if [[ "${RELEASE_TAG}" == "latest" || "${RELEASE_TAG}" =~ ^v[0-9\.]+$ ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
               docker push decidim/decidim:$RELEASE_TAG
               docker push decidim/decidim:$RELEASE_TAG-dev
