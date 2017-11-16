@@ -52,8 +52,9 @@ jobs:
                          -t decidim/decidim:latest-deploy \
                          --cache-from=decidim/decidim:latest-deploy .
 
-      - deploy:
+      - run:
           name: Push application Docker image
+          shell: /bin/bash
           command: |
             export RELEASE_TAG=$(cat release_tag)
 
