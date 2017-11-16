@@ -54,11 +54,14 @@ jobs:
             set -e
             if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
-              docker push decidim/decidim:latest
 
-              cat versions.txt | while read version; do
-                docker push decidim/decidim:$version
-                docker push decidim/decidim:$version-dev
+              cat versions.txt | sort -n -n | while read version; do
                 docker push decidim/decidim:$version-deploy
+                docker push decidim/decidim:$version-dev
+                docker push decidim/decidim:$version
               done
+
+              docker push decidim/decidim:latest-deploy
+              docker push decidim/decidim:latest-dev
+              docker push decidim/decidim:latest
             fi
