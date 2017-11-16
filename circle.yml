@@ -12,8 +12,6 @@ jobs:
           keys:
             - {{ .Branch }}
             - master
-          paths:
-            - /caches/images.tar
       - run:
           name: Load Docker image layer cache
           command: |
@@ -22,7 +20,7 @@ jobs:
       - run:
           name: Set decidim version
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
               echo 'latest' > release_tag
             else
               echo $CIRCLE_BRANCH > release_tag
@@ -74,6 +72,6 @@ jobs:
                                               decidim/decidim:$RELEASE_TAG-dev \
                                               decidim/decidim:$RELEASE_TAG-deploy
       - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
+          key: {{ .Branch }}
           paths:
             - /caches/images.tar
