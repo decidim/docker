@@ -3,8 +3,6 @@ ARG base_image_tag=latest
 FROM decidim/decidim:$base_image_tag
 MAINTAINER info@codegram.com
 
-WORKDIR /code
-
 ARG decidim_version
 
 RUN apt-get update \
