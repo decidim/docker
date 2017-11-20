@@ -2,6 +2,9 @@ FROM ruby:2.4.2
 MAINTAINER info@codegram.com
 ARG decidim_version
 
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+
 WORKDIR /code
 
 RUN apt-get install -y git imagemagick wget
