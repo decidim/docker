@@ -30,4 +30,8 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 
 RUN gem install decidim-dev:$decidim_version
 
+RUN cd /tmp && \
+    decidim decidim_app && \
+    rm -fR decidim_app
+
 ENTRYPOINT []
