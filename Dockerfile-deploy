@@ -6,6 +6,8 @@ MAINTAINER info@codegram.com
 ENV RAILS_ENV=production
 ENV PORT=3000
 
+RUN cd /tmp && decidim test_app && rm -fR test_app
+
 ONBUILD COPY Gemfile Gemfile.lock ./
 ONBUILD RUN bundle install
 ONBUILD COPY . .
