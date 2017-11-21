@@ -6,6 +6,16 @@ MAINTAINER info@codegram.com
 ENV RAILS_ENV=production
 ENV PORT=3000
 
+# Build a test app in order to be able to precache dependencies. The
+# app itself is removed afterwards as dependencies will get installed
+# under /usr/local/bundle.
+#
+RUN cd /tmp && \
+    decidim decidim_app --skip-bundle && \
+    cd decidim_app && \
+    bundle install --without development,test && \
+    rm -fR decidim_app
+
 ONBUILD COPY Gemfile Gemfile.lock ./
 ONBUILD RUN bundle install
 ONBUILD COPY . .
