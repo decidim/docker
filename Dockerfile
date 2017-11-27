@@ -1,5 +1,6 @@
 FROM ruby:2.4.2
 MAINTAINER info@codegram.com
+
 ARG decidim_version
 
 ENV LANG C.UTF-8
