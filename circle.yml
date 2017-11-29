@@ -2,6 +2,8 @@ version: 2
 jobs:
   build:
     working_directory: /app
+    environment:
+      - DECIDIM_VERSION=0.7.4
     docker:
       - image: docker:17.10.0-ce-git
     steps:
@@ -23,29 +25,21 @@ jobs:
           shell: /bin/bash
           command: |
             set -e
-            cat versions.txt | sort -r -n | while read version; do
-              docker build -f Dockerfile \
-                          --build-arg decidim_version=$version \
-                          -t decidim/decidim:$version \
-                          -t decidim/decidim:$version-$CIRCLE_SHA1 \
-                          -t decidim/decidim:latest \
-                          --cache-from=decidim/decidim:latest .
+            docker build -f Dockerfile \
+                        --build-arg decidim_version=$DECIDIM_VERSION \
+                        -t decidim/decidim:$CIRCLE_SHA1 \
+                        --cache-from=decidim/decidim:latest .
 
-              docker build -f Dockerfile-dev \
-                          --build-arg base_image_tag=$version-$CIRCLE_SHA1 \
-                          --build-arg decidim_version=$version \
-                          -t decidim/decidim:$version-dev \
-                          -t decidim/decidim:$version-dev-$CIRCLE_SHA1 \
-                          -t decidim/decidim:latest-dev \
-                          --cache-from=decidim/decidim:latest-dev .
+            docker build -f Dockerfile-dev \
+                        --build-arg base_image_tag=$CIRCLE_SHA1 \
+                        --build-arg decidim_version=$DECIDIM_VERSION \
+                        -t decidim/decidim:$CIRCLE_SHA1-dev \
+                        --cache-from=decidim/decidim:latest-dev .
 
-              docker build -f Dockerfile-deploy \
-                          --build-arg base_image_tag=$version-$CIRCLE_SHA1 \
-                          -t decidim/decidim:$version-deploy \
-                          -t decidim/decidim:$version-deploy-$CIRCLE_SHA1 \
-                          -t decidim/decidim:latest-deploy \
-                          --cache-from=decidim/decidim:latest-deploy .
-            done
+            docker build -f Dockerfile-deploy \
+                        --build-arg base_image_tag=$CIRCLE_SHA1 \
+                        -t decidim/decidim:$CIRCLE_SHA1-deploy \
+                        --cache-from=decidim/decidim:latest-deploy .
 
       - run:
           name: Push application Docker image
@@ -55,13 +49,23 @@ jobs:
             if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-              cat versions.txt | sort -n -n | while read version; do
-                docker push decidim/decidim:$version-deploy
-                docker push decidim/decidim:$version-dev
-                docker push decidim/decidim:$version
-              done
+              docker tag decidim/decidim:$CIRCLE_SHA1-deploy decidim/decidim:latest-deploy
+              docker tag decidim/decidim:$CIRCLE_SHA1-dev decidim/decidim:latest-dev
+              docker tag decidim/decidim:$CIRCLE_SHA1 decidim/decidim:latest
 
-              docker push decidim/decidim:latest-deploy
-              docker push decidim/decidim:latest-dev
-              docker push decidim/decidim:latest
+              docker push decidim/decidim:$latest-deploy
+              docker push decidim/decidim:$latest-dev
+              docker push decidim/decidim:$latest
+            fi
+
+            if [[ "${CIRCLE_BRANCH}" =~ ^[0-9\.]+$ ]]; then
+              docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+              docker tag decidim/decidim:$CIRCLE_SHA1-deploy decidim/decidim:$CIRCLE_BRANCH-deploy
+              docker tag decidim/decidim:$CIRCLE_SHA1-dev decidim/decidim:$CIRCLE_BRANCH-dev
+              docker tag decidim/decidim:$CIRCLE_SHA1 decidim/decidim:$CIRCLE_BRANCH
+
+              docker push decidim/decidim:$CIRCLE_BRANCH-deploy
+              docker push decidim/decidim:$CIRCLE_BRANCH-dev
+              docker push decidim/decidim:$CIRCLE_BRANCH
             fi
