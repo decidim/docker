@@ -46,7 +46,7 @@ jobs:
           shell: /bin/bash
           command: |
             set -e
-            if [[ "${BRANCH}" == "master" ]]; then
+            if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
               docker login -u $DOCKER_USER -p $DOCKER_PASS
 
               docker tag decidim/decidim:$CIRCLE_SHA1-deploy decidim/decidim:latest-deploy
