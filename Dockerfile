@@ -1,6 +1,11 @@
 FROM ruby:2.4.2
 MAINTAINER info@codegram.com
 
+# Increment this variable to force a rebuild from this step on.
+# This is useful when we want to rebuild the image from scratch to
+# prevent using cache.
+RUN echo FORCE_REBUILD_VERSION=1
+
 ARG decidim_version
 
 ENV LANG C.UTF-8

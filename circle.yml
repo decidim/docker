@@ -25,7 +25,7 @@ jobs:
           shell: /bin/bash
           command: |
             set -e
-            docker build -f Dockerfile \
+            docker build -f Dockerfile --pull \
                         --build-arg decidim_version=$DECIDIM_VERSION \
                         -t decidim:${CIRCLE_SHA1} \
                         --cache-from=decidim/decidim:latest .
