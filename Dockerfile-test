@@ -18,8 +18,7 @@ RUN apt-get update && apt-get install -y google-chrome-stable
 RUN CHROMEDRIVER_URL="http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_RELEASE/chromedriver_linux64.zip" \
   && curl --silent --show-error --location --fail --retry 3 --output /tmp/chromedriver_linux64.zip $CHROMEDRIVER_URL \
   && unzip /tmp/chromedriver_linux64.zip chromedriver -d /usr/local/bin \
-  && rm /tmp/chromedriver_linux64.zip \
-  && chromedriver --version
+  && rm /tmp/chromedriver_linux64.zip
 
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
   && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
