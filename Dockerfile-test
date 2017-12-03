@@ -21,8 +21,6 @@ RUN CHROMEDRIVER_URL="http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_R
     && rm /tmp/chromedriver_linux64.zip \
     && chromedriver --version
 
-RUN apt-get update && apt-get install -y wget
-
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
