@@ -11,7 +11,7 @@ WORKDIR /code
 RUN apt-get install -y git imagemagick wget
 
 RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
-    && apt-get install -y nodejs
+  && apt-get install -y nodejs
 
 RUN npm install -g npm
 
