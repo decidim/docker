@@ -3,21 +3,22 @@
 set -e
 
 sha1=${CIRCLE_SHA1:-latest}
+version=${DECIDIM_VERSION:-0.9.2}
 
 docker build -f Dockerfile \
-            --build-arg "decidim_version=$DECIDIM_VERSION" \
+            --build-arg "decidim_version=$version" \
             -t "decidim:$sha1" \
             --cache-from=decidim/decidim:latest .
 
 docker build -f Dockerfile-test \
             --build-arg "base_image=decidim:$sha1" \
-            --build-arg "decidim_version=$DECIDIM_VERSION" \
+            --build-arg "decidim_version=$version" \
             -t "decidim:$sha1-test" \
             --cache-from=decidim/decidim:latest-test .
 
 docker build -f Dockerfile-dev \
             --build-arg "base_image=decidim:$sha1" \
-            --build-arg "decidim_version=$DECIDIM_VERSION" \
+            --build-arg "decidim_version=$version" \
             -t "decidim:$sha1-dev" \
             --cache-from=decidim/decidim:latest-dev .
 
