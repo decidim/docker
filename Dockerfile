@@ -21,8 +21,8 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources
 RUN apt-get update && apt-get install yarn=1.3.2-1
 
 RUN gem update --system
-RUN gem install -u \\
-    decidim:$decidim_version \\
-    decidim-verifications:${decidim_version} # Mandatory because of a rubygems bug.
+RUN gem install -u \
+    decidim:$decidim_version \
+    decidim-verifications:$decidim_version
 
 ENTRYPOINT ["decidim"]
