@@ -11,7 +11,7 @@ WORKDIR /code
 RUN apt-get install -y git imagemagick wget
 
 RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
-    && apt-get install -y nodejs=9.2.0-1nodesource1
+    && apt-get install -y nodejs=9.2.1-1nodesource1
 
 RUN npm install -g npm@5.6.0
 
@@ -20,6 +20,8 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources
 
 RUN apt-get update && apt-get install yarn=1.3.2-1
 
-RUN gem install decidim:$decidim_version
-
+RUN gem update --system
+RUN gem install -u \
+    decidim:$decidim_version
+    
 ENTRYPOINT ["decidim"]
