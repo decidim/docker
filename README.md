@@ -1,4 +1,4 @@
-# Docker files for Decidim
+# Docker files for Decidim [![CircleCI](https://circleci.com/gh/decidim/docker.svg?style=svg)](https://circleci.com/gh/decidim/docker)
 
 ## Docker images for development.
 
