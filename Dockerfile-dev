@@ -13,7 +13,7 @@ ENV CHROMEDRIVER_RELEASE=2.34
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-RUN apt-get update && apt-get install -y
+RUN apt-get update && apt-get install -y google-chrome-stable
 
 RUN CHROMEDRIVER_URL="http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_RELEASE/chromedriver_linux64.zip" \
     && curl --silent --show-error --location --fail --retry 3 --output /tmp/chromedriver_linux64.zip $CHROMEDRIVER_URL \
@@ -28,5 +28,19 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 RUN gem install decidim-dev:$decidim_version
+
+RUN apt-get install -y sudo && \
+    apt-get clean
+
+RUN adduser --home /code --shell /bin/bash --disabled-password --gecos "" decidim && \
+    adduser decidim sudo && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+RUN echo 'Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/gems/bin"' > /etc/sudoers.d/secure_path
+RUN chmod 0440 /etc/sudoers.d/secure_path
+
+RUN mkdir /gems && chown decidim:decidim /gems
+
+COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT []
