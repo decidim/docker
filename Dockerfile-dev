@@ -10,11 +10,10 @@ RUN apt-get update \
 
 ENV DOCKERIZE_VERSION=v0.6.0
 ENV CHROMEDRIVER_RELEASE=2.34
-ENV GOOGLE_CHROME_VERSION=63.0.3239.108-1
 
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-RUN apt-get update && apt-get install -y google-chrome-stable=$GOOGLE_CHROME_VERSION
+RUN apt-get update && apt-get install -y
 
 RUN CHROMEDRIVER_URL="http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_RELEASE/chromedriver_linux64.zip" \
     && curl --silent --show-error --location --fail --retry 3 --output /tmp/chromedriver_linux64.zip $CHROMEDRIVER_URL \
