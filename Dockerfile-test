@@ -1,0 +1,30 @@
+ARG base_image=decidim/decidim:latest
+
+FROM $base_image
+LABEL maintainer="info@codegram.com"
+
+ARG decidim_version
+
+RUN apt-get update \
+  && apt-get install -y unzip
+
+ENV DOCKERIZE_VERSION=v0.6.0
+ENV CHROMEDRIVER_RELEASE=2.35
+
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+RUN apt-get update && apt-get install -y google-chrome-stable
+
+RUN CHROMEDRIVER_URL="http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_RELEASE/chromedriver_linux64.zip" \
+    && curl --silent --show-error --location --fail --retry 3 --output /tmp/chromedriver_linux64.zip $CHROMEDRIVER_URL \
+    && unzip /tmp/chromedriver_linux64.zip chromedriver -d /usr/local/bin \
+    && rm /tmp/chromedriver_linux64.zip \
+    && chromedriver --version
+
+RUN apt-get update && apt-get install -y wget
+
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+RUN gem install decidim-dev:$decidim_version
