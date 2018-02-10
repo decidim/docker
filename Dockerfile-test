@@ -23,3 +23,5 @@ RUN DOCKERIZE_VERSION=v0.6.0 \
   && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 RUN gem install decidim-dev:$decidim_version
+
+ENTRYPOINT []
