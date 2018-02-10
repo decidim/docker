@@ -1,10 +1,5 @@
 #!/bin/sh -x
 
-# https://github.com/docker-library/ruby/issues/66
-export BUNDLE_PATH=/gems
-export BUNDLE_BIN=/gems/bin
-export BUNDLE_APP_CONFIG=/gems/config
-
 USER_UID=$(stat -c %u /code/Gemfile)
 USER_GID=$(stat -c %g /code/Gemfile)
 
