@@ -5,8 +5,6 @@ LABEL maintainer="info@codegram.com"
 
 ARG decidim_version
 
-ARG base_image=decidim/decidim:latest-test
-
 RUN apt-get install -y sudo \
   && apt-get clean
 
