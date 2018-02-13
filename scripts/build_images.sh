@@ -17,7 +17,7 @@ docker build -f Dockerfile-test \
             --cache-from=decidim/decidim:latest-test .
 
 docker build -f Dockerfile-dev \
-            --build-arg "base_image=decidim/decidim:$sha1" \
+            --build-arg "base_image=decidim/decidim:$sha1-test" \
             -t "decidim/decidim:$sha1-dev" \
             --cache-from=decidim/decidim:latest-dev .
 
