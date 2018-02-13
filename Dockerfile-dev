@@ -6,7 +6,7 @@ LABEL maintainer="info@codegram.com"
 RUN apt-get install -y sudo \
   && apt-get clean
 
-RUN adduser --home /code --shell /bin/bash --disabled-password --gecos "" decidim \
+RUN adduser --shell /bin/bash --disabled-password --gecos "" decidim \
   && adduser decidim sudo \
   && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
