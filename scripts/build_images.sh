@@ -3,7 +3,7 @@
 set -e
 
 sha1=${CIRCLE_SHA1:-latest}
-version=${DECIDIM_VERSION:-0.9.2}
+version=${DECIDIM_VERSION:-0.9.3}
 
 docker build -f Dockerfile \
             --build-arg "decidim_version=$version" \
