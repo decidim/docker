@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /app
     environment:
-      - DECIDIM_VERSION=0.9.3
+      - DECIDIM_VERSION=0.10.0
     docker:
       - image: docker:17.10.0-ce-git
     steps:
