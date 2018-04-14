@@ -1,4 +1,4 @@
-FROM ruby:2.5.0
+FROM ruby:2.5.1
 LABEL maintainer="info@codegram.com"
 
 ARG decidim_version
