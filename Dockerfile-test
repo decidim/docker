@@ -5,19 +5,6 @@ LABEL maintainer="info@codegram.com"
 
 ARG decidim_version
 
-#
-# This is needed in order to pick up
-# https://github.com/rubygems/rubygems/pull/2196, because otherwise our
-# generator tests won't play nice with rubygems. To be removed once rubygems
-# 2.7.7 is released and the image starts using it.
-#
-RUN git clone https://github.com/rubygems/rubygems /tmp/rubygems \
-  && cd /tmp/rubygems \
-  && git checkout e093fb7d594f97edaa6289547a90537871ca5f98 \
-  && git submodule update --init \
-  && ruby setup.rb \
-  && rm -rf /tmp/rubygems
-
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   && apt-get update \
