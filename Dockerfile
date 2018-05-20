@@ -15,7 +15,6 @@ RUN curl -sL https://deb.nodesource.com/setup_9.x | bash - \
 
 RUN npm install -g npm
 
-RUN gem update --system
 RUN gem install decidim:$decidim_version
 
 ENTRYPOINT ["decidim"]
