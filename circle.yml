@@ -5,7 +5,7 @@ jobs:
     environment:
       - DECIDIM_VERSION=0.11.1
     docker:
-      - image: docker:17.10.0-ce-git
+      - image: docker:17.11.0-ce-git
     steps:
       - run:
           name: Install Bash
@@ -13,7 +13,7 @@ jobs:
             apk add --no-cache bash
       - checkout
       - setup_remote_docker:
-          version: 17.10.0-ce
+          version: 17.11.0-ce
       - run:
           name: Pull images
           command: scripts/pull_images.sh
