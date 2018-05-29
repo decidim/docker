@@ -8,9 +8,9 @@ jobs:
       - image: docker:17.11.0-ce-git
     steps:
       - run:
-          name: Install Bash
+          name: Install Bash & Curl
           command: |
-            apk add --no-cache bash
+            apk add --no-cache bash curl curl-dev
       - checkout
       - setup_remote_docker:
           version: 17.11.0-ce
