@@ -3,7 +3,8 @@
 set -ex
 
 sha1=${CIRCLE_SHA1:-latest}
-version=${DECIDIM_VERSION:-0.10.0}
+latest_version=$(curl https://rubygems.org/api/v1/versions/decidim/latest.json | grep -o "[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*")
+version=${DECIDIM_VERSION:-$latest_version}
 extra_args=("$@")
 
 docker build -f Dockerfile \
