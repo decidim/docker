@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 sha1=${CIRCLE_SHA1:-latest}
 version=${DECIDIM_VERSION:-0.10.0}
