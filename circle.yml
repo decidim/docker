@@ -15,9 +15,6 @@ jobs:
       - setup_remote_docker:
           version: 17.11.0-ce
       - run:
-          name: Pull images
-          command: scripts/pull_images.sh
-      - run:
           name: Build images
           command: scripts/build_images.sh
       - run:
