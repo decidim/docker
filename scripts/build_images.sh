@@ -10,6 +10,7 @@ extra_args=("$@")
 docker build --file Dockerfile \
              --build-arg "decidim_version=$version" \
              --tag "decidim/decidim:$sha1" \
+             --tag "decidim/decidim:$version" \
              --tag "decidim/decidim:latest" \
              "${extra_args[@]}" .
 
@@ -17,17 +18,20 @@ docker build --file Dockerfile-test \
              --build-arg "base_image=decidim/decidim:$sha1" \
              --build-arg "decidim_version=$version" \
              --tag "decidim/decidim:$sha1-test" \
+             --tag "decidim/decidim:$version-test" \
              --tag "decidim/decidim:latest-test" \
              "${extra_args[@]}" .
 
 docker build --file Dockerfile-dev \
              --build-arg "base_image=decidim/decidim:$sha1-test" \
              --tag "decidim/decidim:$sha1-dev" \
+             --tag "decidim/decidim:$version-dev" \
              --tag "decidim/decidim:latest-dev" \
              "${extra_args[@]}" .
 
 docker build --file Dockerfile-deploy \
              --build-arg "base_image=decidim/decidim:$sha1" \
              --tag "decidim/decidim:$sha1-deploy" \
+             --tag "decidim/decidim:$version-deploy" \
              --tag "decidim/decidim:latest-deploy" \
              "${extra_args[@]}" .
