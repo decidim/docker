@@ -3,7 +3,7 @@
 set -e
 
 if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
-  docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+  docker login -u "$DOCKER_USER" --password-stdin "$DOCKER_PASS"
 
   docker push "decidim/decidim:$DECIDIM_VERSION-deploy"
   docker push "decidim/decidim:$DECIDIM_VERSION-dev"
@@ -17,7 +17,7 @@ if [[ "${CIRCLE_BRANCH}" == "master" ]]; then
 fi
 
 if [[ "${CIRCLE_BRANCH}" =~ ^[0-9\.]+$ ]]; then
-  docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+  docker login -u "$DOCKER_USER" --password-stdin "$DOCKER_PASS"
 
   docker push "decidim/decidim:$DECIDIM_VERSION-deploy"
   docker push "decidim/decidim:$DECIDIM_VERSION-dev"
