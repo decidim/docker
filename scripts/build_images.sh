@@ -12,7 +12,6 @@ docker build --file Dockerfile \
              --tag "decidim/decidim:$sha1" \
              --tag "decidim/decidim:$version" \
              --tag "decidim/decidim:latest" \
-             --no-cache \
              "${extra_args[@]}" .
 
 docker build --file Dockerfile-test \
@@ -21,7 +20,6 @@ docker build --file Dockerfile-test \
              --tag "decidim/decidim:$sha1-test" \
              --tag "decidim/decidim:$version-test" \
              --tag "decidim/decidim:latest-test" \
-             --no-cache \
              "${extra_args[@]}" .
 
 docker build --file Dockerfile-dev \
@@ -29,7 +27,6 @@ docker build --file Dockerfile-dev \
              --tag "decidim/decidim:$sha1-dev" \
              --tag "decidim/decidim:$version-dev" \
              --tag "decidim/decidim:latest-dev" \
-             --no-cache \
              "${extra_args[@]}" .
 
 docker build --file Dockerfile-deploy \
@@ -37,5 +34,4 @@ docker build --file Dockerfile-deploy \
              --tag "decidim/decidim:$sha1-deploy" \
              --tag "decidim/decidim:$version-deploy" \
              --tag "decidim/decidim:latest-deploy" \
-             --no-cache \
              "${extra_args[@]}" .
