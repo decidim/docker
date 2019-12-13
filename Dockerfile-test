@@ -1,7 +1,7 @@
 ARG base_image=decidim/decidim:latest
 
 FROM $base_image
-LABEL maintainer="info@codegram.com"
+LABEL maintainer="info@coditramuntana.com"
 
 ARG decidim_version
 

@@ -1,7 +1,7 @@
 ARG base_image=decidim/decidim:latest-test
 
 FROM $base_image
-LABEL maintainer="info@codegram.com"
+LABEL maintainer="info@coditramuntana.com"
 
 RUN apt-get install -y sudo \
   && apt-get clean
