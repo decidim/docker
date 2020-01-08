@@ -1,4 +1,6 @@
-FROM ruby:2.6.5
+# can't update to a higher Ruby version because they use debian 10
+# and wkhtmltopdf-binary in decidim-initiatives still not supports debian 10
+FROM ruby:2.5.3
 LABEL maintainer="info@coditramuntana.com"
 
 ARG decidim_version
