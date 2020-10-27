@@ -1,17 +1,17 @@
-ARG base_image=decidim/decidim:latest
+ARG base_image=ghcr.io/decidim/decidim-generator:latest
 
 FROM $base_image
 LABEL maintainer="info@coditramuntana.com"
 
-ENV RAILS_ENV=production
-ENV PORT=3000
+RUN decidim .
+RUN bundle check || bundle install
+RUN bundle exec rake assets:precompile
 
-ONBUILD COPY Gemfile Gemfile.lock ./
-ONBUILD RUN bundle install
-ONBUILD COPY . .
-ONBUILD RUN bundle install
-ONBUILD RUN bundle exec rake assets:precompile
+ENV RAILS_ENV=production
+ENV RAILS_SERVE_STATIC_FILES=true
+
+EXPOSE 3000
 
 ENTRYPOINT []
-ENV RAILS_SERVE_STATIC_FILES=true
-CMD bundle exec rails s
+
+CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]
