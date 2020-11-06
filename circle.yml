@@ -3,7 +3,6 @@ jobs:
   build:
     working_directory: /app
     environment:
-      #
       - DECIDIM_VERSION=0.23.0
     docker:
       - image: docker:17.11.0-ce-git
