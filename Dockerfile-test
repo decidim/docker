@@ -11,7 +11,7 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
   && apt-get install -y google-chrome-stable \
   && apt-get clean
 
-RUN CHROMEDRIVER_RELEASE=78.0.3904.11 \
+RUN CHROMEDRIVER_RELEASE=85.0.4183.87 \
   && CHROMEDRIVER_URL="http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_RELEASE/chromedriver_linux64.zip" \
   && apt-get install unzip \
   && curl --silent --show-error --location --fail --retry 3 --output /tmp/chromedriver_linux64.zip $CHROMEDRIVER_URL \
