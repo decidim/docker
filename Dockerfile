@@ -1,4 +1,4 @@
-FROM ruby:2.6.6
+FROM ruby:2.7.1
 LABEL maintainer="info@coditramuntana.com"
 
 ARG decidim_version
