@@ -17,14 +17,14 @@ docker run -it --rm \
   -e DATABASE_HOST=host.docker.internal \
   -e RAILS_ENV=development \
   -p 3000:3000 \
-  docker.pkg.github.com/decidim/docker/decidim:latest
+  ghcr.io/decidim/decidim:latest
 ```
 
 ```bash
 docker run -it --rm \
   -e DATABASE_URL="postgres://user:pass@postgres-host/decidim-production-db" \
   -p 3000:3000 \
-  docker.pkg.github.com/decidim/docker/decidim:latest
+  ghcr.io/decidim/decidim:latest
 ```
 
 ## Using the decidim-generator image
@@ -33,7 +33,7 @@ With this image you can generate a new Decidim application:
 
 ```bash
 APP_NAME=HelloWorld
-IMAGE=docker.pkg.github.com/decidim/docker/decidim-generator:latest
+IMAGE=ghcr.io/decidim/decidim-generator:latest
 docker run -it -v "$(pwd):/code" ${IMAGE} ${APP_NAME}
 sudo chown -R $(whoami): ${APP_NAME}
 ```
