@@ -1,0 +1,76 @@
+# Git repo checkout builder 
+# based on https://github.com/jnovack/git-checkout
+FROM alpine:latest as repo-builder
+
+WORKDIR /repo
+
+ARG SSH_KEY
+ENV SSH_KEY=$SSH_KEY
+ENV REPO="git@github.com:decidim/decidim.git"
+ENV BRANCH="develop"
+ENV HASH="HEAD"
+
+RUN apk add --no-cache git openssh
+
+ENV USER=appuser
+ENV UID=10001
+RUN adduser \
+  --disabled-password \
+  --gecos "" \
+  --home "/home/${USER}" \
+  --shell "/sbin/nologin" \
+  --uid "${UID}" \
+  "${USER}"
+RUN chown -R appuser:appuser /repo
+USER appuser:appuser
+
+RUN /bin/mkdir -p ~/.ssh \
+  && /bin/echo "[DEBUG] Copying ssh private key from environment ..." \
+  && /bin/echo -e "$SSH_KEY" > ~/.ssh/id_rsa \
+  && /bin/echo "[DEBUG] Using ~/.ssh/id_rsa ..." \
+  && /bin/chmod 400 ~/.ssh/id_rsa \
+  && eval $(ssh-agent -s) > /dev/null \
+  && /usr/bin/ssh-add ~/.ssh/id_rsa
+
+RUN /bin/echo -e "Host * \n    StrictHostKeyChecking no" > ~/.ssh/config
+
+RUN /bin/echo "[INFO  ] Downloading from ${REPO} ..." \
+  && /bin/echo "[INFO  ] ... checking out ${BRANCH}" \
+  && /bin/echo "[INFO  ] ... resetting to ${HASH}"
+
+RUN /bin/echo "[INFO  ] Creating new repository ..." \
+  && /bin/rm -rf * &> /dev/null || /bin/true \
+  && /bin/rm -rf .* &> /dev/null || /bin/true \
+  && /usr/bin/git clone -b "$BRANCH" \
+    --single-branch "$REPO" .
+
+  # && /usr/bin/git remote add origin "$REPO" \
+  # && /usr/bin/git fetch origin \
+  # && /usr/bin/git checkout --force "$BRANCH" \
+  # && /usr/bin/git reset --hard "$HASH" \
+
+## Gem builder
+# ARG ruby_version=2.7.1
+FROM ruby:2.7.1
+
+# COPY --from=repo-builder . /repo
+
+# ENV LANG C.UTF-8
+# ENV LC_ALL C.UTF-8
+
+# WORKDIR /code
+
+# RUN apt-get install -y git imagemagick wget \
+#   && apt-get clean
+
+# RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+#   && apt-get install -y nodejs \
+#   && apt-get clean
+
+# RUN npm install -g npm@6.3.0
+
+# RUN gem install bundler --version '>= 2.1.4'
+
+# RUN 
+
+# ENTRYPOINT []
