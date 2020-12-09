@@ -1,4 +1,8 @@
-# docker build --file Dockerfile-build-branch --build-arg SSH_KEY="$(cat ~/.ssh/id_rsa)" -t decidim-staging .
+# docker build --file Dockerfile-build-branch \
+# --build-arg SSH_KEY="$(cat ~/.ssh/id_rsa)" \
+# --build-arg REPO="git@github.com:liquidvotingio/decidim.git" \
+# --build-arg BRANCH="feature/allow-admin-discarded-to-tech-eval" \
+# -t decidim-staging .
 
 # Git repo checkout builder 
 # based on https://github.com/jnovack/git-checkout
@@ -8,8 +12,10 @@ WORKDIR /repo
 
 ARG SSH_KEY
 ENV SSH_KEY=$SSH_KEY
-ENV REPO="git@github.com:decidim/decidim.git"
-ENV BRANCH="develop"
+ARG REPO="git@github.com:decidim/decidim.git"
+ENV REPO=$REPO
+ARG BRANCH="develop"
+ENV BRANCH=$BRANCH
 ENV HASH="HEAD"
 
 RUN apk add --no-cache git openssh
@@ -73,6 +79,8 @@ RUN npm install -g npm@6.3.0
 
 RUN gem install bundler --version '>= 2.1.4'
 
-# RUN 
+RUN bundle install
+
+# RUN bundle exec rake development_app
 
 ENTRYPOINT []
