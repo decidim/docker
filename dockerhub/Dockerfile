@@ -1,6 +1,4 @@
-ARG ruby_version
-
-FROM ruby:${ruby_version}
+FROM ruby:2.7.1
 LABEL maintainer="info@coditramuntana.com"
 
 ARG decidim_version
@@ -20,6 +18,6 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
 RUN npm install -g npm@6.3.0
 
 RUN gem install bundler --version '>= 2.1.4' \
-  && gem install decidim:${decidim_version}
+  && gem install decidim:$decidim_version
 
 ENTRYPOINT ["decidim"]

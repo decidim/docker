@@ -7,14 +7,14 @@ latest_version=$(curl https://rubygems.org/api/v1/versions/decidim/latest.json |
 version=${DECIDIM_VERSION:-$latest_version}
 extra_args=("$@")
 
-docker build --file Dockerfile \
+docker build --file dockerhub/Dockerfile \
              --build-arg "decidim_version=$version" \
              --tag "decidim/decidim:$sha1" \
              --tag "decidim/decidim:$version" \
              --tag "decidim/decidim:latest" \
              "${extra_args[@]}" .
 
-docker build --file Dockerfile-test \
+docker build --file dockerhub/Dockerfile-test \
              --build-arg "base_image=decidim/decidim:$sha1" \
              --build-arg "decidim_version=$version" \
              --tag "decidim/decidim:$sha1-test" \
@@ -22,14 +22,14 @@ docker build --file Dockerfile-test \
              --tag "decidim/decidim:latest-test" \
              "${extra_args[@]}" .
 
-docker build --file Dockerfile-dev \
+docker build --file dockerhub/Dockerfile-dev \
              --build-arg "base_image=decidim/decidim:$sha1-test" \
              --tag "decidim/decidim:$sha1-dev" \
              --tag "decidim/decidim:$version-dev" \
              --tag "decidim/decidim:latest-dev" \
              "${extra_args[@]}" .
 
-docker build --file Dockerfile-deploy \
+docker build --file dockerhub/Dockerfile-deploy \
              --build-arg "base_image=decidim/decidim:$sha1" \
              --tag "decidim/decidim:$sha1-deploy" \
              --tag "decidim/decidim:$version-deploy" \
