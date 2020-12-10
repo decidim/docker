@@ -1,7 +1,7 @@
 # docker build --file Dockerfile-build-branch \
 # --build-arg SSH_KEY="$(cat ~/.ssh/id_rsa)" \
 # --build-arg REPO="git@github.com:liquidvotingio/decidim.git" \
-# --build-arg BRANCH="feature/allow-admin-discarded-to-tech-eval" \
+# --build-arg BRANCH="stateless-app-generator" \
 # -t decidim-staging .
 
 # Git repo checkout builder 
@@ -81,6 +81,7 @@ RUN gem install bundler --version '>= 2.1.4'
 
 RUN bundle install
 
-# RUN bundle exec rake development_app
+# Not yet available on decidim/decidim - will be submitted soon
+RUN bundle exec rake decidim:generate_stateless_demo_app
 
 ENTRYPOINT []
