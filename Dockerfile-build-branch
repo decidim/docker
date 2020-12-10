@@ -84,4 +84,10 @@ RUN bundle install
 # Not yet available on decidim/decidim - will be submitted soon
 RUN bundle exec rake decidim:generate_stateless_demo_app
 
+# Before this can be run, there'll need to be a docker exec to run migrations
+# and seeding through rake. This of course can only be done once container is up
+# and running and with access to a database.
+CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]
+
+# So far trying to avoid using an entrypoint script
 ENTRYPOINT []
