@@ -20,6 +20,8 @@ There's different tags for different usage scenarios:
 
 ## Github Registry Images
 
+** Not yet available** - pending authentication setup: https://github.com/decidim/docker/issues/66
+
 Naming has changed for images published on the new Github flow. We now use different names for images with different purposes, as opposed to using tagging to distinguish between them. Also, the app generator gem is now called `decidim-generator`.
 
 - `decidim-generator:latest` or `decidim-generator:<version>` (eg: `decidim-generator:0.23.1`): the [decidim gem](https://rubygems.org/gems/decidim) with all necessary environment for running it.
