@@ -17,10 +17,10 @@ jobs:
     name: Build & Publish Docker Images
     runs-on: ubuntu-latest
     env:
-      GENERATOR_IMAGE_NAME: ghcr.io/${{ github.actor }}/decidim-generator
-      TEST_IMAGE_NAME: ghcr.io/${{ github.actor }}/decidim-test
-      DEV_IMAGE_NAME: ghcr.io/${{ github.actor }}/decidim-dev
-      APP_IMAGE_NAME: ghcr.io/${{ github.actor }}/decidim
+      GENERATOR_IMAGE_NAME: ghcr.io/decidim/decidim-generator
+      TEST_IMAGE_NAME: ghcr.io/decidim/decidim-test
+      DEV_IMAGE_NAME: ghcr.io/decidim/decidim-dev
+      APP_IMAGE_NAME: ghcr.io/decidim/decidim
       TAG: ${{ github.sha }}
 
     steps:
