@@ -61,8 +61,8 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.PAT_TOKEN }}
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
     - run: |
         docker push $GENERATOR_IMAGE_NAME
 
@@ -81,8 +81,8 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.PAT_TOKEN }}
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
     - run: |
         docker push $TEST_IMAGE_NAME
 
@@ -101,8 +101,8 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.PAT_TOKEN }}
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
     - run: |
         docker push $DEV_IMAGE_NAME
 
@@ -121,7 +121,7 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.PAT_TOKEN }}
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
     - run: |
         docker push $APP_IMAGE_NAME
