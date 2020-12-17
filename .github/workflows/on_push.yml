@@ -7,15 +7,20 @@ on:
     - master
     paths:
     - 'Dockerfile'
+    - 'Dockerfile-test'
+    - 'Dockerfile-dev'
+    - 'Dockerfile-deploy'
     - '.github/workflows/on_push.yml'
 
 jobs:
   build-publish:
-    name: Build & Publish Docker Image
+    name: Build & Publish Docker Images
     runs-on: ubuntu-latest
     env:
-      GENERATOR_IMAGE_NAME: ghcr.io/${{ github.actor }}/decidim-generator
-      APP_IMAGE_NAME: ghcr.io/${{ github.actor }}/decidim
+      GENERATOR_IMAGE_NAME: ghcr.io/decidim/decidim-generator
+      TEST_IMAGE_NAME: ghcr.io/decidim/decidim-test
+      DEV_IMAGE_NAME: ghcr.io/decidim/decidim-dev
+      APP_IMAGE_NAME: ghcr.io/decidim/decidim
       TAG: ${{ github.sha }}
 
     steps:
@@ -56,10 +61,50 @@ jobs:
       uses: azure/docker-login@v1
       with:
         login-server: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.PAT_TOKEN }}
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
     - run: |
         docker push $GENERATOR_IMAGE_NAME
+
+    - name: Build decidim-test Image
+      env:
+        RUBY_VERSION: ${{ steps.ruby-version.outputs.version }}
+        DECIDIM_VERSION: ${{ steps.decidim-version.outputs.version }}
+      run: |
+        docker build \
+        --file Dockerfile-test \
+        -t $TEST_IMAGE_NAME:$TAG .
+        docker tag $TEST_IMAGE_NAME:$TAG $TEST_IMAGE_NAME:latest
+        docker tag $TEST_IMAGE_NAME:$TAG $TEST_IMAGE_NAME:$DECIDIM_VERSION
+
+    - name: Publish decidim-test Image to Github Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: ghcr.io
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
+    - run: |
+        docker push $TEST_IMAGE_NAME
+
+    - name: Build decidim-dev Image
+      env:
+        RUBY_VERSION: ${{ steps.ruby-version.outputs.version }}
+        DECIDIM_VERSION: ${{ steps.decidim-version.outputs.version }}
+      run: |
+        docker build \
+        --file Dockerfile-dev \
+        -t $DEV_IMAGE_NAME:$TAG .
+        docker tag $DEV_IMAGE_NAME:$TAG $DEV_IMAGE_NAME:latest
+        docker tag $DEV_IMAGE_NAME:$TAG $DEV_IMAGE_NAME:$DECIDIM_VERSION
+
+    - name: Publish decidim-dev Image to Github Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: ghcr.io
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
+    - run: |
+        docker push $DEV_IMAGE_NAME
 
     - name: Build decidim (app) Image
       env:
@@ -68,16 +113,15 @@ jobs:
       run: |
         docker build \
         --file Dockerfile-deploy \
-        --build-arg base_image=$GENERATOR_IMAGE_NAME \
         -t $APP_IMAGE_NAME:$TAG .
         docker tag $APP_IMAGE_NAME:$TAG $APP_IMAGE_NAME:latest
         docker tag $APP_IMAGE_NAME:$TAG $APP_IMAGE_NAME:$DECIDIM_VERSION
 
-    - name: Publish Image to Github Container Registry
+    - name: Publish decidim Image to Github Container Registry
       uses: azure/docker-login@v1
       with:
         login-server: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.PAT_TOKEN }}
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
     - run: |
         docker push $APP_IMAGE_NAME

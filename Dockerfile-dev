@@ -1,4 +1,4 @@
-ARG base_image=decidim/decidim:latest-test
+ARG base_image=ghcr.io/decidim/decidim-test:latest
 
 FROM $base_image
 LABEL maintainer="info@coditramuntana.com"
@@ -13,6 +13,6 @@ RUN adduser --shell /bin/bash --disabled-password --gecos "" decidim \
 RUN echo 'Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/bundle/bin"' > /etc/sudoers.d/secure_path
 RUN chmod 0440 /etc/sudoers.d/secure_path
 
-COPY ../scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT []
