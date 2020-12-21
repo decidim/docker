@@ -1,9 +1,9 @@
-ARG ruby_version
+ARG ruby_version=2.7.1
 
 FROM ruby:${ruby_version}
 LABEL maintainer="info@coditramuntana.com"
 
-ARG decidim_version
+ARG decidim_version=0.23.1
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
