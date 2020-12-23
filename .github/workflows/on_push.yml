@@ -57,12 +57,20 @@ jobs:
         docker tag $GENERATOR_IMAGE_NAME:$TAG $GENERATOR_IMAGE_NAME:latest
         docker tag $GENERATOR_IMAGE_NAME:$TAG $GENERATOR_IMAGE_NAME:$DECIDIM_VERSION
 
-    - name: Publish Image to Github Container Registry
+    - name: Publish decidim-generator Image to Github Container Registry
       uses: azure/docker-login@v1
       with:
         login-server: ghcr.io
         username: decidim-bot
         password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
+    - run: |
+        docker push $GENERATOR_IMAGE_NAME
+
+    - name: Publish decidim-generator Image to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: decidimbot
+        password: ${{ secrets.DOCKERHUB_PAT }}
     - run: |
         docker push $GENERATOR_IMAGE_NAME
 
@@ -86,6 +94,14 @@ jobs:
     - run: |
         docker push $TEST_IMAGE_NAME
 
+    - name: Publish decidim-test Image to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: decidimbot
+        password: ${{ secrets.DOCKERHUB_PAT }}
+    - run: |
+        docker push $TEST_IMAGE_NAME
+
     - name: Build decidim-dev Image
       env:
         RUBY_VERSION: ${{ steps.ruby-version.outputs.version }}
@@ -103,6 +119,14 @@ jobs:
         login-server: ghcr.io
         username: decidim-bot
         password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
+    - run: |
+        docker push $DEV_IMAGE_NAME
+
+    - name: Publish decidim-dev Image to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: decidimbot
+        password: ${{ secrets.DOCKERHUB_PAT }}
     - run: |
         docker push $DEV_IMAGE_NAME
 
@@ -125,3 +149,12 @@ jobs:
         password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
     - run: |
         docker push $APP_IMAGE_NAME
+
+    - name: Publish decidim Image to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: decidimbot
+        password: ${{ secrets.DOCKERHUB_PAT }}
+    - run: |
+        docker push $APP_IMAGE_NAME
+

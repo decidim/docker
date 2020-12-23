@@ -1,9 +1,9 @@
-ARG ruby_version
+ARG ruby_version=2.7.1
 
 FROM ruby:${ruby_version}
 LABEL maintainer="info@coditramuntana.com"
 
-ARG decidim_version
+ARG decidim_version=0.23.1
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
@@ -20,6 +20,8 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
 RUN npm install -g npm@6.3.0
 
 RUN gem install bundler --version '>= 2.1.4' \
-  && gem install decidim:${decidim_version}
+  && gem install decidim:${decidim_version} --no-document
 
-ENTRYPOINT ["decidim"]
+CMD ["decidim"]
+
+ENTRYPOINT []
