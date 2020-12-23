@@ -10,17 +10,17 @@ on:
     - 'Dockerfile-test'
     - 'Dockerfile-dev'
     - 'Dockerfile-deploy'
-    - '.github/workflows/on_push.yml'
+    - '.github/workflows/dockerhub.yml'
 
 jobs:
   build-publish:
     name: Build & Publish Docker Images
     runs-on: ubuntu-latest
     env:
-      GENERATOR_IMAGE_NAME: ghcr.io/decidim/decidim-generator
-      TEST_IMAGE_NAME: ghcr.io/decidim/decidim-test
-      DEV_IMAGE_NAME: ghcr.io/decidim/decidim-dev
-      APP_IMAGE_NAME: ghcr.io/decidim/decidim
+      GENERATOR_IMAGE_NAME: decidim/decidim-generator
+      TEST_IMAGE_NAME: decidim/decidim-test
+      DEV_IMAGE_NAME: decidim/decidim-dev
+      APP_IMAGE_NAME: decidim/decidim
       TAG: ${{ github.sha }}
 
     steps:
@@ -57,15 +57,6 @@ jobs:
         docker tag $GENERATOR_IMAGE_NAME:$TAG $GENERATOR_IMAGE_NAME:latest
         docker tag $GENERATOR_IMAGE_NAME:$TAG $GENERATOR_IMAGE_NAME:$DECIDIM_VERSION
 
-    - name: Publish decidim-generator Image to Github Container Registry
-      uses: azure/docker-login@v1
-      with:
-        login-server: ghcr.io
-        username: decidim-bot
-        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
-    - run: |
-        docker push $GENERATOR_IMAGE_NAME
-
     - name: Publish decidim-generator Image to Docker Hub
       uses: docker/login-action@v1
       with:
@@ -84,15 +75,6 @@ jobs:
         -t $TEST_IMAGE_NAME:$TAG .
         docker tag $TEST_IMAGE_NAME:$TAG $TEST_IMAGE_NAME:latest
         docker tag $TEST_IMAGE_NAME:$TAG $TEST_IMAGE_NAME:$DECIDIM_VERSION
-
-    - name: Publish decidim-test Image to Github Container Registry
-      uses: azure/docker-login@v1
-      with:
-        login-server: ghcr.io
-        username: decidim-bot
-        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
-    - run: |
-        docker push $TEST_IMAGE_NAME
 
     - name: Publish decidim-test Image to Docker Hub
       uses: docker/login-action@v1
@@ -113,15 +95,6 @@ jobs:
         docker tag $DEV_IMAGE_NAME:$TAG $DEV_IMAGE_NAME:latest
         docker tag $DEV_IMAGE_NAME:$TAG $DEV_IMAGE_NAME:$DECIDIM_VERSION
 
-    - name: Publish decidim-dev Image to Github Container Registry
-      uses: azure/docker-login@v1
-      with:
-        login-server: ghcr.io
-        username: decidim-bot
-        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
-    - run: |
-        docker push $DEV_IMAGE_NAME
-
     - name: Publish decidim-dev Image to Docker Hub
       uses: docker/login-action@v1
       with:
@@ -141,15 +114,6 @@ jobs:
         docker tag $APP_IMAGE_NAME:$TAG $APP_IMAGE_NAME:latest
         docker tag $APP_IMAGE_NAME:$TAG $APP_IMAGE_NAME:$DECIDIM_VERSION
 
-    - name: Publish decidim Image to Github Container Registry
-      uses: azure/docker-login@v1
-      with:
-        login-server: ghcr.io
-        username: decidim-bot
-        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
-    - run: |
-        docker push $APP_IMAGE_NAME
-
     - name: Publish decidim Image to Docker Hub
       uses: docker/login-action@v1
       with:
@@ -157,4 +121,3 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PAT }}
     - run: |
         docker push $APP_IMAGE_NAME
-
