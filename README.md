@@ -1,38 +1,26 @@
 # Docker images for Decidim 
 
-We're in the process of adopting Github Actions for our automated image build and publishing, and while that flow currently only publishes to Github Container Registry, there's another earlier flow on circleci publishing images to Docker Hub.
+Images are mirrored on [Docker Hub](https://hub.docker.com/repository/docker/decidim/decidim) and [Github Container Registry](https://github.com/orgs/decidim/packages).
 
-Instructions for using the generator and app images can be found below the information on each registry.
+**Note that image naming has changed recently**. We now use different names for images with different purposes, while previously we were using tagging to distinguish between them. CIs and scripts will need to be updated accordingly on updates after v0.23.1.
 
-## Docker Hub images
+Biggest naming change: the app generator gem used to be called `decidim` and is now called `decidim-generator`. 
 
+Here's the complete list of images and their purposes:
 
-We plan to phase out the circleci flow soon, and publish to Docker Hub with Github Actions as well.
-
-You'll find the images here: https://hub.docker.com/r/decidim/decidim/tags
-
-There's different tags for different usage scenarios:
-
-- `decidim:latest` or `decidim:<version>` (eg: `decidim:0.23.1`): the [decidim gem](https://rubygems.org/gems/decidim) with all necessary environment for running it.
-- `decidim:latest-test` or `decidim:<version>-test` (eg: `decidim:0.23.1-test`): the above gem environment plus tooling for testing.
-- `decidim:latest-dev` or `decidim:<version>-dev` (eg: `decidim:0.23.1-dev`): the above plus more configuration for running local dev environment.
-- `decidim:latest-deploy` or `decidim:<version>-deploy` (eg: `decidim:0.23.1-deploy`): actual generated Decidim app to be run locally.
-
-## Github Registry Images
-
-** Not yet available** - pending authentication setup: https://github.com/decidim/docker/issues/66
-
-Naming has changed for images published on the new Github flow. We now use different names for images with different purposes, as opposed to using tagging to distinguish between them. Also, the app generator gem is now called `decidim-generator`.
+## Images available
 
 - `decidim-generator:latest` or `decidim-generator:<version>` (eg: `decidim-generator:0.23.1`): the [decidim gem](https://rubygems.org/gems/decidim) with all necessary environment for running it.
 - `decidim-test:latest` or `decidim-test:<version>` (eg: `decidim-test:0.23.1`): the above gem environment plus tooling for testing.
 - `decidim-dev:latest` or `decidim-dev:<version>` (eg: `decidim-dev:0.23.1`): the above plus more configuration for running local dev environment.
 - `decidim:latest` or `decidim:<version>` (eg: `decidim:0.23.1`): actual generated Decidim app to be run locally.
 
-
 ## Using the decidim (app) image
 
 With this image you can run a pre-generated Decidim app:
+
+
+### Locally
 
 ```bash
 docker run -it --rm \
@@ -43,6 +31,8 @@ docker run -it --rm \
   -p 3000:3000 \
   ghcr.io/decidim/decidim:latest
 ```
+
+### In production
 
 ```bash
 docker run -it --rm \
