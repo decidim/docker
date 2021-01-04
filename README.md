@@ -56,6 +56,12 @@ From here on you can follow the steps on the [Getting Started](https://github.co
 
 ### Using decidim-generator with docker-compose
 
-The generator image can be used in conjunction with docker-compose, and the core [decidim/decidim](https://github.com/decidim/decidim) repo already offers a [docker-compose.yml](https://github.com/decidim/decidim/blob/develop/docker-compose.yml) file (currently pointing to the Docker Hub `decidim/decidim:latest-dev` image).
+The generator image can be used in conjunction with docker-compose, and the core [decidim/decidim](https://github.com/decidim/decidim) repo already offers a [docker-compose.yml](https://github.com/decidim/decidim/blob/develop/docker-compose.yml) file.
 
-It is convenient, but not absolutely mandatory to create a volume for the /usr/local/bundle folder.
+The flow is to checkout the [decidim/decidim](https://github.com/decidim/decidim) repo and then `docker-compose up`:
+
+```bash
+git clone git@github.com:decidim/decidim.git
+cd decidim
+docker-compose up
+```
