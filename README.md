@@ -2,31 +2,79 @@
 
 Images are mirrored on [Docker Hub](https://hub.docker.com/repository/docker/decidim/decidim) and [Github Container Registry](https://github.com/orgs/decidim/packages).
 
-**Note that image naming has changed recently**. We now use different names for images with different purposes, while previously we were using tagging to distinguish between them. CIs and scripts will need to be updated accordingly on updates after v0.23.1.
+**Image naming has changed recently.**
 
-Biggest naming change: the app generator gem used to be called `decidim` and is now called `decidim-generator`. 
+We now use different names for images with different purposes, while previously we were using tagging to distinguish between them. CIs and scripts will need to be updated accordingly on updates after v0.23.1.
+
+**Biggest naming change:** 
+
+The app generator gem used to be called `decidim` and is now called `decidim-generator`. There's now a new `decidim` image for a fully functioning generated Decidim app.
 
 Here's the complete list of images and their purposes:
 
 ## Images available
 
-- `decidim-generator:latest` or `decidim-generator:<version>` (eg: `decidim-generator:0.23.1`): the [decidim gem](https://rubygems.org/gems/decidim) with all necessary environment for running it.
-- `decidim-test:latest` or `decidim-test:<version>` (eg: `decidim-test:0.23.1`): the above gem environment plus tooling for testing.
-- `decidim-dev:latest` or `decidim-dev:<version>` (eg: `decidim-dev:0.23.1`): the above plus more configuration for running local dev environment.
-- `decidim:latest` or `decidim:<version>` (eg: `decidim:0.23.1`): actual generated Decidim app to be run locally.
+### decidim
 
-## Using the decidim (app) image
+Decidim app pre-generated with core modules.
 
-With this image you can run a pre-generated Decidim app:
+Tagged as `decidim:latest` or `decidim:<version>` (eg: `decidim:0.23.1`). 
 
+### decidim-generator
 
-### Locally
+The [decidim gem](https://rubygems.org/gems/decidim) with all necessary environment for running it.
+
+Tagged as `decidim-generator:latest` or `decidim-generator:<version>` (eg: `decidim-generator:0.23.1`).
+
+### decidim-test
+
+The above gem environment plus tooling for testing.
+
+Tagged `decidim-test:latest` or `decidim-test:<version>` (eg: `decidim-test:0.23.1`).
+
+### decidim-dev
+
+The above plus more configuration for running local dev environment.
+
+Tagged `decidim-dev:latest` or `decidim-dev:<version>` (eg: `decidim-dev:0.23.1`).
+
+## Hello World with docker-compose
+
+This repo includes a [docker-compose.yml](docker-compose.yml) file with:
+
+- a Decidim service (using the `decidim:latest` image)
+- a Postgres service
+- a Redis service
+
+By cloning the repo and then running `docker-compose up`, you'll get a fully functional Decidim app complete with seed data, accessible at http://localhost:3000.
+
+```bash
+git clone git@github.com:decidim/docker.git decidim-docker
+cd decidim-docker
+docker-compose up
+```
+It'll take a couple of minutes to run through all migrations (rake db:schema:load isn't working, currently) and seeds. At the end you should see:
+
+```
+(...lots of migrating and seeding...)
+decidim_1  | Puma starting in single mode...
+decidim_1  | * Version 4.3.5 (ruby 2.6.6-p146), codename: Mysterious Traveller
+decidim_1  | * Min threads: 5, max threads: 5
+decidim_1  | * Environment: development
+decidim_1  | * Listening on tcp://0.0.0.0:3000
+decidim_1  | Use Ctrl-C to stop
+```
+
+Note: in case you run into SSL redirection errors, opening it on an incognito window usually solves the problem.
+
+## Using the decidim app image individually
+
+### Locally, with running local database
 
 ```bash
 docker run -it --rm \
   -e DATABASE_USERNAME=postgres \
   -e DATABASE_PASSWORD=postgres \
-  -e DATABASE_HOST=host.docker.internal \
   -e RAILS_ENV=development \
   -p 3000:3000 \
   ghcr.io/decidim/decidim:latest
@@ -53,9 +101,3 @@ sudo chown -R $(whoami): ${APP_NAME}
 ```
 
 From here on you can follow the steps on the [Getting Started](https://github.com/decidim/decidim/blob/master/docs/getting_started.md) guide.
-
-### Using decidim-generator with docker-compose
-
-The generator image can be used in conjunction with docker-compose, and the core [decidim/decidim](https://github.com/decidim/decidim) repo already offers a [docker-compose.yml](https://github.com/decidim/decidim/blob/develop/docker-compose.yml) file (currently pointing to the Docker Hub `decidim/decidim:latest-dev` image).
-
-It is convenient, but not absolutely mandatory to create a volume for the /usr/local/bundle folder.
