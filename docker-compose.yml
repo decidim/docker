@@ -10,6 +10,8 @@ services:
     ports:
       - 3000:3000
     volumes:
+      # Makes our entrypoint scripts available to the container
+      # under /code/vendor
       - ./scripts:/code/vendor
     environment:
       - RAILS_ENV=development

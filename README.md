@@ -53,7 +53,7 @@ git clone git@github.com:decidim/docker.git decidim-docker
 cd decidim-docker
 docker-compose up
 ```
-It'll take a couple of minutes to run through all migrations (rake db:schema:load isn't working, currently) and seeds. At the end you should see:
+It'll take a couple of minutes to run through all migrations and seeds. At the end you should see:
 
 ```
 (...lots of migrating and seeding...)
