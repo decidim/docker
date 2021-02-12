@@ -120,4 +120,4 @@ jobs:
         username: decidimbot
         password: ${{ secrets.DOCKERHUB_PAT }}
     - run: |
-        docker push $APP_IMAGE_NAME
+        docker push --all-tags $APP_IMAGE_NAME
