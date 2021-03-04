@@ -1,6 +1,6 @@
 # Docker images for Decidim 
 
-Images are mirrored on [Docker Hub](https://hub.docker.com/repository/docker/decidim/decidim) and [Github Container Registry](https://github.com/orgs/decidim/packages).
+Images are mirrored on [Docker Hub](https://hub.docker.com/u/decidim) and [Github Container Registry](https://github.com/orgs/decidim/packages).
 
 **Image naming has changed recently.**
 
