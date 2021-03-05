@@ -71,6 +71,7 @@ jobs:
         DECIDIM_VERSION: ${{ steps.decidim-version.outputs.version }}
       run: |
         docker build \
+        --build-arg decidim_version=$DECIDIM_VERSION \
         --file Dockerfile-test \
         -t $TEST_IMAGE_NAME:$TAG .
         docker tag $TEST_IMAGE_NAME:$TAG $TEST_IMAGE_NAME:latest
