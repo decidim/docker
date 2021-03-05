@@ -63,7 +63,7 @@ jobs:
         username: decidimbot
         password: ${{ secrets.DOCKERHUB_PAT }}
     - run: |
-        docker push $GENERATOR_IMAGE_NAME
+        docker push --all-tags $GENERATOR_IMAGE_NAME
 
     - name: Build decidim-test Image
       env:
@@ -82,7 +82,7 @@ jobs:
         username: decidimbot
         password: ${{ secrets.DOCKERHUB_PAT }}
     - run: |
-        docker push $TEST_IMAGE_NAME
+        docker push --all-tags $TEST_IMAGE_NAME
 
     - name: Build decidim-dev Image
       env:
@@ -101,7 +101,7 @@ jobs:
         username: decidimbot
         password: ${{ secrets.DOCKERHUB_PAT }}
     - run: |
-        docker push $DEV_IMAGE_NAME
+        docker push --all-tags $DEV_IMAGE_NAME
 
     - name: Build decidim (app) Image
       env:
