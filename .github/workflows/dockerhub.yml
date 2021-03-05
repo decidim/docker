@@ -1,4 +1,4 @@
-name: Docker Hub Build
+name: Build docker images
 
 on:
   workflow_dispatch:
@@ -41,7 +41,7 @@ jobs:
     - name: Set Decidim Version
       id: decidim-version
       run: echo ::set-output name=version::$(echo ${{ steps.decidim-tag.outputs.tag }} | cut -c2-)
-      
+
     - name: Checkout Our Repo
       uses: actions/checkout@v2
 
