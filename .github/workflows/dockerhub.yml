@@ -53,9 +53,11 @@ jobs:
         docker build \
         --build-arg ruby_version=$RUBY_VERSION \
         --build-arg decidim_version=$DECIDIM_VERSION \
-        -t $GENERATOR_IMAGE_NAME:$TAG .
-        docker tag $GENERATOR_IMAGE_NAME:$TAG $GENERATOR_IMAGE_NAME:latest
-        docker tag $GENERATOR_IMAGE_NAME:$TAG $GENERATOR_IMAGE_NAME:$DECIDIM_VERSION
+        -t $GENERATOR_IMAGE_NAME .
+        docker tag $GENERATOR_IMAGE_NAME $GENERATOR_IMAGE_NAME:$TAG
+        docker tag $GENERATOR_IMAGE_NAME ghcr.io/$GENERATOR_IMAGE_NAME:$TAG
+        docker tag $GENERATOR_IMAGE_NAME $GENERATOR_IMAGE_NAME:$DECIDIM_VERSION
+        docker tag $GENERATOR_IMAGE_NAME ghcr.io/$GENERATOR_IMAGE_NAME:$DECIDIM_VERSION
 
     - name: Publish decidim-generator Image to Docker Hub
       uses: docker/login-action@v1
@@ -73,9 +75,11 @@ jobs:
         docker build \
         --build-arg decidim_version=$DECIDIM_VERSION \
         --file Dockerfile-test \
-        -t $TEST_IMAGE_NAME:$TAG .
-        docker tag $TEST_IMAGE_NAME:$TAG $TEST_IMAGE_NAME:latest
-        docker tag $TEST_IMAGE_NAME:$TAG $TEST_IMAGE_NAME:$DECIDIM_VERSION
+        -t $TEST_IMAGE_NAME .
+        docker tag $TEST_IMAGE_NAME $TEST_IMAGE_NAME:$TAG
+        docker tag $TEST_IMAGE_NAME $TEST_IMAGE_NAME:$DECIDIM_VERSION
+        docker tag $TEST_IMAGE_NAME ghcr.io/$TEST_IMAGE_NAME:$TAG
+        docker tag $TEST_IMAGE_NAME ghcr.io/$TEST_IMAGE_NAME:$DECIDIM_VERSION
 
     - name: Publish decidim-test Image to Docker Hub
       uses: docker/login-action@v1
@@ -92,9 +96,11 @@ jobs:
       run: |
         docker build \
         --file Dockerfile-dev \
-        -t $DEV_IMAGE_NAME:$TAG .
-        docker tag $DEV_IMAGE_NAME:$TAG $DEV_IMAGE_NAME:latest
-        docker tag $DEV_IMAGE_NAME:$TAG $DEV_IMAGE_NAME:$DECIDIM_VERSION
+        -t $DEV_IMAGE_NAME .
+        docker tag $DEV_IMAGE_NAME $DEV_IMAGE_NAME:$TAG
+        docker tag $DEV_IMAGE_NAME $DEV_IMAGE_NAME:$DECIDIM_VERSION
+        docker tag $DEV_IMAGE_NAME ghcr.io/$DEV_IMAGE_NAME:$TAG
+        docker tag $DEV_IMAGE_NAME ghcr.io/$DEV_IMAGE_NAME:$DECIDIM_VERSION
 
     - name: Publish decidim-dev Image to Docker Hub
       uses: docker/login-action@v1
@@ -111,9 +117,11 @@ jobs:
       run: |
         docker build \
         --file Dockerfile-deploy \
-        -t $APP_IMAGE_NAME:$TAG .
-        docker tag $APP_IMAGE_NAME:$TAG $APP_IMAGE_NAME:latest
-        docker tag $APP_IMAGE_NAME:$TAG $APP_IMAGE_NAME:$DECIDIM_VERSION
+        -t $APP_IMAGE_NAME .
+        docker tag $APP_IMAGE_NAME $APP_IMAGE_NAME:$TAG
+        docker tag $APP_IMAGE_NAME $APP_IMAGE_NAME:$DECIDIM_VERSION
+        docker tag $APP_IMAGE_NAME ghcr.io/$APP_IMAGE_NAME:$TAG
+        docker tag $APP_IMAGE_NAME ghcr.io/$APP_IMAGE_NAME:$DECIDIM_VERSION
 
     - name: Publish decidim Image to Docker Hub
       uses: docker/login-action@v1
