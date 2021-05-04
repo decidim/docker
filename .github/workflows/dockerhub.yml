@@ -9,7 +9,7 @@ on:
     - 'Dockerfile'
     - 'Dockerfile-test'
     - 'Dockerfile-dev'
-    - 'Dockerfile-deploy'
+    - 'Dockerfile-generator'
     - '.github/workflows/dockerhub.yml'
 
 jobs:
@@ -53,6 +53,7 @@ jobs:
         docker build \
         --build-arg ruby_version=$RUBY_VERSION \
         --build-arg decidim_version=$DECIDIM_VERSION \
+        --file Dockerfile-generator \
         -t $GENERATOR_IMAGE_NAME .
         docker tag $GENERATOR_IMAGE_NAME $GENERATOR_IMAGE_NAME:$TAG
         docker tag $GENERATOR_IMAGE_NAME ghcr.io/$GENERATOR_IMAGE_NAME:$TAG
@@ -146,7 +147,6 @@ jobs:
       run: |
         docker build \
         --build-arg base_image=ghcr.io/$GENERATOR_IMAGE_NAME:$TAG \
-        --file Dockerfile-deploy \
         -t $APP_IMAGE_NAME .
         docker tag $APP_IMAGE_NAME $APP_IMAGE_NAME:$TAG
         docker tag $APP_IMAGE_NAME $APP_IMAGE_NAME:$DECIDIM_VERSION
