@@ -100,4 +100,4 @@ docker run -it -v "$(pwd):/code" ${IMAGE} ${APP_NAME}
 sudo chown -R $(whoami): ${APP_NAME}
 ```
 
-From here on you can follow the steps on the [Getting Started](https://github.com/decidim/decidim/blob/master/docs/getting_started.md) guide.
+From here on you can follow the steps on the [Getting Started](https://docs.decidim.org/en/install/) guide.
