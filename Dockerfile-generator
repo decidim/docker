@@ -3,7 +3,7 @@ ARG ruby_version=2.7.5
 FROM ruby:${ruby_version}
 LABEL maintainer="hola@decidim.org"
 
-ARG decidim_version=0.23.1
+ARG decidim_version=0.26.2
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
