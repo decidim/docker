@@ -19,6 +19,12 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
 
 RUN npm install -g npm@6.3.0
 
+RUN  curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /usr/share/keyrings/yarnkey.gpg >/dev/null \
+  && echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | tee /etc/apt/sources.list.d/yarn.list \
+  && apt-get update \
+  && apt-get install yarn \
+  && apt-get clean
+
 RUN gem install bundler --version '>= 2.1.4' \
   && gem install decidim:${decidim_version} --no-document
 
