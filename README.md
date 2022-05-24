@@ -96,7 +96,7 @@ With this image you can generate a new Decidim application:
 ```bash
 APP_NAME=HelloWorld
 IMAGE=ghcr.io/decidim/decidim-generator:latest
-docker run -it -v "$(pwd):/code" ${IMAGE} ${APP_NAME}
+docker run -it -v "$(pwd):/code" ${IMAGE} decidim ${APP_NAME}
 sudo chown -R $(whoami): ${APP_NAME}
 ```
 
