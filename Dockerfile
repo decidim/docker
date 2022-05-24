@@ -1,7 +1,7 @@
 ARG base_image=ghcr.io/decidim/decidim-generator:latest
 
 FROM $base_image
-LABEL maintainer="info@coditramuntana.com"
+LABEL maintainer="hola@decidim.org"
 
 RUN decidim .
 RUN bundle check || bundle install
