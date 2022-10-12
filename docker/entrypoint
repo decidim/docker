@@ -1,0 +1,20 @@
+#! /bin/bash
+set -e
+# Remove pid file if exists
+PID_FILE=${RAILS_PID_FILE:-"tmp/pids/server.pid"}
+if [[ -f ${PID_FILE} ]]; then
+	echo "Removing pid file ${PID_FILE}"
+	rm -f "${PID_FILE}"
+fi
+
+# Wait for postgres to be available for connections
+echo "Waiting for database, cache and job databases."
+wait-for-it -h "${DATABASE_HOST:-db}" -p "${DATABASE_PORT:-5432}" -t 60
+wait-for-it -h "${CACHE_HOST:-redis}" -p "${CACHE_PORT:-6379}" -t 60
+wait-for-it -h "${JOB_HOST:-redis}" -p "${JOB_PORT:-6379}" -t 60
+
+bundle check
+
+echo "Running '$@'"
+# All looks great, can execute commands
+exec "$@"

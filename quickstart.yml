@@ -1,0 +1,65 @@
+version: '3'
+services:
+  decidim:
+    image: ghcr.io/decidim/decidim:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - ./config:/home/decidim/app/config
+      - ./scripts
+    environment:
+      - RAILS_ENV=production
+      - DATABASE_HOST=pg
+      - DATABASE_USERNAME=decidim
+      - DATABASE_PASSWORD=insecure-password
+      - RAILS_SERVE_STATIC_FILES=true
+      - RAILS_FORCE_SSL=disabled
+      - CACHE_HOST=redis
+      - CACHE_USERNAME=default
+      - CACHE_PASSWORD=insecure-password
+      - CACHE_DB=0
+      - JOB_HOST=redis
+      - JOB_USERNAME=default
+      - JOB_PASSWORD=insecure-password
+      - JOB_DB=1
+      - SMTP_DOMAIN=mailer
+      - SMTP_PORT=25
+    depends_on:
+      - pg
+      - redis
+      - mailer
+    networks:
+      - private
+      - default
+
+  pg:
+    image: postgres:14
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=insecure-password
+      - POSTGRES_USER=decidim
+      - POSTGRES_DB=decidim
+    networks:
+      - private
+
+  redis:
+    image: redis
+
+    volumes:
+      - redis-data:/data
+
+  mailer:
+    image: tophfr/mailcatcher
+    ports:
+      - 1080:80
+    networks:
+      - private
+      - default
+
+volumes:
+  pg-data: {}
+  redis-data: {}
+networks:
+  private:
+    internal: true
