@@ -7,7 +7,6 @@ if [[ -f ${PID_FILE} ]]; then
 	rm -f "${PID_FILE}"
 fi
 
-
 # Wait for postgres to be available for connections
 echo "Waiting for database, cache and job databases."
 wait-for-it -h "${DATABASE_HOST:-db}" -p "${DATABASE_PORT:-5432}" -t 60
@@ -22,6 +21,11 @@ fi
 
 bundle check
 
+if [ ! -f $ROOT/.app_seeded ]; then
+	echo "Seed the application"
+	bundle exec rails decidim:seed
+	touch .app_seeded
+fi
 echo "Running '$@'"
 # All looks great, can execute commands
 exec "$@"

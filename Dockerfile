@@ -163,6 +163,7 @@ ENV BUNDLE_JOBS=4 \
     CABLE_PASSWORD="insecure-password" \
     CABLE_PORT="6379" \
     CABLE_DB="2" \
+    DECIDIM_SEED="1"\
     DECIDIM_DEFAULT_LOCALE="en"\
     DECIDIM_AVAILABLE_LOCALES="fr,en,es"\
     DECIDIM_CURRENCY_UNIT="EUR"\
@@ -190,6 +191,7 @@ RUN gem update --system \
   # - bash curl vim: Utilities for sysadmins
   # - p7zip: seven_zip_ruby deps
   # - ttf-freefont: for pdf exports
+  # - gettext: envsubst for templating
   && apk --update --no-cache add \
         tzdata \
         postgresql-dev postgresql-client \
@@ -200,6 +202,10 @@ RUN gem update --system \
         bash curl vim\
         p7zip \
         ttf-freefont \
+        gettext\
+  && apk add --virtual build_deps libintl \
+  && cp /usr/bin/envsubst /usr/local/bin/envsubst \
+  && apk del build_deps \
   && rm -rf /var/cache/apk/* \
   # Prepare workspace users
   && addgroup -S decidim \
@@ -224,18 +230,20 @@ COPY ./bundle/docker/entrypoint /usr/local/bin/entrypoint
 COPY ./bundle/docker/supervisord.template $HOME/config/supervisord.template
 
 USER decidim
-WORKDIR $HOME
+
 # Setup volumes before copying, to avoid data-loss on binding
 VOLUME $HOME/public
 VOLUME $HOME/config
 VOLUME $HOME/app
 VOLUME $HOME/log
 
-COPY --from=generator --chown=decidim:decidim $HOME $HOME
-COPY ./bundle/docker/motd /etc/motd.template
+COPY --from=generator --chown=decidim $HOME $HOME
+WORKDIR $HOME
+COPY ./bundle/docker/motd /etc/motd
 
-  # Be sure gem is installed
-RUN bundle config set without 'development test' \
+# Prepare the environment
+RUN touch $HOME/config/supervisord.conf \
+  && bundle config set without 'development test' \
   && bundle config set path 'vendor' \
   && (bundle check || bundle install) \
   # Prepare binaries

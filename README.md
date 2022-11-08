@@ -80,7 +80,7 @@ You want to publish your instance on github? You can copy all files of the decid
 
 ```
 docker-compose -f quickstart.yml up -d
-docker cp decidim:/home/decidim/app ready-to-publish
+docker cp decidim:/home/decidim/app ready-to-publish # Wait the command finishes!
 cd ready-to-publish && git init
 # Follow github to upload this repo to github
 ```
@@ -121,6 +121,9 @@ cd ready-to-publish && git init
 | SMTP_PORT | SMTP address port | `587` |
 | SMTP_STARTTLS_AUTO | If TLS should start automatically | `enabled` |
 | SMTP_VERIFY_MODE | How smtp certificates are verified | `none` |
+| DECIDIM_SEED | Seed a local organization on startup | `1` |
+| RUN_SIDEKIQ | If the container should run sidekiq | `1` |
+| RUN_RAILS | If the container should run rails | `1` |
 
 >  🔐: be sure to read the good practices ;)
 
