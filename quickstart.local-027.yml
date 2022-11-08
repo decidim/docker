@@ -8,5 +8,5 @@ services:
       args:
         - DECIDIM_VERSION=0.27.0
         - NODE_VERSION=16.9.1
-        - ALPINE_RUBY_VERSION=3.0.2
+        - ALPINE_RUBY_VERSION=3.0
 

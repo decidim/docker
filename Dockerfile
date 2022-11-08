@@ -1,5 +1,5 @@
 # For versions pinning, use the ./version.sh script
-ARG RUBY_VERSION=3.1.2
+ARG RUBY_VERSION=3.0
 ARG NODE_VERSION=16.9.1
 ARG DECIDIM_VERSION=0.27.0
 
@@ -21,11 +21,13 @@ LABEL node_version=$NODE_VERSION
 ARG NODE_VERSION
 ARG DECIDIM_VERSION
 
-ENV BUNDLE_JOBS=4 \
+ENV BUNDLE_JOBS=8 \
     BUNDLE_RETRY=3 \
     HOME=/home/decidim/app \ 
     ROOT=/home/decidim/app \          
+    BUNDLE_APP_CONFIG=/home/decidim/app/.bundle \
     RAILS_ENV=production \
+    NODE_ENV=production \
     RACK_ENV=production \
     LANG=en_US.UTF-8\
     PATH=/home/decidim/app/bin:/usr/local/bin:$PATH \
@@ -39,9 +41,11 @@ COPY --from=node /usr/local/share /usr/local/share
 COPY --from=node /usr/local/lib /usr/local/lib
 COPY --from=node /usr/local/include /usr/local/include
 COPY --from=node /usr/local/bin /usr/local/bin
-RUN npm install -g yarn --force
-RUN gem update --system \
+RUN npm install -g yarn --force \
+  && gem update --system \
   && gem install bundler --silent \
+  && apk update \
+  && apk upgrade \
   # Install dependencies:
   # - build-base: To ensure certain gems can be compiled
   # - postgresql-dev postgresql-client: Communicate with postgres through the postgres gem
@@ -63,21 +67,24 @@ RUN gem update --system \
       git \
       python3 \
       p7zip \
-  && rm -rf /var/cache/apk/*
+  && rm -rf /var/cache/apk/* 
 
 WORKDIR /home/decidim
 
 RUN git clone -b v$DECIDIM_VERSION https://github.com/decidim/decidim generator \
   && mkdir -p $HOME/bin \
-  && ln -s /usr/lib/p7zip/7z.so $HOME/bin/7z \
-  && cd generator \
-  && bundle install
+  && ln -s /usr/lib/p7zip/7z.so $HOME/bin/7z 
+
 COPY ./bundle/$DECIDIM_VERSION/tmp/Gemfile.patc[h] ./generator/decidim-generators/tmp/Gemfile.patch
 
-RUN mkdir -p ./generator/decidim-generators/tmp \
-  && touch ./generator/decidim-generators/tmp/Gemfile.patch \
-  && cat ./generator/decidim-generators/tmp/Gemfile.patch >> ./generator/decidim-generators/Gemfile \
-  && cd ./generator/decidim-generators \
+RUN cd ./generator \
+  # Install common deps for Decidim
+  && bundle install \
+  # Install deps for decidim-generators
+  && mkdir -p ./decidim-generators/tmp \
+  && touch ./decidim-generators/tmp/Gemfile.patch \
+  && cat ./decidim-generators/tmp/Gemfile.patch >> ./decidim-generators/Gemfile \
+  && cd ./decidim-generators \
   && bundle config set --global path 'vendor' \
   && bundle install \
   && bundle exec ./exe/decidim $HOME
@@ -86,14 +93,22 @@ WORKDIR $HOME
 
 # Add the overrides for docker
 COPY ./bundle/$DECIDIM_VERSION .
-RUN bundle config set without 'development test' \
+RUN echo $RUBY_VERSION > .ruby-version \
+  && bundle config set without 'development test' \
   && bundle install \
   # Keep migrations just in case someone needs them 
   && tar cfz tmp/migrations.tar.gz db/migrate \
   # Clean cache and migration images
   && rm -f db/migrate/*.rb \
   && rm -rf ./.git \
-  && rm -rf ./tmp/**/* 
+  && bundle binstubs wkhtmltopdf-binary \
+  && SECRET_KEY_BASE=assets bundle exec rails webpacker:compile \
+  && SECRET_KEY_BASE=assets bundle exec rails assets:precompile \
+  && rm -rf node_modules tmp/cache app/assets vendor/assets spec \
+  && rm -rf /home/decidim/generator \
+  && yarn cache clean \
+  && truncate -s 0 /var/log/*log
+
 
 ########################################################################################
 # Final image
@@ -110,8 +125,9 @@ LABEL org.opencontainers.image.description="Decidim instance on Docker, usable i
 LABEL org.opencontainers.image.base.name="ruby:$RUBY_VERSION-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
 
-ENV BUNDLE_JOBS=4 \
+ENV BUNDLE_JOBS=8 \
     BUNDLE_RETRY=3 \
+    BUNDLE_APP_CONFIG=/home/decidim/app/.bundle\
     LANG=en_US.UTF-8\
     DECIDIM_VERSION=${DECIDIM_VERSION:-27} \
     NODE_VERSION=$NODE_VERSION \
@@ -122,7 +138,6 @@ ENV BUNDLE_JOBS=4 \
     PATH=/home/decidim/app/bin:/usr/local/bin:$PATH \ 
     RAILS_ENV=production \
     RACK_ENV=production\
-    SECRET_KEY_BASE=my-insecure-password \
     RAILS_MASTER_KEY=my-insecure-password \
     DATABASE_HOST="pg" \
     DATABASE_DATABASE="decidim" \
@@ -182,6 +197,8 @@ ENV BUNDLE_JOBS=4 \
 
 RUN gem update --system \
   && gem install bundler --silent \
+  && apk update \
+  && apk upgrade \
   # Install dependencies:
   # - tzdata: To manage timezones
   # - postgresql-dev postgresql-client: Communicate with postgres through the postgres gem
@@ -191,7 +208,7 @@ RUN gem update --system \
   # - bash curl vim: Utilities for sysadmins
   # - p7zip: seven_zip_ruby deps
   # - ttf-freefont: for pdf exports
-  # - gettext: envsubst for templating
+  # - gettext: envsubst for supervisord templating
   && apk --update --no-cache add \
         tzdata \
         postgresql-dev postgresql-client \
@@ -213,7 +230,8 @@ RUN gem update --system \
   # Link logs to common alpine log directory
   && mkdir -p $HOME/log \
   && mkdir -p /var/log/decidim \
-  && ln -s $HOME/log /var/log/decidim 
+  && ln -s $HOME/log /var/log/decidim \
+  && truncate -s 0 /var/log/*log
 
 # Install node at the required version
 COPY --from=node /usr/lib /usr/lib
@@ -243,14 +261,9 @@ COPY ./bundle/docker/motd /etc/motd
 
 # Prepare the environment
 RUN touch $HOME/config/supervisord.conf \
-  && bundle config set without 'development test' \
+  && bundle config set without 'development test assets' \
   && bundle config set path 'vendor' \
-  && (bundle check || bundle install) \
-  # Prepare binaries
-  && bundle binstubs wkhtmltopdf-binary \
-  && bundle binstubs bundler --force \
-  # Precompile to start faster
-  && bundle exec bootsnap precompile --gemfile app/ lib/
+  && (bundle check || bundle install)
 
 # Define bash as the default shell
 SHELL ["/bin/bash", "-c"]

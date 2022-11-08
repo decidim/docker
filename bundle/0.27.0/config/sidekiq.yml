@@ -1,0 +1,8 @@
+:concurrency: <%= ENV.fetch("SIDEKIQ_CONCURRENCY") { ENV.fetch("RAILS_MAX_THREADS") {5} } %>
+:queues:
+  - default
+  - metrics
+  - mailers
+  - newsletter
+  - events
+  - scheduled

@@ -44,10 +44,9 @@ docker-compose -f quickstart.yml up
 | [http://localhost:3000/admin](http://localhost:3000/admin) | Decidim administration, your credentials are `admin@example.org`/`123456` |
 | [http://localhost:3000/_queuedjobs](http://localhost:3000/_queuedjobs) | Monitoring Sidekiq jobs (emails and async tasks) |
 | [http://localhost:3000/system](http://localhost:3000/system) | Decidim system, your credentials are `admin@example.org`/`123456` |
-| [http://localhost:3000/system](http://localhost:3000/_queuedjobs) | Sidekiq monitor, login with your decidim system credentials |
 
 That's it, you've got your participatory platform!
-Before deploying, be sure to read the good practices.
+Before deploying, be sure to read the [good practices](#good-practices).
 
 # Reverse proxy
 
@@ -94,7 +93,10 @@ cd ready-to-publish && git init
 | RAILS_FORCE_SSL | If rails should force SSL | `enabled` |
 | RAILS_MAX_THREADS | How many threads rails can use | `5` |
 | RAILS_SERVE_STATIC_FILES | If rails should be accountable to serve assets | `false` |
-| DATABASE_HOST | Host for the Postgres database. | `pg` |
+| RAILS_ASSET_HOST | If set, define the assets are loaded from (S3?) | `` |
+| SIDEKIQ_CONCURRENCY | Concurrency for sidekiq worker. MUST be <= DATABASE_MAX_POOL_SIZE | `RAILS_MAX_THREADS` |
+| DATABASE_MAX_POOL_SIZE | Max pool size for the database. | `RAILS_MAX_THREADS` |
+| DATABASE_HOST | Host for the postgres database. | `pg` |
 | DATABASE_USERNAME | Database user to connect | `example` |
 | DATABASE_PASSWORD | Database user's password to connect | `my-insecure-password` |
 | DATABASE_DATABASE | Database name | `decidim` |
@@ -125,7 +127,7 @@ cd ready-to-publish && git init
 | RUN_SIDEKIQ | If the container should run sidekiq | `1` |
 | RUN_RAILS | If the container should run rails | `1` |
 
->  🔐: be sure to read the good practices ;)
+>  🔐: be sure to read the [good practices](#good-practices) ;)
 
 
 All the `DECIDIM_` variables are also available. [See the documentation on default environments variables](https://github.com/decidim/decidim/blob/v0.27.0/docs/modules/configure/pages/environment_variables.adoc).
@@ -164,14 +166,18 @@ Read more on the issue using [Redis Database on sidekiq:](https://github.com/mpe
 A good practice is to run decidim with unpriviligied user (can not create table, truncate it or alter it). 
 A common way to put this in practice is to have CI/CD deployment script (through github actions for example), where: 
 
-- While deploying, deploy a temporary instance (sidecars) with priviliged database access. Migrate the database
+- While deploying, deploy a temporary instance (sidecars) with priviliged database access. Migrate the database.
 - Once `rails db:migrate:status` gives only `up` migrations, redeploy an instance without priviliged accesses.
+
+**NB** running `rails db:migrate` while a rails application is running is most of the time a bad idea (connection to postgres can hangs). Always check `rails db:migrate:status` after a migraiton, to be sure all migration passed.
 
 # Contribute
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for more informations.
 
 # Local development
-[PR Welome](./CONTRIBUTING.md)! To check your change, start a local development container, you can use theses docker-compose files:
+First of all clone this repository (`git clone git@github.com:decidim/docker.git decidim-docker`), and start playing!
+
+[PR are Welcome](./CONTRIBUTING.md) ❤️ To check your changes, start a local development container, you can use theses docker-compose command:
 
 | Label | Command | Decidim Version |
 |---|---|---|
@@ -179,6 +185,16 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for more informations.
 | Decidim 0.26 serving assets | `docker-compose -f quickstart.yml -f quickstart.local-026.yml up` | `0.26.3` |
 | Decidim 0.27 under nginx | `docker-compose -f quickstart.yml -f quickstart.local-027.yml up -f nginx.yml` | `0.27.0` | 
 | Decidim 0.26 under nginx | `docker-compose -f quickstart.yml -f quickstart.local-026.yml up -f nginx.yml` | `0.26.3` |
+
+To test newer or older versions of Decidim, please execute `./version.sh` to generate a `versions.csv` displaying the docker args to
+apply to your Dockerfile. Here an example of output
+
+| Decidim Version | Decidim Major Version | Decidim minor version | Alpine-friendly Node version | Alpine-friendly Ruby version | 
+|---|---|---|---|---|
+| 0.27.0 | 0 | 27 | 16.9.1 | 3.0 |
+| 0.26.3 | 0 | 26 | 16.9.1 | 2.7.5 |
+| 0.25.2 | 0 | 25 | 16.9.1 | 2.7 |
+| 0.24.3 | 0 | 24 | 14.16.1 | 2.7 |
 
 # License
 This repository is under [GNU AFFERO GENERAL PUBLIC LICENSE, V3](./LICENSE).
