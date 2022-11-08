@@ -7,11 +7,18 @@ if [[ -f ${PID_FILE} ]]; then
 	rm -f "${PID_FILE}"
 fi
 
+
 # Wait for postgres to be available for connections
 echo "Waiting for database, cache and job databases."
 wait-for-it -h "${DATABASE_HOST:-db}" -p "${DATABASE_PORT:-5432}" -t 60
-wait-for-it -h "${CACHE_HOST:-redis}" -p "${CACHE_PORT:-6379}" -t 60
-wait-for-it -h "${JOB_HOST:-redis}" -p "${JOB_PORT:-6379}" -t 60
+if [ -z ${CACHE_HOST+x} ];
+then
+	wait-for-it -h "${CACHE_HOST:-redis}" -p "${CACHE_PORT:-6379}" -t 60
+fi
+if [ -z ${JOB_HOST+x} ];
+then
+	wait-for-it -h "${JOB_HOST:-redis}" -p "${JOB_PORT:-6379}" -t 60
+fi
 
 bundle check
 

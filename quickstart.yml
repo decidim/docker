@@ -1,12 +1,10 @@
 version: '3'
 services:
   decidim:
+    container_name: decidim
     image: ghcr.io/decidim/decidim:latest
     ports:
       - 3000:3000
-    volumes:
-      - ./config:/home/decidim/app/config
-      - ./scripts
     environment:
       - RAILS_ENV=production
       - DATABASE_HOST=pg
@@ -22,8 +20,15 @@ services:
       - JOB_USERNAME=default
       - JOB_PASSWORD=insecure-password
       - JOB_DB=1
+      - CABLE_HOST=redis
+      - CABLE_USERNAME=default
+      - CABLE_PASSWORD=insecure-password
+      - CABLE_DB=2
       - SMTP_DOMAIN=mailer
       - SMTP_PORT=25
+      - RUN_RAILS=1 
+      - RUN_SIDEKIQ=1
+
     depends_on:
       - pg
       - redis
@@ -45,9 +50,10 @@ services:
 
   redis:
     image: redis
-
     volumes:
       - redis-data:/data
+    networks:
+      - private
 
   mailer:
     image: tophfr/mailcatcher

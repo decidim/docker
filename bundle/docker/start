@@ -14,6 +14,6 @@ export RUN_PUMA=$RUN_PUMA
 export RUN_SIDEKIQ=$RUN_SIDEKIQ
 
 touch /home/decidim/app/supervisord.conf
-(envsubst \$RUN_PUMA,\$RUN_SIDEKIQ </etc/supervisord.template) > /home/decidim/app/config/supervisord.conf
-
+(envsubst \$RUN_PUMA,\$RUN_SIDEKIQ </ etc/supervisord.template) > /home/decidim/app/config/supervisord.conf
+envsubst \$ROOT,\$DECIDIM_VERSION < /etc/motd.template) > /etc/motd
 supervisord -c /home/decidim/app/config/supervisord.conf

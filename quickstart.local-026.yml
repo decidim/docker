@@ -1,0 +1,12 @@
+
+version: '3'
+services:
+  decidim:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - DECIDIM_VERSION=0.26.3
+        - NODE_VERSION=16.9.1
+        - ALPINE_RUBY_VERSION=2.7.5
+

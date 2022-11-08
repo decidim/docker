@@ -20,6 +20,8 @@ command=bundle exec rails server
 directory=/home/decidim/app
 autostart=$RUN_PUMA
 autorestart=true
+logfile_maxbytes=4MB
+logfile_backups=10
 stdout_logfile=/home/decidim/app/log/run.puma.log
 stderr_logfile=/home/decidim/app/log/errors.puma.log
 killasgroup=true
@@ -30,11 +32,12 @@ command=bundle exec sidekiq
 directory=/home/decidim/app
 autostart=$RUN_SIDEKIQ
 autorestart=true
+logfile_maxbytes=4MB
+logfile_backups=10
 stdout_logfile=/home/decidim/app/log/run.sidekiq.log
 stderr_logfile=/home/decidim/app/log/errors.sidekiq.log
 killasgroup=true
 stopasgroup=true
-
 
 [group:workers]
 programs=puma,sidekiq
