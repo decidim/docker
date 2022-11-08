@@ -15,10 +15,7 @@
 # Output
 # ===
 # A csv file with: 
-# decidim version | decidim major version (ex. 24) | decidim minor version (ex. 3) | node version | ruby version
-# 
-# Example:
-#
+# decidim version | decidim major version (ex. 24) | decidim minor version (ex. 3) | node version | ruby version#
 # 
 # FIXME: this script should run in a github action.
 ##################################################################
