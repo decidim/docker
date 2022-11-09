@@ -3,10 +3,26 @@ version: '3'
 services:
   decidim:
     build:
-      context: .
+      context: ./bundle
       dockerfile: ./Dockerfile
       args:
-        - DECIDIM_VERSION=0.26.3
+        - DECIDIM_VERSION=0.26.4
         - NODE_VERSION=16.9.1
-        - ALPINE_RUBY_VERSION=2.7.5
+        - RUBY_VERSION=2.7.5
+        - BUNDLER_VERSION=2.3.20
+    depends_on:
+      - pg
+      - redis
+      - mailer
+      - decidim-migrate
 
+  decidim-migrate:
+    command: bundle exec rails db:migrate
+    build:
+      context: ./bundle
+      dockerfile: ./Dockerfile
+      args:
+        - DECIDIM_VERSION=0.26.4
+        - NODE_VERSION=16.9.1
+        - RUBY_VERSION=2.7.5
+        - BUNDLER_VERSION=2.3.20

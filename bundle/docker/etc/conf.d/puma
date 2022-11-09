@@ -1,0 +1,7 @@
+command_background=1
+command_user="decidim"
+command_directory="/home/decidim/app"
+command_logfile="/home/decidim/app/log/run.puma.log"
+command_logfile_maxbytes=4MB
+command_logfile_backups=10
+command_stderr="/home/decidim/app/log/errors.puma.log"

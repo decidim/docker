@@ -2,11 +2,13 @@
 version: '3'
 services:
   decidim:
+    entrypoint: ""
     build:
-      context: .
+      context: ./bundle
       dockerfile: ./Dockerfile
       args:
-        - DECIDIM_VERSION=0.27.0
+        - DECIDIM_VERSION=0.27.1
         - NODE_VERSION=16.9.1
-        - ALPINE_RUBY_VERSION=3.0
+        - RUBY_VERSION=3.0
+        - BUNDLER_VERSION=2.3.20
 

@@ -1,0 +1,7 @@
+.git
+.github
+.DS_Store
+version.sh
+./docker-compose.yml
+./docker-compose-etherpad.yml
+Dockerfile

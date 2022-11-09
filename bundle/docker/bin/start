@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+if [[ ${DECIDIM_RUN_RAILS} == "1" ]]; then
+	rc-update add puma
+  echo "puma is starting"
+fi
+if [[ ${DECIDIM_RUN_SIDEKIQ} == "1" ]]; then
+	rc-update add sidekiq
+  echo "sidekiq is starting"
+fi

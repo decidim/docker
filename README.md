@@ -191,10 +191,10 @@ apply to your Dockerfile. Here an example of output
 
 | Decidim Version | Decidim Major Version | Decidim minor version | Alpine-friendly Node version | Alpine-friendly Ruby version | 
 |---|---|---|---|---|
-| 0.27.0 | 0 | 27 | 16.9.1 | 3.0 |
-| 0.26.3 | 0 | 26 | 16.9.1 | 2.7.5 |
-| 0.25.2 | 0 | 25 | 16.9.1 | 2.7 |
-| 0.24.3 | 0 | 24 | 14.16.1 | 2.7 |
+| 0.27.2 | 0 | 27 | 16.9.1 | 3.0.5 |
+| 0.26.4 | 0 | 26 | 16.9.1 | 2.7.5 |
+| 0.25.2 | 0 | 25 | 16.9.1 | 2.7.5 |
+| 0.24.3 | 0 | 24 | 14.16.1 | 2.7.5 |
 
 # License
 This repository is under [GNU AFFERO GENERAL PUBLIC LICENSE, V3](./LICENSE).

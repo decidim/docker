@@ -15,7 +15,7 @@
 # Output
 # ===
 # A csv file with: 
-# decidim version | decidim major version (ex. 24) | decidim minor version (ex. 3) | node version | ruby version#
+# decidim version | decidim major version (ex. 24) | decidim minor version (ex. 3) | node version | ruby version | bundler version
 # 
 # FIXME: this script should run in a github action.
 ##################################################################
@@ -135,7 +135,11 @@ for generator_version in $gemfiles; do
 			echo " Check ruby:$picked_ruby_version-alpine3.15"
 		done
 		echo "	Picked Ruby: $picked_ruby_version"
-		decidim_versions+="$generator_version;$new_major_version;$new_minor_version;$picked_node_version;$picked_ruby_version\n"
+		bundler_version="-"
+		if [[ "$picked_ruby_version" != "ERROR" ]]; then
+			bundler_version=$(gem list bundler -e -r -v $picked_ruby_version | tail -1 | sed 's/.*(\(.*\)).*/\1/')
+		fi
+		decidim_versions+="$generator_version;$new_major_version;$new_minor_version;$picked_node_version;$picked_ruby_version;$bundler_version\n"
 		major_version="$new_major_version"
 		minor_version="$new_minor_version"
     echo -n "."
@@ -146,5 +150,5 @@ rm node_versions.txt;
 rm ruby_versions.txt;
 
 echo -e "\ndone! Happy CI/CD :)"
-echo -e "\ndecidim version;decidim major version (ex. 24);decidim minor version (ex. 3);node version;ruby version"
+echo -e "\ndecidim version;decidim major version (ex. 24);decidim minor version (ex. 3);node version;ruby version;bundler version"
 cat versions.csv

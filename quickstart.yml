@@ -20,15 +20,10 @@ services:
       - JOB_USERNAME=default
       - JOB_PASSWORD=insecure-password
       - JOB_DB=1
-      - CABLE_HOST=redis
-      - CABLE_USERNAME=default
-      - CABLE_PASSWORD=insecure-password
-      - CABLE_DB=2
       - SMTP_DOMAIN=mailer
       - SMTP_PORT=25
       - RUN_RAILS=1 
       - RUN_SIDEKIQ=1
-
     depends_on:
       - pg
       - redis
