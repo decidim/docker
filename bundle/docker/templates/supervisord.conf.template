@@ -1,0 +1,44 @@
+[unix_http_server]
+file=$ROOT/tmp/sockets/supervisor
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+[supervisorctl]
+serverurl=unix://$ROOT/tmp/sockets/supervisor
+
+[supervisord]
+logfile_maxbytes=4MB
+logfile_backups=10
+logfile=$ROOT/log/run.supervisord.log
+pidfile=$ROOT/tmp/pids/supervisord.pid
+loglevel=info
+nodaemon=true
+user=decidim
+
+[program:puma]
+command=bundle exec rails server
+directory=$ROOT
+autostart=$RUN_RAILS
+autorestart=true
+logfile_maxbytes=4MB
+logfile_backups=10
+stdout_logfile=$ROOT/log/run.puma.log
+stderr_logfile=$ROOT/log/errors.puma.log
+killasgroup=true
+stopasgroup=true
+
+[program:sidekiq]
+command=bundle exec sidekiq
+directory=$ROOT
+autostart=$RUN_SIDEKIQ
+autorestart=true
+logfile_maxbytes=4MB
+logfile_backups=10
+stdout_logfile=$ROOT/log/run.sidekiq.log
+stderr_logfile=$ROOT/log/errors.sidekiq.log
+killasgroup=true
+stopasgroup=true
+
+[group:workers]
+programs=puma,sidekiq

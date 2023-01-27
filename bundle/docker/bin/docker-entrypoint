@@ -1,7 +1,5 @@
 #! /bin/sh
 set -e
-
-run-parts /docker-entrypoint.d
-echo "Running '$@'"
-# All looks great, can execute commands
+echo "Container initializing:"
+run-parts /usr/local/share/docker-entrypoint.d
 exec "$@"

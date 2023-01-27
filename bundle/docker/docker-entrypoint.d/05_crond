@@ -1,0 +1,8 @@
+#! /bin/sh
+set -e
+if [[ "$DECIDIM_RUN_CRON" == "1" ]]; then
+  rc-service crond start && rc-update add crond
+  echo "    ✅ Crontab will run in background"
+else
+  rc-service crond stop
+fi;

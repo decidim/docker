@@ -1,0 +1,9 @@
+#! /bin/sh
+set -e
+# Check all the gems are installed or fails.
+bundle check
+echo "    ✅ Gems in Gemfiles are installed"
+
+# Check no migrations are pending migrations
+bundle exec rails db:migrate
+echo "    ✅ Migrations are all up"

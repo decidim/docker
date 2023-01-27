@@ -1,0 +1,12 @@
+#! /bin/sh
+set -e
+
+bundle exec rails c <<EOF
+  Decidim::System::Admin.first_or_create(
+    email: ENV["DECIDIM_SYSTEM_EMAIL"], 
+    password: ENV["DECIDIM_SYSTEM_PASSWORD"],
+    password_confirmation: ENV["DECIDIM_SYSTEM_PASSWORD"]
+  ) if ENV["DECIDIM_SYSTEM_EMAIL"].present? && ENV["DECIDIM_SYSTEM_PASSWORD"].present?
+EOF
+
+echo "    ✅ /system account created from DECIDIM_SYSTEM_EMAIL"

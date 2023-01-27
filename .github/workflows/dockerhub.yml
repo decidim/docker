@@ -37,7 +37,7 @@ jobs:
         RUBY_VERSION_URL: https://raw.githubusercontent.com/decidim/decidim/${{ steps.decidim-tag.outputs.tag }}/.ruby-version
       run: |
         echo ::set-output name=version::$(curl -s $RUBY_VERSION_URL)
-
+        
     - name: Set Decidim Version
       id: decidim-version
       run: echo ::set-output name=version::$(echo ${{ steps.decidim-tag.outputs.tag }} | cut -c2-)

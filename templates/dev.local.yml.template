@@ -1,0 +1,12 @@
+
+
+version: '3'
+services:
+  # change decidim version to $DECIDIM_VERSION
+  decidim:
+    build:
+      context: ./bundle
+      dockerfile: ./$DOCKER_FILE
+      args: 
+        BASE_IMAGE_RAILS_ENV: development # Change to "test" for testing
+
