@@ -2,7 +2,6 @@
 version: '3'
 services:
   decidim:
-    entrypoint: ""
     build:
       context: ./bundle
       dockerfile: ./Dockerfile
@@ -10,5 +9,20 @@ services:
         - DECIDIM_VERSION=0.27.1
         - NODE_VERSION=16.9.1
         - RUBY_VERSION=3.0
-        - BUNDLER_VERSION=2.3.20
+    environment:
+      - RAILS_SERVE_STATIC_FILES=true
+    depends_on:
+      - pg
+      - redis
+      - mailer
+      - decidim-migrate
 
+  decidim-migrate:
+    command: bundle exec rails db:migrate
+    build:
+      context: ./bundle
+      dockerfile: ./Dockerfile
+      args:
+        - DECIDIM_VERSION=0.27.1
+        - NODE_VERSION=16.9.1
+        - RUBY_VERSION=3.0

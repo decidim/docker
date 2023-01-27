@@ -9,15 +9,17 @@ services:
         - DECIDIM_VERSION=0.26.4
         - NODE_VERSION=16.9.1
         - RUBY_VERSION=2.7.5
-        - BUNDLER_VERSION=2.3.20
     depends_on:
       - pg
       - redis
       - mailer
       - decidim-migrate
+    environment:
+      - RAILS_SERVE_STATIC_FILES=true
 
   decidim-migrate:
     command: bundle exec rails db:migrate
+    image: ghcr.io/decidim/decidim:latest
     build:
       context: ./bundle
       dockerfile: ./Dockerfile
@@ -25,4 +27,4 @@ services:
         - DECIDIM_VERSION=0.26.4
         - NODE_VERSION=16.9.1
         - RUBY_VERSION=2.7.5
-        - BUNDLER_VERSION=2.3.20
+    

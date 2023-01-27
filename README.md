@@ -183,13 +183,11 @@ First of all clone this repository (`git clone git@github.com:decidim/docker.git
 |---|---|---|
 | Decidim 0.27 serving assets | `docker-compose -f quickstart.yml -f quickstart.local-027.yml up` | `0.27.0` | 
 | Decidim 0.26 serving assets | `docker-compose -f quickstart.yml -f quickstart.local-026.yml up` | `0.26.3` |
-| Decidim 0.27 under nginx | `docker-compose -f quickstart.yml -f quickstart.local-027.yml up -f nginx.yml` | `0.27.0` | 
-| Decidim 0.26 under nginx | `docker-compose -f quickstart.yml -f quickstart.local-026.yml up -f nginx.yml` | `0.26.3` |
 
 To test newer or older versions of Decidim, please execute `./version.sh` to generate a `versions.csv` displaying the docker args to
 apply to your Dockerfile. Here an example of output
 
-| Decidim Version | Decidim Major Version | Decidim minor version | Alpine-friendly Node version | Alpine-friendly Ruby version | 
+| Decidim Version | Decidim Major Version | Decidim minor version | Alpine-friendly Node version | Alpine-friendly Ruby version |
 |---|---|---|---|---|
 | 0.27.2 | 0 | 27 | 16.9.1 | 3.0.5 |
 | 0.26.4 | 0 | 26 | 16.9.1 | 2.7.5 |
