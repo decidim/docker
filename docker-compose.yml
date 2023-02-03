@@ -1,7 +1,7 @@
 version: '3'
 services:
   decidim:
-    image: ghcr.io/decidim/decidim:latest
+    image: decidim/decidim:latest
     entrypoint: ["/code/vendor/hello-world.sh"]
     # The entrypoint override above wipes out the CMD 
     # on the Dockerfile-deploy, so we need to declare it 
