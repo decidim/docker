@@ -14,7 +14,7 @@ services:
     image: decidim:$DECIDIM_TAG-dev
     build:
       context: ./bundle
-      dockerfile: ./Dockerfile-dev-alpine.dev
+      dockerfile: ./Dockerfile-develop-dev
       args: 
         BASE_IMAGE_RAILS_ENV: development # Change to "test" for testing
     tty: true

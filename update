@@ -2,36 +2,36 @@
 declare versions=(
 	v027
 	v026
-	dev
+	develop
 )
 declare -A branches=(
 	[v027]='release/0.27-stable'
 	[v026]='release/0.26-stable'
-	[dev]='develop'
+	[develop]='develop'
 )
 # FIXME: There is C++ compilation issues
 # on alpine > 3.15
 declare -A alpine=(
 	[v027]='3.15'
 	[v026]='3.15'
-	[dev]='3.15'
+	[develop]='3.15'
 )
 declare -A generator_cmd=(
 	[v027]='decidim $HOME --queue sidekiq'
 	[v026]='decidim $HOME'
-	[dev]='decidim $HOME --queue sidekiq --edge'
+	[develop]='decidim $HOME --queue sidekiq --edge'
 )
 declare -A generator_install=(
 	[v027]='gem install decidim -v $DECIDIM_VERSION'
 	[v026]='gem install decidim -v $DECIDIM_VERSION'
-	[dev]='gem install decidim'
+	[develop]='gem install decidim'
 )
 stable_versions=(v027 v026)
-dev_versions=(dev)
+dev_versions=(develop)
 
 # Clear previous generated files
 rm -rf bundle/Dockerfile-*
-rm -f quickstart*.yml dev-*.yml
+rm -f quickstart*.yml develop-*.yml
 # Store decidim generation to display informative table in README
 decidim_csv=()
 # Clone a bare repo to get the commit hash of the target. (see OCI image spec)
@@ -44,7 +44,6 @@ echo -n "Fetching alpine node images"
 until [ $i -gt 5 ]; do
 	query=$(curl --silent \
 		-H 'Accept: application/json' \
-		-H "Authorization: Bearer $DOCKERHUB_PERSONAL_TOKEN" \
 		-H 'Content-Type: application/json' \
 		"https://hub.docker.com/v2/namespaces/library/repositories/node/tags?page=$i&page_size=100")
 	node_versions+=("$(echo "$query" | jq ".results[].name")")
@@ -60,7 +59,6 @@ echo -n "Fetching alpine ruby images"
 until [ $i -gt 5 ]; do
 	query=$(curl --silent \
 		-H 'Accept: application/json' \
-		-H "Authorization: Bearer $DOCKERHUB_PERSONAL_TOKEN" \
 		-H 'Content-Type: application/json' \
 		"https://hub.docker.com/v2/namespaces/library/repositories/ruby/tags?page=$i&page_size=100")
 	ruby_versions+=("$(echo "$query" | jq ".results[].name")")
@@ -114,8 +112,8 @@ for version in "${versions[@]}"; do
 EOF
 	)
 
-	template="templates/Dockerfile-alpine.dev.template"
-	dev_dockerfile="./bundle/Dockerfile-$version-alpine.dev"
+	template="templates/Dockerfile-dev.template"
+	dev_dockerfile="./bundle/Dockerfile-$version-dev"
 	rm -rf "$dev_dockerfile"
 	echo "$warning" > "$dev_dockerfile"
 	cat $template | sed -e "s@\$NODE_TAG@$node_version@g" \
@@ -152,7 +150,7 @@ EOF
 	rm -f "$dev_dockercompose"
 	echo "$warning" >"$dev_dockercompose"
 	cat $template | sed -e "s@\$DECIDIM_VERSION@$target_decidim@g" \
-		-e "s@\$DOCKER_FILE@Dockerfile-$version-alpine.dev@g" >>"$dev_dockercompose"
+		-e "s@\$DOCKER_FILE@Dockerfile-$version-dev@g" >>"$dev_dockercompose"
 
 	decidim_csv+="| $target_decidim | ruby:$ruby_version | node:$node_version | \`docker-compose -f quickstart.yml -f quickstart.$version.yml up\` |\n"
 	decidim_csv+="| $target_decidim | ruby:$ruby_version | node:$node_version | \`docker-compose -f quickstart.yml -f dev-$version.yml up\` |\n"

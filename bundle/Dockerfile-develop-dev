@@ -8,7 +8,7 @@
 ARG BASE_IMAGE_RAILS_ENV="development"
 # https://docs.docker.com/develop/develop-images/multistage-build/
 # node: pre-build node at the given version (@see ARGS)
-FROM node:16.19-alpine3.17 as node
+FROM node:16.19-alpine3.16 as node
 
 # Avoid using alpine 3.16 for building seven_zip_ruby
 # @see https://github.com/metanorma/packed-mn/issues/169
@@ -19,7 +19,7 @@ LABEL org.opencontainers.image.title="Development images for Decidim 0.28.0.dev.
 LABEL org.opencontainers.image.description="Use this images to develop/test decidim on 0.28.0.dev."
 LABEL org.opencontainers.image.base.name="ruby:3.0-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
-LABEL org.opencontainers.image.revision="bed94b49293b18427515e0c252aea4e99e7a5f0b"
+LABEL org.opencontainers.image.revision="03f9f993a2962d649281c15405687184beb3cf6d"
 
 # Rails configuration
 ENV BUNDLE_JOBS=8 \
@@ -129,7 +129,7 @@ WORKDIR $HOME
 # Prepare the decidim application, with correct ruby version, 
 # and binaries
 # Add all the overrides, for default configuration purpose.
-COPY ./dev/ .
+COPY ./develop/ .
 
 # Set the ruby version from the current version used.
 # Useful if you eject your container and want to work without docker.

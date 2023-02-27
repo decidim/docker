@@ -13,4 +13,4 @@ services:
   decidim:
     build:
       context: ./bundle
-      dockerfile: ./Dockerfile-dev-alpine
+      dockerfile: ./Dockerfile-develop-alpine
