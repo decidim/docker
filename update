@@ -152,6 +152,14 @@ EOF
 	cat $template | sed -e "s@\$DECIDIM_VERSION@$target_decidim@g" \
 		-e "s@\$DOCKER_FILE@Dockerfile-$version-dev@g" >>"$dev_dockercompose"
 
+	major=$(echo $target_decidim | cut -d. -f1)
+	minor=$(echo $target_decidim | cut -d. -f2)
+	patch=$(echo $target_decidim | cut -d. -f3)
+	if [ $major -gt 0 ]; then
+		echo "$major" >> "$version.versions"
+	fi
+	echo "$major.$minor" >> "$version.versions"
+	echo "$major.$minor.$patch" >> "$version.versions"
 	decidim_csv+="| $target_decidim | ruby:$ruby_version | node:$node_version | \`docker-compose -f quickstart.yml -f quickstart.$version.yml up\` |\n"
 	decidim_csv+="| $target_decidim | ruby:$ruby_version | node:$node_version | \`docker-compose -f quickstart.yml -f dev-$version.yml up\` |\n"
 done

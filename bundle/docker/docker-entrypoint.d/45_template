@@ -8,19 +8,23 @@ cat /usr/local/share/decidim/templates/motd.template | sed -e "s@\$DECIDIM_VERSI
 
 RUN_RAILS="false"
 RUN_SIDEKIQ="false"
-
+RUN_CRON="false"
 if [[ ${DECIDIM_RUN_RAILS} == "1" ]]; then
 	RUN_RAILS="true"
 fi
-
+if [[ ${DECIDIM_RUN_CRON} == "1" ]]; then
+	RUN_CRON="true"
+fi
 if [[ ${DECIDIM_RUN_SIDEKIQ} == "1" ]]; then
 	RUN_SIDEKIQ="true"
 fi
 
 export RUN_RAILS=$RUN_RAILS
 export RUN_SIDEKIQ=$RUN_SIDEKIQ
+export RUN_CRON=$RUN_CRON
 cat /usr/local/share/decidim/templates/supervisord.conf.template | sed -e "s@\$RUN_RAILS@$RUN_RAILS@g" \
 	-e "s@\$RUN_SIDEKIQ@$RUN_SIDEKIQ@g" \
+	-e "s@\$RUN_CRON@$RUN_CRON@g" \
 	-e "s@\$ROOT@$ROOT@g" >"$ROOT"/config/supervisord.conf
 
 echo "    ✅ /etc/motd updated"

@@ -23,12 +23,23 @@ jobs:
 
       - name: Build and publish images
         run: |
+          npm install -g doctoc
           ./update
           for file in $(find bundle -type f -name "Dockerfile-*"); do
-            tag=$(basename "$file" | sed 's/^Dockerfile-//')
-            echo "build 'decidim/$tag' with bundle/$file"
-            docker build -t decidim/"$tag":"${{ github.sha }}" -f "$file" .
-            docker push decidim/"$tag":"${{ github.sha }}"
+            default_tag=$(basename "$file" | sed 's/^Dockerfile-//')
+            default_destination="${{ secrets.DOCKERHUB_USERNAME }}/decidim:$default_tag"
+            echo "build 'decidim/$default_tag' with bundle/$file"
+            docker build -t $default_destination -f "$file" ./bundle
+            stable_version=$(echo "$default_tag" | cut -d'-' -f2)
+            if [ -f "$stable_version.versions" ]; then
+              while read version; do
+                destination= $(echo $default_tag | sed -e "s/$stable_version/$version/")
+                docker tag $default_destination $destination
+                docker push $destination
+              done < "$stable_version.versions"
+            else
+              docker push $default_destination
+            fi
           done
 
       - name: Commit and push changes

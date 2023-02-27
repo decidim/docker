@@ -315,12 +315,12 @@ To debug and rebuild the images locally, you can:
 
 | Decidim Version | Alpine Ruby image | Alpine Node image | Docker-compose command |
 |---|---|---|---|
-| 0.27.2 | ruby:3.0-alpine3.15 | node:16.19-alpine3.16 | `docker-compose -f quickstart.yml -f quickstart.v027.yml up` |
-| 0.27.2 | ruby:3.0-alpine3.15 | node:16.19-alpine3.16 | `docker-compose -f quickstart.yml -f dev-v027.yml up` |
-| 0.26.5 | ruby:2.7-alpine3.15 | node:16.19-alpine3.16 | `docker-compose -f quickstart.yml -f quickstart.v026.yml up` |
-| 0.26.5 | ruby:2.7-alpine3.15 | node:16.19-alpine3.16 | `docker-compose -f quickstart.yml -f dev-v026.yml up` |
-| 0.28.0.dev | ruby:3.0-alpine3.15 | node:16.19-alpine3.16 | `docker-compose -f quickstart.yml -f quickstart.develop.yml up` |
-| 0.28.0.dev | ruby:3.0-alpine3.15 | node:16.19-alpine3.16 | `docker-compose -f quickstart.yml -f dev-develop.yml up` |
+| 0.27.2 | ruby:3.0-alpine3.15 | node:16.19-alpine3.17 | `docker-compose -f quickstart.yml -f quickstart.v027.yml up` |
+| 0.27.2 | ruby:3.0-alpine3.15 | node:16.19-alpine3.17 | `docker-compose -f quickstart.yml -f dev-v027.yml up` |
+| 0.26.5 | ruby:2.7-alpine3.15 | node:16.19-alpine3.17 | `docker-compose -f quickstart.yml -f quickstart.v026.yml up` |
+| 0.26.5 | ruby:2.7-alpine3.15 | node:16.19-alpine3.17 | `docker-compose -f quickstart.yml -f dev-v026.yml up` |
+| 0.28.0.dev | ruby:3.0-alpine3.15 | node:16.19-alpine3.17 | `docker-compose -f quickstart.yml -f quickstart.develop.yml up` |
+| 0.28.0.dev | ruby:3.0-alpine3.15 | node:16.19-alpine3.17 | `docker-compose -f quickstart.yml -f dev-develop.yml up` |
 
 
 The templates for README, quickstart.yml, quickstart.NAME_YOUR_VERSION.yml are available in the [template directory](./templates)

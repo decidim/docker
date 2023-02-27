@@ -16,6 +16,19 @@ loglevel=info
 nodaemon=true
 user=decidim
 
+[program:cron]
+command=cron -f
+directory=$ROOT
+autostart=$RUN_CRON
+autorestart=true
+logfile_maxbytes=4MB
+logfile_backups=10
+stdout_logfile=$ROOT/log/run.cron.log
+stderr_logfile=$ROOT/log/errors.cron.log
+killasgroup=true
+stopasgroup=true
+
+
 [program:puma]
 command=bundle exec rails server
 directory=$ROOT
@@ -41,4 +54,4 @@ killasgroup=true
 stopasgroup=true
 
 [group:workers]
-programs=puma,sidekiq
+programs=puma,sidekiq,cron
