@@ -188,6 +188,7 @@ rm -f $destination
 echo "<!--- $warning -->" >$destination
 cat $template | sed -e "s@\$DECIDIM_TABLE@$DECIDIM_TABLE@g" \
 	-e "s@\$DEV_IMAGES@$DEV_IMAGES@g" \
+	-e "s@\$LAST_STABLE@$last_stable@g" \
 	-e "s@\$STABLE_IMAGES@$STABLE_IMAGES@g" >>$destination
 # Update Table of content
 doctoc README.md

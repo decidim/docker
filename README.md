@@ -127,6 +127,8 @@ Before deploying, be sure to read the [good practices](#good-practices).
 - [Eject you decidim instance](#eject-you-decidim-instance)
 - [Environments configurations](#environments-configurations)
 - [Unsupported Environments](#unsupported-environments)
+- [Cron configurations](#cron-configurations)
+- [Extend Decidim Images](#extend-decidim-images)
 - [Good Practices](#good-practices)
   - [Choose a 64chars password for redis](#choose-a-64chars-password-for-redis)
   - [Use memcached as cache](#use-memcached-as-cache)
@@ -186,8 +188,9 @@ And if you want to keep this docker-compose from quickstart:
 |---|---|---|
 | DECIDIM_SYSTEM_EMAIL | Email use to access /system | `hello@myorg.com` |
 | DECIDIM_SYSTEM_PASSWORD | Password use to access /system | `youReallyWantToChangeMe` |
-| RUN_RAILS | If the container should run rails | `1` |
-| RUN_SIDEKIQ | If the container should run sidekiq | `1` |
+| DECIDIM_RUN_RAILS | If the container should run rails | `1` |
+| DECIDIM_RUN_SIDEKIQ | If the container should run sidekiq | `1` |
+| DECIDIM_RUN_CRON | If the container should run cron | `1` |
 | SECRET_KEY_BASE | 🔐 Secret used to initialize application's key generator | `youReallyWantToChangeMe` |
 | RAILS_MASTER_KEY | 🔐 Used to decrypt credentials file | `youReallyWantToChangeMe` |
 | RAILS_FORCE_SSL | If rails should force SSL | `false` |
@@ -216,6 +219,64 @@ Almost all the `DECIDIM_` variables are available. [See the documentation on def
 | Env name | Why it is NOT supported |
 |---|---|
 | RAILS_LOG_TO_STDOUT | We use `supervisord` process manager that will create/rotates logfiles for you. `RAILS_LOG_TO_STDOUT` will have no effect. |
+
+
+## Cron configurations
+Cron is configured to run scripts every 15min, 1hour, daily, weekly, monthly. 
+When the times comes, it will execute all scripts present in the `/etc/periodic` directory. 
+[By default](./bundle/docker/crontab.d), the following scripts are executed: 
+
+```sh
+├── 15min
+│   └── change_active_steps.sh
+├── daily
+│   ├── daily_digest.sh
+│   ├── open_data_export.sh
+│   └── reminders_all.sh
+├── hourly
+│   ├── compute_metrics.sh
+│   └── delete_download_your_data_files.sh
+├── monthly
+└── weekly
+    ├── clean_registration_forms.sh
+    └── weekly_digest.sh
+```
+
+To configure this, you can copy this `cron.d` directory, change the scripts and map a volume. 
+Carefull, these scripts need permission to be executed, don't forget to `chmod +x` any new scripts.
+
+```
+# Copy the container directory locally
+docker cp decidim:/etc/periodic crontab.d
+```
+
+And update your docker-compose: 
+```diff
+    container_name: decidim
+    image: ghcr.io/decidim/decidim:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - storage:/home/decidim/app/storage
++     - ./crontab.d:/etc/periodic
++   environment:
+-   environment:    
+```
+
+
+## Extend Decidim Images
+Let say you want to use official image, but a binary is missing. For the sake of the example, let's add `restic` a binary to manage encrypted backups. 
+```
+# Your new custom image
+FROM decidim:v027
+USER root # temporary go back in root to add your executable
+RUN apk --update --no-cache restic
+USER decidim # Go back to non-root user
+# You are done!
+```
+
+To improve this you could remove logs, cache and others artifact from `apk` or use a multi-stage build to keep only the restic binary.
+
 
 ## Good Practices
 

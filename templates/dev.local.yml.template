@@ -4,9 +4,26 @@ version: '3'
 services:
   # change decidim version to $DECIDIM_VERSION
   decidim:
+    image: decidim:$DECIDIM_TAG-dev
     build:
       context: ./bundle
       dockerfile: ./$DOCKER_FILE
       args: 
         BASE_IMAGE_RAILS_ENV: development # Change to "test" for testing
+    tty: true
+    stdin_open: true
+    environment:
+      - WEBPACKER_DEV_SERVER_HOST=webpacker
+    depends_on:
+      - pg
+      - redis
+      - mailer
+      - webpacker
 
+  webpacker:
+    image: decidim:$DECIDIM_TAG-dev
+    command: bin/webpack-dev-server
+    environment:
+      - WEBPACKER_DEV_SERVER_HOST=0.0.0.0
+    volumes:
+      - bundle:/home/decidim/app/vendor

@@ -19,7 +19,7 @@ LABEL org.opencontainers.image.title="Development images for Decidim 0.27.2."
 LABEL org.opencontainers.image.description="Use this images to develop/test decidim on 0.27.2."
 LABEL org.opencontainers.image.base.name="ruby:3.0-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
-LABEL org.opencontainers.image.revision="4c29e9846fd767e2d9d3ad4f1b40d620f06bd31c"
+LABEL org.opencontainers.image.revision="7e86fdf7cbe1127d03edda8892095b7119033a83"
 
 # Rails configuration
 ENV BUNDLE_JOBS=8 \
@@ -152,7 +152,7 @@ RUN mkdir -p $HOME/lib/seven_zip_ruby \
 
 # Prepare supervisor directories
 RUN mkdir -p $ROOT/tmp/pids $ROOT/tmp/sockets
-
+COPY ./docker/templates /usr/local/share/decidim/templates
 COPY ./docker/bin /usr/local/bin/
 COPY ./docker/docker-entrypoint.d /usr/local/share/docker-entrypoint.d
 
@@ -181,7 +181,7 @@ LABEL org.opencontainers.image.title="Decidim 0.27.2 on docker."
 LABEL org.opencontainers.image.description="Decidim instance on Docker, usable in production"
 LABEL org.opencontainers.image.base.name="ruby:3.0-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
-LABEL org.opencontainers.image.revision="4c29e9846fd767e2d9d3ad4f1b40d620f06bd31c"
+LABEL org.opencontainers.image.revision="7e86fdf7cbe1127d03edda8892095b7119033a83"
 
 # Rails configuration
 ENV BUNDLE_JOBS=8 \
@@ -211,7 +211,8 @@ ENV BUNDLE_JOBS=8 \
 
 # supervisord configuration
 ENV DECIDIM_RUN_RAILS="1" \
-    DECIDIM_RUN_SIDEKIQ="1"
+    DECIDIM_RUN_SIDEKIQ="1"\
+    DECIDIM_RUN_CRON="1"
 
 # Decidim configuration
 ENV DECIDIM_VERSION=0.27.2 \
@@ -287,6 +288,8 @@ VOLUME $HOME/storage
 # Add binaries, to start the container
 COPY ./docker/bin /usr/local/bin/
 COPY ./docker/docker-entrypoint.d /usr/local/share/docker-entrypoint.d
+COPY ./docker/crontab.d /etc/periodic/
+
 
 USER decidim
 COPY --from=development --chown=decidim:decidim $HOME $HOME
@@ -302,6 +305,7 @@ RUN bundle config set --global without 'development:test' \
 
 # Expose the rails port
 EXPOSE 3000
+
 # Define the default shell
 SHELL ["/bin/sh", "-c", "set -e;"]
 

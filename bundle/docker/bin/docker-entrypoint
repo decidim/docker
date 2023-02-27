@@ -2,4 +2,5 @@
 set -e
 echo "Container initializing:"
 run-parts /usr/local/share/docker-entrypoint.d
+echo "🚀 $@"
 exec "$@"

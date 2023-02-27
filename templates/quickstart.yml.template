@@ -6,6 +6,7 @@ services:
       - 3000:3000
     volumes:
       - storage:/home/decidim/app/storage
+      - bundle:/home/decidim/app/vendor
     environment:
       - DECIDIM_SYSTEM_EMAIL=hello@myorg.com
       - DECIDIM_SYSTEM_PASSWORD=youReallyWantToChangeMe
@@ -63,6 +64,7 @@ volumes:
   pg-data: {}
   redis-data: {}
   storage: {}
+  bundle: {}
 networks:
   private:
     internal: true

@@ -2,8 +2,7 @@
 |   \ | __| / __||_ _||   \ |_ _||  \/  |
 | |) || _| | (__  | | | |) | | | | |\/| |
 |___/ |___| \___||___||___/ |___||_|  |_|
-$DECIDIM_VERSION (node $NODE_VERSION, ruby $RUBY_VERSION)
+          $DECIDIM_VERSION (ruby $RUBY_VERSION)
 ---
 env:  $RAILS_ENV
 home: $ROOT
----

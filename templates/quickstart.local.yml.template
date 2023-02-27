@@ -7,4 +7,3 @@ services:
     build:
       context: ./bundle
       dockerfile: ./$DOCKER_FILE
-

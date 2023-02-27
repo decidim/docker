@@ -152,7 +152,7 @@ RUN mkdir -p $HOME/lib/seven_zip_ruby \
 
 # Prepare supervisor directories
 RUN mkdir -p $ROOT/tmp/pids $ROOT/tmp/sockets
-
+COPY ./docker/templates /usr/local/share/decidim/templates
 COPY ./docker/bin /usr/local/bin/
 COPY ./docker/docker-entrypoint.d /usr/local/share/docker-entrypoint.d
 
@@ -211,7 +211,8 @@ ENV BUNDLE_JOBS=8 \
 
 # supervisord configuration
 ENV DECIDIM_RUN_RAILS="1" \
-    DECIDIM_RUN_SIDEKIQ="1"
+    DECIDIM_RUN_SIDEKIQ="1"\
+    DECIDIM_RUN_CRON="1"
 
 # Decidim configuration
 ENV DECIDIM_VERSION=0.26.5 \
@@ -287,6 +288,8 @@ VOLUME $HOME/storage
 # Add binaries, to start the container
 COPY ./docker/bin /usr/local/bin/
 COPY ./docker/docker-entrypoint.d /usr/local/share/docker-entrypoint.d
+COPY ./docker/crontab.d /etc/periodic/
+
 
 USER decidim
 COPY --from=development --chown=decidim:decidim $HOME $HOME
@@ -302,6 +305,7 @@ RUN bundle config set --global without 'development:test' \
 
 # Expose the rails port
 EXPOSE 3000
+
 # Define the default shell
 SHELL ["/bin/sh", "-c", "set -e;"]
 

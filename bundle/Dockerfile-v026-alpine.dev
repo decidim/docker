@@ -152,7 +152,7 @@ RUN mkdir -p $HOME/lib/seven_zip_ruby \
 
 # Prepare supervisor directories
 RUN mkdir -p $ROOT/tmp/pids $ROOT/tmp/sockets
-
+COPY ./docker/templates /usr/local/share/decidim/templates
 COPY ./docker/bin /usr/local/bin/
 COPY ./docker/docker-entrypoint.d /usr/local/share/docker-entrypoint.d
 
