@@ -1,0 +1,3 @@
+#! /bin/sh
+set -e
+cd $ROOT && bundle exec rails decidim_participatory_processes:change_active_step

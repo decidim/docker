@@ -1,0 +1,3 @@
+#! /bin/sh
+set -e
+cd $ROOT && bundle exec rails decidim_meetings:clean_registration_forms
