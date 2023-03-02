@@ -148,11 +148,11 @@ Please choose one of the officially supported version of Decidim.
 
 **Stable tags**
 
-`:0.27.2-alpine`, `:0.27-alpine`, `:0.26.5-alpine`, `:0.26-alpine`
+[`:0.27.2-alpine`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=0.27.2-alpine), [`:0.27-alpine`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=0.27-alpine), [`:0.26.5-alpine`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=0.26.5-alpine), [`:0.26-alpine`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=0.26-alpine)
 
 **Development tags**
 
-`:latest`, `:0.27.2-dev`, `:0.27-dev`, `:0.26.5-dev`, `:0.26-dev`, `:develop`
+[`:latest`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=latest), [`:0.27.2-dev`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=0.27.2-dev), [`:0.27-dev`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=0.27-dev), [`:0.26.5-dev`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=0.26.5-dev), [`:0.26-dev`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=0.26-dev), [`:develop-alpine`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=develop-alpine), [`:develop-dev`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=develop-dev), [`:develop-alpine`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=develop-alpine), [`:develop-dev`](https://hub.docker.com/repository/docker/hfroger/decidim/tags?page=1&name=develop-dev)
 
 ## Eject you decidim instance
 You want to publish your instance on a git client? 

@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+decidim_repo="$1"
+
 declare versions=(
 	v027
 	v026
@@ -155,6 +158,7 @@ EOF
 	major=$(echo $target_decidim | cut -d. -f1)
 	minor=$(echo $target_decidim | cut -d. -f2)
 	patch=$(echo $target_decidim | cut -d. -f3)
+
 	echo "$major.$minor.$patch" > "$version.versions"
 	echo "$major.$minor" >> "$version.versions"
 	if [ $major -gt 0 ]; then
@@ -175,23 +179,32 @@ cat $template | sed -e "s@\$DECIDIM_TAG@$last_stable@g" >> "$destination"
 # Prepare README informations: Which images are stable to uses,
 # which are not
 STABLE_IMAGES=()
-DEV_IMAGES=("\`:latest\`, ")
+DEV_IMAGES=("[\`:latest\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=latest), ")
 for v in "${stable_versions[@]}"; do
 	if [ -f "$v.versions" ]; then
 		while read version; do
-			STABLE_IMAGES+="\`:$version-alpine\`, "
-			DEV_IMAGES+="\`:$version-dev\`, "
+			STABLE_IMAGES+="[\`:$version-alpine\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$version-alpine), "
+			DEV_IMAGES+="[\`:$version-dev\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$version-dev), "
 		done < "$v.versions"
 	else
-		STABLE_IMAGES+="\`:$v\`, "
-		DEV_IMAGES+="\`:$v-dev\`, "
+		STABLE_IMAGES+="[\`:$v-alpine\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-alpine), "
+		DEV_IMAGES+="[\`:$v-dev\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-dev), "
 	fi
 done
 STABLE_IMAGES="${STABLE_IMAGES%, }"
 
 for v in "${dev_versions[@]}"; do
-	DEV_IMAGES+="\`:$v\`, "
+	if [ -f "$v.versions" ]; then
+		while read version; do
+			DEV_IMAGES+="[\`:$v-alpine\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-alpine), "
+			DEV_IMAGES+="[\`:$v-dev\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-dev), "
+		done < "$v.versions"
+	else
+		DEV_IMAGES+="[\`:$v-alpine\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-alpine), "
+		DEV_IMAGES+="[\`:$v-dev\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-dev), "
+	fi
 done
+
 DEV_IMAGES="${DEV_IMAGES%, }"
 DECIDIM_TABLE="$(echo "$decidim_csv")"
 

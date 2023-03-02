@@ -12,6 +12,65 @@ FROM node:16.19-alpine3.17 as node
 
 # Avoid using alpine 3.16 for building seven_zip_ruby
 # @see https://github.com/metanorma/packed-mn/issues/169
+FROM ruby:2.7-alpine3.15 as generator
+ENV BUNDLE_JOBS=8 \
+    BUNDLE_RETRY=3 \
+    BUNDLE_APP_CONFIG=/home/decidim/app/.bundle \
+    NODE_VERSION=$NODE_VERSION \
+    RUBY_VERSION=$RUBY_VERSION \
+    RAILS_ENV=$BASE_IMAGE_RAILS_ENV \
+    RACK_ENV=$BASE_IMAGE_RAILS_ENV \
+    NODE_ENV=development \
+    HOME=/home/decidim/app \
+    ROOT=/home/decidim/app \
+    PATH=/home/decidim/app/bin:/usr/local/bin:$PATH
+
+# Add node binaries for precompilation 
+COPY --from=node /usr/lib /usr/lib
+COPY --from=node /usr/local/share /usr/local/share
+COPY --from=node /usr/local/lib /usr/local/lib
+COPY --from=node /usr/local/include /usr/local/include
+COPY --from=node /usr/local/bin /usr/local/bin
+
+RUN npm install -g --force yarn webpack  \
+  && gem update --system \
+  && apk update \
+  && apk upgrade \
+  # Install dependencies:
+  && apk --update --no-cache add \
+      # help with native gem compilation
+      build-base ruby-dev alpine-sdk python3 \
+      icu-dev cmake libc-dev linux-headers libxml2-dev libxslt-dev readline-dev gcc \
+      # timezone management
+      tzdata \
+      # postgres connection
+      postgresql-dev postgresql-client \
+      # deps for gem charlock_holmes and nokogiri, to use system libraries
+      ruby-charlock_holmes \
+      ruby-nokogiri \
+      # image processing
+      imagemagick \
+      # gem using git
+      git \
+      # seven_zip gem dep
+      p7zip \
+      # supervisord
+      supervisor \
+  && rm -rf /var/cache/apk/*
+
+# Configure bundle
+RUN bundle config --global build.nokogiri --use-system-libraries \
+  && bundle config --global build.charlock_holmes --with-icu-dir=/usr/include
+
+WORKDIR /home/decidim
+
+# Run the generator
+RUN gem install decidim -v 0.26.5 \
+  && bundle config set --global path 'vendor' \
+  && decidim $HOME
+
+WORKDIR $HOME
+
 FROM ruby:2.7-alpine3.15 as development
 LABEL org.opencontainers.image.authors="hola@decidim.org"
 LABEL org.opencontainers.image.vendor="Decidim"
@@ -116,12 +175,8 @@ RUN npm install -g --force yarn webpack  \
 RUN bundle config --global build.nokogiri --use-system-libraries \
   && bundle config --global build.charlock_holmes --with-icu-dir=/usr/include
 
-WORKDIR /home/decidim
-
 # Run the generator
-RUN gem install decidim -v 0.26.5 \
-  && bundle config set --global path 'vendor' \
-  && decidim $HOME
+COPY --from=generator $HOME $HOME
 
 # Go in the generated decidim application. 
 WORKDIR $HOME
@@ -163,10 +218,10 @@ SHELL ["/bin/sh", "-c", "set -e;"]
 
 CMD ["bundle exec rails s"]
 ENTRYPOINT ["docker-entrypoint"]
-# The content above pasted from Dockerfile-v026-alpine.dev
+# The content above pasted from Dockerfile-v026-dev
 
-RUN npm ci \
-  && SECRET_KEY_BASE="assets" bundle exec rails assets:precompile \
+RUN npm ci\
+  && SECRET_KEY_BASE="assets" bundle exec rails assets:precompile\
   && rm -rf node_modules tmp/* .npm .gem spec test
 
 ########################################################################################
@@ -184,38 +239,38 @@ LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
 LABEL org.opencontainers.image.revision="3398945f06de924c20591ac0e4c5b272d34956b9"
 
 # Rails configuration
-ENV BUNDLE_JOBS=8 \
-    BUNDLE_RETRY=3 \
-    BUNDLE_APP_CONFIG=/home/decidim/app/.bundle \
-    EDITOR=vi \
-    LANG=en_US.UTF-8 \
-    TZ="Europe/Madrid" \
-    NODE_VERSION=$NODE_VERSION \
-    RUBY_VERSION=$RUBY_VERSION \
-    RAILS_ENV=production \
-    RACK_ENV=production \
-    NODE_ENV=production \
-    HOME=/home/decidim/app \ 
-    ROOT=/home/decidim/app \ 
-    PATH=/home/decidim/app/bin:/usr/local/bin:$PATH \
-    PORT=3000 \
-    RAILS_FORCE_SSL="false" \
+ENV BUNDLE_JOBS=8\
+    BUNDLE_RETRY=3\
+    BUNDLE_APP_CONFIG=/home/decidim/app/.bundle\
+    EDITOR=vi\
+    LANG=en_US.UTF-8\
+    TZ="Europe/Madrid"\
+    NODE_VERSION=$NODE_VERSION\
+    RUBY_VERSION=$RUBY_VERSION\
+    RAILS_ENV=production\
+    RACK_ENV=production\
+    NODE_ENV=production\
+    HOME=/home/decidim/app\
+    ROOT=/home/decidim/app\
+    PATH=/home/decidim/app/bin:/usr/local/bin:$PATH\
+    PORT=3000\
+    RAILS_FORCE_SSL="false"\
     RAILS_SERVE_STATIC_FILES="false"\
     RAILS_LOG_TO_STDOUT="true"\
-    RAILS_ASSET_HOST="" \
-    RAILS_MAX_THREAD=5 \
-    RAILS_PID_FILE="tmp/pids/server.pid" \
-    RAILS_SERVE_STATIC_FILES="disabled" \
-    RAILS_MASTER_KEY="youReallyWantToChangeMe" \
+    RAILS_ASSET_HOST=""\
+    RAILS_MAX_THREAD=5\
+    RAILS_PID_FILE="tmp/pids/server.pid"\
+    RAILS_SERVE_STATIC_FILES="disabled"\
+    RAILS_MASTER_KEY="youReallyWantToChangeMe"\
     SECRET_KEY_BASE="youReallyWantToChangeMe"
 
 # supervisord configuration
-ENV DECIDIM_RUN_RAILS="1" \
+ENV DECIDIM_RUN_RAILS="1"\
     DECIDIM_RUN_SIDEKIQ="1"\
     DECIDIM_RUN_CRON="1"
 
 # Decidim configuration
-ENV DECIDIM_VERSION=0.26.5 \
+ENV DECIDIM_VERSION=0.26.5\
     DECIDIM_SEED="1"\
     DECIDIM_DEFAULT_LOCALE="en"\
     DECIDIM_CURRENCY_UNIT="EUR"\
@@ -224,55 +279,55 @@ ENV DECIDIM_VERSION=0.26.5 \
     DECIDIM_SYSTEM_PASSWORD="youReallyWantToChangeMe"
 
 # Database configuration
-ENV DATABASE_URL="postgres://decidim:youReallyWantToChangeMe@pg/decidim" 
+ENV DATABASE_URL="postgres://decidim:youReallyWantToChangeMe@pg/decidim"
 
 # Job Configuration (Sidekiq)
 # WARNING: If you run an intensive instance,
 # use two different redis for cache and sidekiq
 # @see https://github.com/mperham/sidekiq/wiki/Using-Redis#multiple-redis-instances
-ENV REDIS_URL="redis://example.com:6379/5" \
-    QUEUE_ADAPTER="sidekiq" \
+ENV REDIS_URL="redis://example.com:6379/5"\
+    QUEUE_ADAPTER="sidekiq"\
     SIDEKIQ_CONCURRENCY=$RAILS_MAX_THREAD
 
 # SMTP configuration
-ENV SMTP_AUTHENTICATION="plain" \
-    SMTP_USERNAME="my-participatory-platform@iredmail.org" \
-    SMTP_PASSWORD="youReallyWantToChangeMe" \
-    SMTP_ADDRESS="smtp.iredmail.org" \
-    SMTP_DOMAIN="iredmail" \
-    SMTP_PORT="587" \
-    SMTP_STARTTLS_AUTO="1" \
-    SMTP_VERIFY_MODE="plain" 
+ENV SMTP_AUTHENTICATION="plain"\
+    SMTP_USERNAME="my-participatory-platform@iredmail.org"\
+    SMTP_PASSWORD="youReallyWantToChangeMe"\
+    SMTP_ADDRESS="smtp.iredmail.org"\
+    SMTP_DOMAIN="iredmail"\
+    SMTP_PORT="587"\
+    SMTP_STARTTLS_AUTO="1"\
+    SMTP_VERIFY_MODE="plain"
 
-RUN gem update --system \
-  && apk update \
-  && apk upgrade \
-  && gem install bundler --silent \
+RUN gem update --system\
+  && apk update\
+  && apk upgrade\
+  && gem install bundler --silent\
   # Install dependencies:
-  && apk --update --no-cache add \
+  && apk --update --no-cache add\
     # nokogiri native deps (don't need full ruby-nokogiri, just these headers)
-    libxslt-dev \
+    libxslt-dev\
     # manage timezones
-    tzdata \
+    tzdata\
     # communicate with postgres through the postgres gem
-    postgresql-dev \
+    postgresql-dev\
     # for image processing
-    imagemagick \
+    imagemagick\
     # allows gem to use git
-    git \
+    git\
     # seven_zip gem dep
-    p7zip \ 
+    p7zip\
      # supervisord
-    supervisor \
-  && rm -rf /var/cache/apk/* \
+    supervisor\
+  && rm -rf /var/cache/apk/*\
   # Prepare workspace users
-  && addgroup -S decidim \
-  && adduser -S decidim -G decidim \
+  && addgroup -S decidim\
+  && adduser -S decidim -G decidim\
   # Remove default supervisord configuration
-  && rm /etc/supervisord.conf \
+  && rm /etc/supervisord.conf\
   # Link logs to common alpine log directory
-  && mkdir -p $HOME/log \
-  && truncate -s 0 /var/log/*log \
+  && mkdir -p $HOME/log\
+  && truncate -s 0 /var/log/*log\
   && chown decidim:decidim /etc/motd
 
 # Setup templates, will be used at runtime on container initialization
@@ -298,9 +353,9 @@ WORKDIR $HOME
 
 # Set the config again, the same as the previous image, 
 # to to avoid rebuilding native extensions.
-RUN bundle config set --global without 'development:test' \
-  && bundle config set --global path 'vendor' \
-  && bundle config --global build.nokogiri --use-system-libraries \
+RUN bundle config set --global without 'development:test'\
+  && bundle config set --global path 'vendor'\
+  && bundle config --global build.nokogiri --use-system-libraries\
   && bundle config --global build.charlock_holmes --with-icu-dir=/usr/include 
 
 # Expose the rails port

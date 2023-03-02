@@ -2,11 +2,9 @@ name: Build docker images
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-    - master
-    paths:
-    - 'bundle/Dockerfile-*'
+  schedule:
+    # Every day at 17:30, we udpdate images
+    - cron:  '30 17 * * *'
 
 jobs:
   build-and-publish:
@@ -14,7 +12,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -24,20 +21,23 @@ jobs:
       - name: Build and publish images
         run: |
           npm install -g doctoc
-          ./update
+          ./update "${{ secrets.DOCKERHUB_USERNAME }}/decidim"
+          ls *.versions
           for file in $(find bundle -type f -name "Dockerfile-*"); do
             default_tag=$(basename "$file" | sed 's/^Dockerfile-//')
             default_destination="${{ secrets.DOCKERHUB_USERNAME }}/decidim:$default_tag"
-            echo "build 'decidim/$default_tag' with bundle/$file"
+            stable_version=$(echo "$default_tag" | cut -d'-' -f1)
+            echo "$stable_version: build 'decidim/$default_tag' with $file"
             docker build -t $default_destination -f "$file" ./bundle
-            stable_version=$(echo "$default_tag" | cut -d'-' -f2)
             if [ -f "$stable_version.versions" ]; then
               while read version; do
-                destination= $(echo $default_tag | sed -e "s/$stable_version/$version/")
+                destination_tag=$(echo $default_tag | sed -e "s/$stable_version/$version/")
+                destination="${{ secrets.DOCKERHUB_USERNAME }}/decidim:$destination_tag"
                 docker tag $default_destination $destination
                 docker push $destination
               done < "$stable_version.versions"
             else
+              echo "No $stable_version.versions file, push to default destination"
               docker push $default_destination
             fi
             if [ $default_tag == "develop-dev" ]; then

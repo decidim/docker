@@ -5,6 +5,65 @@ FROM node:$NODE_TAG as node
 
 # Avoid using alpine 3.16 for building seven_zip_ruby
 # @see https://github.com/metanorma/packed-mn/issues/169
+FROM ruby:$RUBY_TAG as generator
+ENV BUNDLE_JOBS=8 \
+    BUNDLE_RETRY=3 \
+    BUNDLE_APP_CONFIG=/home/decidim/app/.bundle \
+    NODE_VERSION=$NODE_VERSION \
+    RUBY_VERSION=$RUBY_VERSION \
+    RAILS_ENV=$BASE_IMAGE_RAILS_ENV \
+    RACK_ENV=$BASE_IMAGE_RAILS_ENV \
+    NODE_ENV=development \
+    HOME=/home/decidim/app \
+    ROOT=/home/decidim/app \
+    PATH=/home/decidim/app/bin:/usr/local/bin:$PATH
+
+# Add node binaries for precompilation 
+COPY --from=node /usr/lib /usr/lib
+COPY --from=node /usr/local/share /usr/local/share
+COPY --from=node /usr/local/lib /usr/local/lib
+COPY --from=node /usr/local/include /usr/local/include
+COPY --from=node /usr/local/bin /usr/local/bin
+
+RUN npm install -g --force yarn webpack  \
+  && gem update --system \
+  && apk update \
+  && apk upgrade \
+  # Install dependencies:
+  && apk --update --no-cache add \
+      # help with native gem compilation
+      build-base ruby-dev alpine-sdk python3 \
+      icu-dev cmake libc-dev linux-headers libxml2-dev libxslt-dev readline-dev gcc \
+      # timezone management
+      tzdata \
+      # postgres connection
+      postgresql-dev postgresql-client \
+      # deps for gem charlock_holmes and nokogiri, to use system libraries
+      ruby-charlock_holmes \
+      ruby-nokogiri \
+      # image processing
+      imagemagick \
+      # gem using git
+      git \
+      # seven_zip gem dep
+      p7zip \
+      # supervisord
+      supervisor \
+  && rm -rf /var/cache/apk/*
+
+# Configure bundle
+RUN bundle config --global build.nokogiri --use-system-libraries \
+  && bundle config --global build.charlock_holmes --with-icu-dir=/usr/include
+
+WORKDIR /home/decidim
+
+# Run the generator
+RUN $GENERATOR_INSTALL \
+  && bundle config set --global path 'vendor' \
+  && $GENERATOR_CMD
+
+WORKDIR $HOME
+
 FROM ruby:$RUBY_TAG as development
 LABEL org.opencontainers.image.authors="hola@decidim.org"
 LABEL org.opencontainers.image.vendor="Decidim"
@@ -109,12 +168,8 @@ RUN npm install -g --force yarn webpack  \
 RUN bundle config --global build.nokogiri --use-system-libraries \
   && bundle config --global build.charlock_holmes --with-icu-dir=/usr/include
 
-WORKDIR /home/decidim
-
 # Run the generator
-RUN $GENERATOR_INSTALL \
-  && bundle config set --global path 'vendor' \
-  && $GENERATOR_CMD
+COPY --from=generator $HOME $HOME
 
 # Go in the generated decidim application. 
 WORKDIR $HOME
