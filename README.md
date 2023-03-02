@@ -122,7 +122,6 @@ Before deploying, be sure to read the [good practices](#good-practices).
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [Dockerhub](#dockerhub)
 - [Eject you decidim instance](#eject-you-decidim-instance)
 - [Environments configurations](#environments-configurations)
