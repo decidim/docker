@@ -40,6 +40,11 @@ jobs:
             else
               docker push $default_destination
             fi
+            if [ $default_tag == "develop-dev" ]; then
+              latest="${{ secrets.DOCKERHUB_USERNAME }}/decidim:latest"
+              docker tag $default_destination $latest
+              docker push $latest
+            fi
           done
 
       - name: Commit and push changes

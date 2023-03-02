@@ -148,11 +148,11 @@ Please choose one of the officially supported version of Decidim.
 
 **Stable tags**
 
-`:v027`, `:v026`
+`:0.27.2-alpine`, `:0.27-alpine`, `:0.26.5-alpine`, `:0.26-alpine`
 
 **Development tags**
 
-`:latest`, `:v027-dev`, `:v026-dev`, `:develop`
+`:latest`, `:0.27.2-dev`, `:0.27-dev`, `:0.26.5-dev`, `:0.26-dev`, `:develop`
 
 ## Eject you decidim instance
 You want to publish your instance on a git client? 

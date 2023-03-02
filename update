@@ -155,11 +155,11 @@ EOF
 	major=$(echo $target_decidim | cut -d. -f1)
 	minor=$(echo $target_decidim | cut -d. -f2)
 	patch=$(echo $target_decidim | cut -d. -f3)
+	echo "$major.$minor.$patch" > "$version.versions"
+	echo "$major.$minor" >> "$version.versions"
 	if [ $major -gt 0 ]; then
 		echo "$major" >> "$version.versions"
 	fi
-	echo "$major.$minor" >> "$version.versions"
-	echo "$major.$minor.$patch" >> "$version.versions"
 	decidim_csv+="| $target_decidim | ruby:$ruby_version | node:$node_version | \`docker-compose -f quickstart.yml -f quickstart.$version.yml up\` |\n"
 	decidim_csv+="| $target_decidim | ruby:$ruby_version | node:$node_version | \`docker-compose -f quickstart.yml -f dev-$version.yml up\` |\n"
 done
@@ -177,8 +177,15 @@ cat $template | sed -e "s@\$DECIDIM_TAG@$last_stable@g" >> "$destination"
 STABLE_IMAGES=()
 DEV_IMAGES=("\`:latest\`, ")
 for v in "${stable_versions[@]}"; do
-	STABLE_IMAGES+="\`:$v\`, "
-	DEV_IMAGES+="\`:$v-dev\`, "
+	if [ -f "$v.versions" ]; then
+		while read version; do
+			STABLE_IMAGES+="\`:$version-alpine\`, "
+			DEV_IMAGES+="\`:$version-dev\`, "
+		done < "$v.versions"
+	else
+		STABLE_IMAGES+="\`:$v\`, "
+		DEV_IMAGES+="\`:$v-dev\`, "
+	fi
 done
 STABLE_IMAGES="${STABLE_IMAGES%, }"
 
