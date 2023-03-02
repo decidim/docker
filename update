@@ -179,16 +179,17 @@ cat $template | sed -e "s@\$DECIDIM_TAG@$last_stable@g" >> "$destination"
 # Prepare README informations: Which images are stable to uses,
 # which are not
 STABLE_IMAGES=()
-DEV_IMAGES=("[\`:latest\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=latest), ")
+repository_base="https://hub.docker.com/r/"
+DEV_IMAGES=("[\`:latest\`]($repository_base$decidim_repo/tags?page=1\&name=latest), ")
 for v in "${stable_versions[@]}"; do
 	if [ -f "$v.versions" ]; then
 		while read version; do
-			STABLE_IMAGES+="[\`:$version-alpine\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$version-alpine), "
-			DEV_IMAGES+="[\`:$version-dev\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$version-dev), "
+			STABLE_IMAGES+="[\`:$version-alpine\`]($repository_base$decidim_repo/tags?page=1\&name=$version-alpine), "
+			DEV_IMAGES+="[\`:$version-dev\`]($repository_base$decidim_repo/tags?page=1\&name=$version-dev), "
 		done < "$v.versions"
 	else
-		STABLE_IMAGES+="[\`:$v-alpine\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-alpine), "
-		DEV_IMAGES+="[\`:$v-dev\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-dev), "
+		STABLE_IMAGES+="[\`:$v-alpine\`]($repository_base$decidim_repo/tags?page=1\&name=$v-alpine), "
+		DEV_IMAGES+="[\`:$v-dev\`]($repository_base$decidim_repo/tags?page=1\&name=$v-dev), "
 	fi
 done
 STABLE_IMAGES="${STABLE_IMAGES%, }"
@@ -196,12 +197,12 @@ STABLE_IMAGES="${STABLE_IMAGES%, }"
 for v in "${dev_versions[@]}"; do
 	if [ -f "$v.versions" ]; then
 		while read version; do
-			DEV_IMAGES+="[\`:$v-alpine\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-alpine), "
-			DEV_IMAGES+="[\`:$v-dev\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-dev), "
+			DEV_IMAGES+="[\`:$v-alpine\`]($repository_base$decidim_repo/tags?page=1\&name=$v-alpine), "
+			DEV_IMAGES+="[\`:$v-dev\`]($repository_base$decidim_repo/tags?page=1\&name=$v-dev), "
 		done < "$v.versions"
 	else
-		DEV_IMAGES+="[\`:$v-alpine\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-alpine), "
-		DEV_IMAGES+="[\`:$v-dev\`](https://hub.docker.com/repository/docker/$decidim_repo/tags?page=1\&name=$v-dev), "
+		DEV_IMAGES+="[\`:$v-alpine\`]($repository_base$decidim_repo/tags?page=1\&name=$v-alpine), "
+		DEV_IMAGES+="[\`:$v-dev\`]($repository_base$decidim_repo/tags?page=1\&name=$v-dev), "
 	fi
 done
 
