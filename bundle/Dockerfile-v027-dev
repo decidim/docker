@@ -78,7 +78,7 @@ LABEL org.opencontainers.image.title="Development images for Decidim 0.27.2."
 LABEL org.opencontainers.image.description="Use this images to develop/test decidim on 0.27.2."
 LABEL org.opencontainers.image.base.name="ruby:3.0-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
-LABEL org.opencontainers.image.revision="dc93658524b6646cf1361d2cee5e52936272ee6a"
+LABEL org.opencontainers.image.revision="c4685f48594724e022ca754414ce1da982e57d07"
 
 # Rails configuration
 ENV BUNDLE_JOBS=8 \
