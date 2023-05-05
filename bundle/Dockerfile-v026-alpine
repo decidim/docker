@@ -8,7 +8,7 @@
 ARG BASE_IMAGE_RAILS_ENV="development"
 # https://docs.docker.com/develop/develop-images/multistage-build/
 # node: pre-build node at the given version (@see ARGS)
-FROM node:16.19-alpine3.17 as node
+FROM node:16.20-alpine3.17 as node
 
 # Avoid using alpine 3.16 for building seven_zip_ruby
 # @see https://github.com/metanorma/packed-mn/issues/169
@@ -78,7 +78,7 @@ LABEL org.opencontainers.image.title="Development images for Decidim 0.26.5."
 LABEL org.opencontainers.image.description="Use this images to develop/test decidim on 0.26.5."
 LABEL org.opencontainers.image.base.name="ruby:2.7-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
-LABEL org.opencontainers.image.revision="ee8d3e95ff575d67ccc4a5411980823224ae837c"
+LABEL org.opencontainers.image.revision="791c58ce8abb66a2fc04168c9b78e22fe334230c"
 
 # Rails configuration
 ENV BUNDLE_JOBS=8 \
@@ -236,7 +236,7 @@ LABEL org.opencontainers.image.title="Decidim 0.26.5 on docker."
 LABEL org.opencontainers.image.description="Decidim instance on Docker, usable in production"
 LABEL org.opencontainers.image.base.name="ruby:2.7-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
-LABEL org.opencontainers.image.revision="ee8d3e95ff575d67ccc4a5411980823224ae837c"
+LABEL org.opencontainers.image.revision="791c58ce8abb66a2fc04168c9b78e22fe334230c"
 
 # Rails configuration
 ENV BUNDLE_JOBS=8\
