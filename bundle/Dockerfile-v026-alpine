@@ -65,7 +65,7 @@ RUN bundle config --global build.nokogiri --use-system-libraries \
 WORKDIR /home/decidim
 
 # Run the generator
-RUN gem install decidim -v 0.26.5 \
+RUN gem install decidim -v 0.26.7 \
   && bundle config set --global path 'vendor' \
   && decidim $HOME
 
@@ -74,11 +74,11 @@ WORKDIR $HOME
 FROM ruby:2.7-alpine3.15 as development
 LABEL org.opencontainers.image.authors="hola@decidim.org"
 LABEL org.opencontainers.image.vendor="Decidim"
-LABEL org.opencontainers.image.title="Development images for Decidim 0.26.5."
-LABEL org.opencontainers.image.description="Use this images to develop/test decidim on 0.26.5."
+LABEL org.opencontainers.image.title="Development images for Decidim 0.26.7."
+LABEL org.opencontainers.image.description="Use this images to develop/test decidim on 0.26.7."
 LABEL org.opencontainers.image.base.name="ruby:2.7-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
-LABEL org.opencontainers.image.revision="c5c83790ac090ec903ebc0aa60d7feb20481c1e0"
+LABEL org.opencontainers.image.revision="0988ce9db54da0485a7ae5094b4b99fa2b153b45"
 
 # Rails configuration
 ENV BUNDLE_JOBS=8 \
@@ -109,7 +109,7 @@ ENV DECIDIM_RUN_RAILS="1" \
     DECIDIM_RUN_SIDEKIQ="1"
 
 # Decidim configuration
-ENV DECIDIM_VERSION=0.26.5 \
+ENV DECIDIM_VERSION=0.26.7 \
     DECIDIM_SEED="1"\
     DECIDIM_DEFAULT_LOCALE="en"\
     DECIDIM_CURRENCY_UNIT="EUR"\
@@ -232,11 +232,11 @@ RUN npm ci\
 FROM ruby:2.7-alpine3.15
 LABEL org.opencontainers.image.authors="hola@decidim.org"
 LABEL org.opencontainers.image.vendor="Decidim"
-LABEL org.opencontainers.image.title="Decidim 0.26.5 on docker."
+LABEL org.opencontainers.image.title="Decidim 0.26.7 on docker."
 LABEL org.opencontainers.image.description="Decidim instance on Docker, usable in production"
 LABEL org.opencontainers.image.base.name="ruby:2.7-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
-LABEL org.opencontainers.image.revision="c5c83790ac090ec903ebc0aa60d7feb20481c1e0"
+LABEL org.opencontainers.image.revision="0988ce9db54da0485a7ae5094b4b99fa2b153b45"
 
 # Rails configuration
 ENV BUNDLE_JOBS=8\
@@ -270,7 +270,7 @@ ENV DECIDIM_RUN_RAILS="1"\
     DECIDIM_RUN_CRON="1"
 
 # Decidim configuration
-ENV DECIDIM_VERSION=0.26.5\
+ENV DECIDIM_VERSION=0.26.7\
     DECIDIM_SEED="1"\
     DECIDIM_DEFAULT_LOCALE="en"\
     DECIDIM_CURRENCY_UNIT="EUR"\

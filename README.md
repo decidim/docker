@@ -147,11 +147,11 @@ Please choose one of the officially supported version of Decidim.
 
 **Stable tags**
 
-[`:0.27.2-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27.2-alpine), [`:0.27-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27-alpine), [`:0.26.5-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26.5-alpine), [`:0.26-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26-alpine)
+[`:0.27.3-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27.3-alpine), [`:0.27-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27-alpine), [`:0.26.7-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26.7-alpine), [`:0.26-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26-alpine)
 
 **Development tags**
 
-[`:latest`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=latest), [`:0.27.2-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27.2-dev), [`:0.27-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27-dev), [`:0.26.5-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26.5-dev), [`:0.26-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26-dev), [`:develop-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-alpine), [`:develop-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-dev), [`:develop-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-alpine), [`:develop-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-dev)
+[`:latest`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=latest), [`:0.27.3-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27.3-dev), [`:0.27-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27-dev), [`:0.26.7-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26.7-dev), [`:0.26-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26-dev), [`:develop-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-alpine), [`:develop-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-dev), [`:develop-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-alpine), [`:develop-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-dev)
 
 ## Eject you decidim instance
 You want to publish your instance on a git client? 
@@ -314,10 +314,10 @@ To debug and rebuild the images locally, you can:
 
 | Decidim Version | Alpine Ruby image | Alpine Node image | Docker-compose command |
 |---|---|---|---|
-| 0.27.2 | ruby:3.0-alpine3.15 | node:16.20-alpine3.17 | `docker-compose -f quickstart.yml -f quickstart.v027.yml up` |
-| 0.27.2 | ruby:3.0-alpine3.15 | node:16.20-alpine3.17 | `docker-compose -f quickstart.yml -f dev-v027.yml up` |
-| 0.26.5 | ruby:2.7-alpine3.15 | node:16.20-alpine3.17 | `docker-compose -f quickstart.yml -f quickstart.v026.yml up` |
-| 0.26.5 | ruby:2.7-alpine3.15 | node:16.20-alpine3.17 | `docker-compose -f quickstart.yml -f dev-v026.yml up` |
+| 0.27.3 | ruby:3.0-alpine3.15 | node:16.20-alpine3.17 | `docker-compose -f quickstart.yml -f quickstart.v027.yml up` |
+| 0.27.3 | ruby:3.0-alpine3.15 | node:16.20-alpine3.17 | `docker-compose -f quickstart.yml -f dev-v027.yml up` |
+| 0.26.7 | ruby:2.7-alpine3.15 | node:16.20-alpine3.17 | `docker-compose -f quickstart.yml -f quickstart.v026.yml up` |
+| 0.26.7 | ruby:2.7-alpine3.15 | node:16.20-alpine3.17 | `docker-compose -f quickstart.yml -f dev-v026.yml up` |
 | 0.28.0.dev | ruby:3.0-alpine3.15 | node:16.20-alpine3.17 | `docker-compose -f quickstart.yml -f quickstart.develop.yml up` |
 | 0.28.0.dev | ruby:3.0-alpine3.15 | node:16.20-alpine3.17 | `docker-compose -f quickstart.yml -f dev-develop.yml up` |
 

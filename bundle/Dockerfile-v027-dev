@@ -65,7 +65,7 @@ RUN bundle config --global build.nokogiri --use-system-libraries \
 WORKDIR /home/decidim
 
 # Run the generator
-RUN gem install decidim -v 0.27.2 \
+RUN gem install decidim -v 0.27.3 \
   && bundle config set --global path 'vendor' \
   && decidim $HOME --queue sidekiq
 
@@ -74,11 +74,11 @@ WORKDIR $HOME
 FROM ruby:3.0-alpine3.15 as development
 LABEL org.opencontainers.image.authors="hola@decidim.org"
 LABEL org.opencontainers.image.vendor="Decidim"
-LABEL org.opencontainers.image.title="Development images for Decidim 0.27.2."
-LABEL org.opencontainers.image.description="Use this images to develop/test decidim on 0.27.2."
+LABEL org.opencontainers.image.title="Development images for Decidim 0.27.3."
+LABEL org.opencontainers.image.description="Use this images to develop/test decidim on 0.27.3."
 LABEL org.opencontainers.image.base.name="ruby:3.0-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
-LABEL org.opencontainers.image.revision="7eb550f2310dc37ed7e5ef34eb2311743962fe0b"
+LABEL org.opencontainers.image.revision="073a7d779d22458c3bb1d5b4aa6b3e41f85c338f"
 
 # Rails configuration
 ENV BUNDLE_JOBS=8 \
@@ -109,7 +109,7 @@ ENV DECIDIM_RUN_RAILS="1" \
     DECIDIM_RUN_SIDEKIQ="1"
 
 # Decidim configuration
-ENV DECIDIM_VERSION=0.27.2 \
+ENV DECIDIM_VERSION=0.27.3 \
     DECIDIM_SEED="1"\
     DECIDIM_DEFAULT_LOCALE="en"\
     DECIDIM_CURRENCY_UNIT="EUR"\

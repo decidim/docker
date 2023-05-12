@@ -9,7 +9,7 @@
 
 version: '3'
 services:
-  # change decidim version to 0.27.2
+  # change decidim version to 0.27.3
   decidim:
     image: decidim:$DECIDIM_TAG-dev
     build:
