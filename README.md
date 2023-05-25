@@ -122,7 +122,6 @@ Before deploying, be sure to read the [good practices](#good-practices).
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [Dockerhub](#dockerhub)
 - [Eject you decidim instance](#eject-you-decidim-instance)
 - [Environments configurations](#environments-configurations)
@@ -148,11 +147,11 @@ Please choose one of the officially supported version of Decidim.
 
 **Stable tags**
 
-[`:0.27.3-alpine`](https://hub.docker.com/r//tags?page=1&name=0.27.3-alpine), [`:0.27-alpine`](https://hub.docker.com/r//tags?page=1&name=0.27-alpine), [`:0.26.7-alpine`](https://hub.docker.com/r//tags?page=1&name=0.26.7-alpine), [`:0.26-alpine`](https://hub.docker.com/r//tags?page=1&name=0.26-alpine)
+[`:0.27.3-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27.3-alpine), [`:0.27-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27-alpine), [`:0.26.7-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26.7-alpine), [`:0.26-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26-alpine)
 
 **Development tags**
 
-[`:latest`](https://hub.docker.com/r//tags?page=1&name=latest), [`:0.27.3-dev`](https://hub.docker.com/r//tags?page=1&name=0.27.3-dev), [`:0.27-dev`](https://hub.docker.com/r//tags?page=1&name=0.27-dev), [`:0.26.7-dev`](https://hub.docker.com/r//tags?page=1&name=0.26.7-dev), [`:0.26-dev`](https://hub.docker.com/r//tags?page=1&name=0.26-dev), [`:develop-alpine`](https://hub.docker.com/r//tags?page=1&name=develop-alpine), [`:develop-dev`](https://hub.docker.com/r//tags?page=1&name=develop-dev), [`:develop-alpine`](https://hub.docker.com/r//tags?page=1&name=develop-alpine), [`:develop-dev`](https://hub.docker.com/r//tags?page=1&name=develop-dev)
+[`:latest`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=latest), [`:0.27.3-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27.3-dev), [`:0.27-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.27-dev), [`:0.26.7-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26.7-dev), [`:0.26-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=0.26-dev), [`:develop-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-alpine), [`:develop-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-dev), [`:develop-alpine`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-alpine), [`:develop-dev`](https://hub.docker.com/r/hfroger/decidim/tags?page=1&name=develop-dev)
 
 ## Eject you decidim instance
 You want to publish your instance on a git client? 
