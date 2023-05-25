@@ -5,7 +5,7 @@ DATABASE_HOST_PORT=$(echo "$DATABASE_URL" | sed -E 's/.*@([^\/]+).*/\1/')
 wait-for-it "$DATABASE_HOST_PORT" -t 60
 
 QUEUE_ADAPTER=${QUEUE_ADAPTER:-default}
-if [ "sidekiq" == "$QUEUE_ADAPTER"]; then
+if [ "sidekiq" = "$QUEUE_ADAPTER" ]; then
   echo "    Wait for redis instance"
   REDIS_HOST_PORT=$(echo "$REDIS_URL" | sed -E 's/.*@([^\/]+).*/\1/')
   wait-for-it "$REDIS_HOST_PORT" -t 60

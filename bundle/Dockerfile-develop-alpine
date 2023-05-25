@@ -78,7 +78,7 @@ LABEL org.opencontainers.image.title="Development images for Decidim 0.28.0.dev.
 LABEL org.opencontainers.image.description="Use this images to develop/test decidim on 0.28.0.dev."
 LABEL org.opencontainers.image.base.name="ruby:3.0-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
-LABEL org.opencontainers.image.revision="5514b46c64ae82f4fa9c2d246f4c67233970fbfe"
+LABEL org.opencontainers.image.revision="fd0e09e9e28ab19c78fce193a2bcf4fdb0c79811"
 
 # Rails configuration
 ENV BUNDLE_JOBS=8 \
@@ -236,7 +236,7 @@ LABEL org.opencontainers.image.title="Decidim 0.28.0.dev on docker."
 LABEL org.opencontainers.image.description="Decidim instance on Docker, usable in production"
 LABEL org.opencontainers.image.base.name="ruby:3.0-alpine3.15"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-or-later"
-LABEL org.opencontainers.image.revision="5514b46c64ae82f4fa9c2d246f4c67233970fbfe"
+LABEL org.opencontainers.image.revision="fd0e09e9e28ab19c78fce193a2bcf4fdb0c79811"
 
 # Rails configuration
 ENV BUNDLE_JOBS=8\
@@ -320,15 +320,11 @@ RUN gem update --system\
      # supervisord
     supervisor\
   && rm -rf /var/cache/apk/*\
-  # Prepare workspace users
-  && addgroup -S decidim\
-  && adduser -S decidim -G decidim\
   # Remove default supervisord configuration
   && rm /etc/supervisord.conf\
   # Link logs to common alpine log directory
   && mkdir -p $HOME/log\
-  && truncate -s 0 /var/log/*log\
-  && chown decidim:decidim /etc/motd
+  && truncate -s 0 /var/log/*log
 
 # Setup templates, will be used at runtime on container initialization
 COPY ./docker/templates /usr/local/share/decidim/templates
@@ -346,8 +342,7 @@ COPY ./docker/docker-entrypoint.d /usr/local/share/docker-entrypoint.d
 COPY ./docker/crontab.d /etc/periodic/
 
 
-USER decidim
-COPY --from=development --chown=decidim:decidim $HOME $HOME
+COPY --from=development $HOME $HOME
 
 WORKDIR $HOME
 

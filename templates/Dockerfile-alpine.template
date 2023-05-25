@@ -101,15 +101,11 @@ RUN gem update --system\
      # supervisord
     supervisor\
   && rm -rf /var/cache/apk/*\
-  # Prepare workspace users
-  && addgroup -S decidim\
-  && adduser -S decidim -G decidim\
   # Remove default supervisord configuration
   && rm /etc/supervisord.conf\
   # Link logs to common alpine log directory
   && mkdir -p $HOME/log\
-  && truncate -s 0 /var/log/*log\
-  && chown decidim:decidim /etc/motd
+  && truncate -s 0 /var/log/*log
 
 # Setup templates, will be used at runtime on container initialization
 COPY ./docker/templates /usr/local/share/decidim/templates
@@ -127,8 +123,7 @@ COPY ./docker/docker-entrypoint.d /usr/local/share/docker-entrypoint.d
 COPY ./docker/crontab.d /etc/periodic/
 
 
-USER decidim
-COPY --from=development --chown=decidim:decidim $HOME $HOME
+COPY --from=development $HOME $HOME
 
 WORKDIR $HOME
 
