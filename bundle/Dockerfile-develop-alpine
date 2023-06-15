@@ -8,7 +8,7 @@
 ARG BASE_IMAGE_RAILS_ENV="development"
 # https://docs.docker.com/develop/develop-images/multistage-build/
 # node: pre-build node at the given version (@see ARGS)
-FROM node:16.20-alpine3.18 as node
+FROM node:16.20-alpine3.17 as node
 
 # Avoid using alpine 3.16 for building seven_zip_ruby
 # @see https://github.com/metanorma/packed-mn/issues/169
