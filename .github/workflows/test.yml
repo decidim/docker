@@ -1,0 +1,16 @@
+name: "Test Current PR"
+on:
+  pull_request:
+    paths:
+      - "*"
+      - ".github/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+    name: Build image

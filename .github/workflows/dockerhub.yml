@@ -6,13 +6,18 @@ on:
     branches:
     - master
     paths:
-    - 'Dockerfile'
-    - 'Dockerfile-test'
-    - 'Dockerfile-dev'
-    - 'Dockerfile-generator'
-    - '.github/workflows/dockerhub.yml'
+      - "*"
+      - 'Dockerfile'
+      - 'Dockerfile-test'
+      - 'Dockerfile-dev'
+      - 'Dockerfile-generator'
+      - '.github/workflows/dockerhub.yml'
 
 jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+    name: Build image
   build-publish:
     name: Build & Publish Docker Images
     runs-on: ubuntu-latest
@@ -24,42 +29,6 @@ jobs:
       TAG: ${{ github.sha }}
 
     steps:
-    - name: Fetch Decidim Tag
-      id: decidim-tag
-      uses: oprypin/find-latest-tag@v1
-      with:
-        repository: decidim/decidim
-        releases-only: true
-
-    - name: Set Ruby Version
-      id: ruby-version
-      env:
-        RUBY_VERSION_URL: https://raw.githubusercontent.com/decidim/decidim/${{ steps.decidim-tag.outputs.tag }}/.ruby-version
-      run: |
-        echo ::set-output name=version::$(curl -s $RUBY_VERSION_URL)
-
-    - name: Set Decidim Version
-      id: decidim-version
-      run: echo ::set-output name=version::$(echo ${{ steps.decidim-tag.outputs.tag }} | cut -c2-)
-
-    - name: Checkout Our Repo
-      uses: actions/checkout@v2
-
-    - name: Build decidim-generator Image
-      env:
-        RUBY_VERSION: ${{ steps.ruby-version.outputs.version }}
-        DECIDIM_VERSION: ${{ steps.decidim-version.outputs.version }}
-      run: |
-        docker build \
-        --build-arg ruby_version=$RUBY_VERSION \
-        --build-arg decidim_version=$DECIDIM_VERSION \
-        --file Dockerfile-generator \
-        -t $GENERATOR_IMAGE_NAME .
-        docker tag $GENERATOR_IMAGE_NAME $GENERATOR_IMAGE_NAME:$TAG
-        docker tag $GENERATOR_IMAGE_NAME ghcr.io/$GENERATOR_IMAGE_NAME:$TAG
-        docker tag $GENERATOR_IMAGE_NAME $GENERATOR_IMAGE_NAME:$DECIDIM_VERSION
-        docker tag $GENERATOR_IMAGE_NAME ghcr.io/$GENERATOR_IMAGE_NAME:$DECIDIM_VERSION
-
     - name: Publish decidim-generator Image to Docker Hub
       uses: docker/login-action@v1
       with:
