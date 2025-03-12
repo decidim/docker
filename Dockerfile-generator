@@ -17,7 +17,7 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
   && apt-get install -y nodejs \
   && apt-get clean
 
-RUN npm install -g npm
+RUN npm install -g npm@11.2.0
 RUN npm install -g yarn@1.22.18
 
 RUN gem install bundler --version '>= 2.3.12' \
