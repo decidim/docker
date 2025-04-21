@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  decidim:
+    image: ghcr.io/decidim/decidim:latest
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@pg:5432/${DB_NAME}
+    depends_on:
+      - pg
+
+  pg:
+    image: postgres:14
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+
+volumes:
+  pg-data: {} 
