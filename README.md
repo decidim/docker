@@ -49,7 +49,7 @@ This repo includes a [docker-compose.yml](docker-compose.yml) file with:
 By cloning the repo and then running `docker-compose up`, you'll get a fully functional Decidim app complete with seed data, accessible at http://localhost:3000.
 
 ```bash
-git clone git@github.com:decidim/docker.git decidim-docker
+git clone https://github.com/decidim/docker.git decidim-docker
 cd decidim-docker
 docker-compose up
 ```
