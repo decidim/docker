@@ -14,6 +14,7 @@ services:
     env_file:
       - .env
     environment:
+      - BUNDLE_GEMFILE=Gemfile.wrapper
       - DATABASE_URL
       - SECRET_KEY_BASE
       - DECIDIM_FORCE_SSL=${DECIDIM_FORCE_SSL:-false}

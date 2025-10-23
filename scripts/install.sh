@@ -79,7 +79,8 @@ source $REPOSITORY_PATH/scripts/dependencies/open_ports.sh
 echo "Asking for necessary variables."
 source $REPOSITORY_PATH/scripts/dependencies/build_env.sh
 
-echo "external database: ${EXTERNAL_DATABASE}"
+echo "Building dependencies"
+source $REPOSITORY_PATH/scripts/dependencies/generate_gemfile.sh
 
 # Start decidim
 echo "Starting Decidim..."

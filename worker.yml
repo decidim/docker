@@ -9,6 +9,7 @@ services:
     volumes:
       - ./scripts:/code/vendor
     environment:
+      - BUNDLE_GEMFILE
       - DATABASE_URL
       - SECRET_KEY_BASE
       - DECIDIM_FORCE_SSL=false

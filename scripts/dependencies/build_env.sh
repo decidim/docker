@@ -76,6 +76,7 @@ else
   echo "✅ Writing the environment variables to .env file..."
 
   cat >.env <<EOF
+BUNDLE_GEMFILE="Gemfile.wrapper"
 DECIDIM_IMAGE=$DECIDIM_IMAGE
 DECIDIM_APPLICATION_NAME="$DECIDIM_APPLICATION_NAME"
 DECIDIM_SYSTEM_ADMIN_EMAIL="$DECIDIM_SYSTEM_ADMIN_EMAIL"
