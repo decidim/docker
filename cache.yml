@@ -3,7 +3,7 @@ services:
     depends_on:
       - cache
   cache:
-    image: redis
+    image: redis:8-alpine
     volumes:
       - redis_data:/data
     restart: always
