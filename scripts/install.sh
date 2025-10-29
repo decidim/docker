@@ -55,7 +55,7 @@ cd "$REPOSITORY_PATH"
 
 echo "Downloading decidim-docker repository to ${REPOSITORY_PATH}"
 if [ ! -d ".git" ]; then
-  cp -r /vagrant/* $REPOSITORY_PATH
+  git clone $REPOSITORY_URL $REPOSITORY_PATH -b $REPOSITORY_BRANCH
 else
   git pull
 fi
