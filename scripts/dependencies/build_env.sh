@@ -69,11 +69,15 @@ echo "To start, we are going to store assets locally"
 read -p "Do you have an external bucket already set up? [y/N] " yn
 STORAGE="local"
 
+echo "Generate VAPID keys"
+source $REPOSITORY_PATH/scripts/dependencies/generate_vapid_keys.sh 
+
 if [ -f .env ]; then
   echo "❌ Failing: .env file already exists."
   exit 1
 else
   echo "✅ Writing the environment variables to .env file..."
+fi
 
   cat >.env <<EOF
 BUNDLE_GEMFILE="Gemfile.wrapper"
@@ -95,6 +99,9 @@ SMTP_USERNAME="$SMTP_USERNAME"
 SMTP_PASSWORD="$SMTP_PASSWORD"
 SMTP_ADDRESS="$SMTP_ADDRESS"
 SMTP_DOMAIN="$SMTP_DOMAIN"
+
+VAPID_PUBLIC_KEY="$VAPID_PUBLIC_KEY"
+VAPID_PRIVATE_KEY="$VAPID_PRIVATE_KEY"
 EOF
 fi
 
