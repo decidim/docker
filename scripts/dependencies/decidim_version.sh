@@ -17,3 +17,8 @@ docker pull "$DECIDIM_IMAGE" -d
 
 echo "✅ Using Decidim image: $DECIDIM_IMAGE"
 echo "───────────────────────────────────────────────"
+
+echo "Downloading Decidim image..."
+
+docker pull $DECIDIM_IMAGE 
+
