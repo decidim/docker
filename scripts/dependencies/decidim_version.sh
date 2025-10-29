@@ -13,7 +13,7 @@ read -p "👉 Enter the Decidim image (or press Enter to use the default): " DEC
 # Use default if none entered
 DECIDIM_IMAGE=${DECIDIM_IMAGE:-decidim/decidim:latest}
 
-docker pull "$DECIDIM_IMAGE" -d
+docker pull "$DECIDIM_IMAGE" 
 
 echo "✅ Using Decidim image: $DECIDIM_IMAGE"
 echo "───────────────────────────────────────────────"
