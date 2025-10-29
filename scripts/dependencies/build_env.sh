@@ -27,7 +27,7 @@ build_local_database() {
   POSTGRES_DB="db_$(openssl rand -hex 3)"
 
   DATABASE_USER=$POSTGRES_USER
-  DATABASE_PASSWORD=$DATABASE_PASSWORD
+  DATABASE_PASSWORD=$POSTGRES_PASSWORD
   DATABASE_NAME=$POSTGRES_DB
   DATABASE_HOST="db"
 }
@@ -79,7 +79,7 @@ else
   echo "✅ Writing the environment variables to .env file..."
 fi
 
-  cat >.env <<EOF
+cat >.env <<EOF
 BUNDLE_GEMFILE="Gemfile.wrapper"
 DECIDIM_IMAGE=$DECIDIM_IMAGE
 DECIDIM_APPLICATION_NAME="$DECIDIM_APPLICATION_NAME"
@@ -103,6 +103,5 @@ SMTP_DOMAIN="$SMTP_DOMAIN"
 VAPID_PUBLIC_KEY="$VAPID_PUBLIC_KEY"
 VAPID_PRIVATE_KEY="$VAPID_PRIVATE_KEY"
 EOF
-fi
 
 echo "✅ All environment variables saved to .env successfully!"
