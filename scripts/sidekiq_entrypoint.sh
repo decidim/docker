@@ -23,4 +23,4 @@ else
 fi
 
 echo "🚀 $@"
-/usr/bin/sudo -EH -u decidim "$@"
+exec "$0"

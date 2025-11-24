@@ -32,4 +32,4 @@ fi
 echo "✅ Migrations are all up"
 
 echo "🚀 $@"
-/usr/bin/sudo -EH -u decidim "$@"
+exec "$0"
