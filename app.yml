@@ -3,7 +3,7 @@ services:
     container_name: decidim
     image: ${DECIDIM_IMAGE:-"decidim/decidim:latest"}
     command: "bin/rails server -b 0.0.0.0"
-    entrypoint: ["/code/vendor/entrypoint.sh"]
+    entrypoint: ["/code/entrypoint.sh"]
     pull_policy: always
     restart: always
     volumes:
