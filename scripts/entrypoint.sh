@@ -17,7 +17,7 @@ chgrp -R -h "$USER_GID" "$BUNDLE_PATH"
 bundle check
 if [ $? -ne 0 ]; then
   echo "❌ Gems in Gemfile are not installed, aborting..."
-  exit 1
+  bundle install
 else
   echo "✅ Gems in Gemfile are installed"
 fi
