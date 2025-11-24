@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./scripts:/code/vendor
+      - ${PWD}/scripts/sidekiq_entrypoint.sh:/code/vendor/sidekiq_entrypoint.sh
     environment:
       - BUNDLE_GEMFILE
       - DATABASE_URL
