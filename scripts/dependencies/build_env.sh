@@ -74,11 +74,15 @@ source $REPOSITORY_PATH/scripts/dependencies/generate_vapid_keys.sh
 
 if [ -f .env ]; then
   echo "❌ Failing: .env file already exists."
-  exit 1
-else
-  echo "✅ Writing the environment variables to .env file..."
+  read -p "Do you want to delete the .env file and create a new one? You can make a back-up of it before answering." yn </dev/tty
+  if [[ "$yn" == "N" || "$yn" == "n" ]]; then
+    exit 1
+  fi
+  echo "Deleting .env file."
+  rm .env
 fi
 
+echo "✅ Writing the environment variables to .env file..."
 cat >.env <<EOF
 BUNDLE_GEMFILE="Gemfile.wrapper"
 DECIDIM_IMAGE=$DECIDIM_IMAGE
