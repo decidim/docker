@@ -7,6 +7,6 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-decidim}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-decidim}
-      POSTGRES_DB: ${POSTGRES_DB:-decidim}
+      POSTGRES_USER: ${DATABASE_USER:-decidim}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-decidim}
+      POSTGRES_DB: ${DATABASE_NAME:-decidim}
