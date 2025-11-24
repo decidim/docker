@@ -7,10 +7,9 @@ services:
     pull_policy: always
     restart: always
     volumes:
-      - ${PWD}/Gemfile.wrapper: /code/Gemfile.wrapper
-      - ${PWD}/Gemfile.local: /code/Gemfile.local
+      - ${PWD}/Gemfile.wrapper:/code/Gemfile.wrapper
+      - ${PWD}/Gemfile.local:/code/Gemfile.local
       - ${PWD}/scripts/entrypoint.sh:/code/entrypoint.sh
-      
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`$DECIDIM_DOMAIN`)"
