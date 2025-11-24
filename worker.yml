@@ -1,7 +1,7 @@
 services:
   worker:
     image: ${DECIDIM_IMAGE:-decidim/decidim:latest}
-    command: "bundle exec sidekiq -C config/sidekiq.yml"
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
     entrypoint: ["/code/sidekiq_entrypoint.sh"]
     pull_policy: always
     restart: always
