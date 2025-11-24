@@ -1,12 +1,15 @@
 services:
   worker:
     image: ${DECIDIM_IMAGE:-decidim/decidim:latest}
-    pull_policy: always
-    entrypoint: ["/code/sidekiq_entrypoint.sh"]
     command: "bundle exec sidekiq -C config/sidekiq.yml"
+    entrypoint: ["/code/sidekiq_entrypoint.sh"]
+    pull_policy: always
+    restart: always
     env_file:
       - .env
     volumes:
+      - ${PWD}/Gemfile.wrapper:/code/Gemfile.wrapper
+      - ${PWD}/Gemfile.local:/code/Gemfile.local
       - ${PWD}/scripts/sidekiq_entrypoint.sh:/code/sidekiq_entrypoint.sh
     environment:
       - BUNDLE_GEMFILE

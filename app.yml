@@ -6,15 +6,17 @@ services:
     entrypoint: ["/code/entrypoint.sh"]
     pull_policy: always
     restart: always
+    expose:
+      - 3000
     volumes:
       - ${PWD}/Gemfile.wrapper:/code/Gemfile.wrapper
       - ${PWD}/Gemfile.local:/code/Gemfile.local
       - ${PWD}/scripts/entrypoint.sh:/code/entrypoint.sh
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`$DECIDIM_DOMAIN`)"
-      - "traefik.http.routers.app.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.app.entrypoints=web"
+      - "traefik.http.routers.app.rule=Host(`$DECIDIM_DOMAIN`)"
+      - "traefik.http.routers.app.entrypoints=web,websecure"
+      - "traefik.http.routers.app.tls=true"
       - "traefik.http.services.app.loadbalancer.server.port=3000"
     env_file:
       - .env
