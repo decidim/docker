@@ -25,7 +25,6 @@ case $yn in
   ;;
 *)
   echo "Not openning ports."
-  exit 1
   ;;
 esac
 
