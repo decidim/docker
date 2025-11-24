@@ -10,4 +10,4 @@ if [ "$STORAGE" == 'local' ]; then
   composes+=" -f storage.yml"
 fi
 
-sudo docker compose --env-file .env "${composes}" up
+sudo docker compose --env-file .env ${composes} up
