@@ -23,4 +23,4 @@ else
 fi
 
 echo "🚀 $@"
-exec "$0"
+exec "$@"

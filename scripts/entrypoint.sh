@@ -32,4 +32,4 @@ fi
 echo "✅ Migrations are all up"
 
 echo "🚀 $@"
-exec "$0"
+exec "$@"
