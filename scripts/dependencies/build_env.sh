@@ -23,7 +23,7 @@ read -p "Do you have an external database already set up? [y/N] " yn </dev/tty
 
 build_local_database() {
   POSTGRES_USER="user_$(openssl rand -hex 3)"
-  POSTGRES_PASSWORD="$(openssl rand -base64 18)"
+  POSTGRES_PASSWORD="$(openssl rand -hex 18)"
   POSTGRES_DB="db_$(openssl rand -hex 3)"
 
   DATABASE_USER=$POSTGRES_USER
