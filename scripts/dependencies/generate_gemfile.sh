@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 echo "───────────────────────────────────────────────"
 echo "Now we are going to generate some Gemfiles so that we can track gem dependencies"

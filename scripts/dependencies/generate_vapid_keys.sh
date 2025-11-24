@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 echo "Generating VAPID keys"
 output=$(docker run --rm \
   "$DECIDIM_IMAGE" \
