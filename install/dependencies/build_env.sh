@@ -70,7 +70,7 @@ read -p "Do you have an external bucket already set up? [y/N] " yn </dev/tty
 STORAGE="local"
 
 echo "Generate VAPID keys"
-source $REPOSITORY_PATH/scripts/dependencies/generate_vapid_keys.sh
+source $REPOSITORY_PATH/dependencies/generate_vapid_keys.sh
 
 if [ -f .env ]; then
   echo "❌ Failing: .env file already exists."

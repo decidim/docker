@@ -38,50 +38,51 @@ set -e
 
 trap "You can re-run this script to restart the installation", ERR
 
-if command -v git; then
-  echo "Git is installed. $(git --version)"
-else
-  sudo apt update
-  sudo apt install -y git curl
-  sudo apt clean
-fi
-
 if [ ! -d "$REPOSITORY_PATH" ]; then
   sudo mkdir -p "$REPOSITORY_PATH"
   sudo chown "$USER":"$USER" "$REPOSITORY_PATH"
 fi
 
-cd "$REPOSITORY_PATH"
-
-echo "Downloading decidim-docker repository to ${REPOSITORY_PATH}"
-if [ ! -d ".git" ]; then
-  git clone $REPOSITORY_URL $REPOSITORY_PATH -b $REPOSITORY_BRANCH
-else
-  git pull
+TMP=/tmp/decidim-docker-files
+if [! -d $TMP]; then
+  mkdir $TMP
 fi
 
+echo "Downloading the installation necessary files."
+#curl -L -o "$TMP/deploy.tar.gz" "$REPOSITORY_URL/releases/latest/download/deploy_bundle.zip"
+cp /tmp/decidim-docker/install/deploy.zip $TMP/deploy.zip
+sudo apt install unzip -y
+
+if [ ! -d $REPOSITORY_PATH ]; then
+  unzip -f $TMP/deploy.zip -d $REPOSITORY_PATH
+else
+  unzip $TMP/deploy.zip -d $REPOSITORY_PATH
+fi
+
+cd $REPOSITORY_PATH
+
 echo "Checking the OS version"
-source $REPOSITORY_PATH/scripts/dependencies/os_version.sh
+source $REPOSITORY_PATH/dependencies/os_version.sh
 
 # Check if docker is installed, if not install it
 echo "Checking if docker is installed. If not install it."
-source $REPOSITORY_PATH/scripts/dependencies/check_docker.sh
+source $REPOSITORY_PATH/dependencies/check_docker.sh
 
 # Checking which Decidim version does the user want
 echo "Checking the Decidim version to use."
-source $REPOSITORY_PATH/scripts/dependencies/decidim_version.sh
+source $REPOSITORY_PATH/dependencies/decidim_version.sh
 
 # Open necessary ports
 echo "Openning necessary server ports."
-source $REPOSITORY_PATH/scripts/dependencies/open_ports.sh
+source $REPOSITORY_PATH/dependencies/open_ports.sh
 
 # Build environment variables
 echo "Asking for necessary variables."
-source $REPOSITORY_PATH/scripts/dependencies/build_env.sh
+source $REPOSITORY_PATH/dependencies/build_env.sh
 
 echo "Building dependencies"
-source $REPOSITORY_PATH/scripts/dependencies/generate_gemfile.sh
+source $REPOSITORY_PATH/dependencies/generate_gemfile.sh
 
 # Start decidim
 echo "Starting Decidim..."
-source $REPOSITORY_PATH/scripts/up.sh
+source $REPOSITORY_PATH/up.sh
