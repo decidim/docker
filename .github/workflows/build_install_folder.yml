@@ -1,0 +1,24 @@
+name: Build Deployment Zip
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create deployment ZIP
+        run: |
+          zip -r deploy_bundle.zip \
+            scripts/ \
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: deploy_bundle.zip
