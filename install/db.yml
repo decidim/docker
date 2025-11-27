@@ -4,6 +4,7 @@ services:
       - db
   db:
     image: postgres:17-alpine
+    container_name: decidim_db
     env_file:
       - .env
     environment:
