@@ -9,11 +9,6 @@ echo
 read -p "What are you going to name your instance? " DECIDIM_APPLICATION_NAME </dev/tty
 echo "The name of the instance is: $DECIDIM_APPLICATION_NAME"
 echo
-echo "Who's going to administer this instance?"
-read -p "email: " DECIDIM_SYSTEM_ADMIN_EMAIL </dev/tty
-read -p "name: " DECIDIM_SYSTEM_ADMIN_NAME </dev/tty
-echo "The administrator will be $DECIDIM_SYSTEM_ADMIN_NAME, $DECIDIM_SYSTEM_ADMIN_EMAIL"
-echo
 echo "Now we need to know how people will access this instance (e.g., decidim.example.org)"
 read -p "domain: " DECIDIM_DOMAIN </dev/tty
 
@@ -112,8 +107,6 @@ cat >.env <<EOF
 BUNDLE_GEMFILE="Gemfile.wrapper"
 DECIDIM_IMAGE=$DECIDIM_IMAGE
 DECIDIM_APPLICATION_NAME="$DECIDIM_APPLICATION_NAME"
-DECIDIM_SYSTEM_ADMIN_EMAIL="$DECIDIM_SYSTEM_ADMIN_EMAIL"
-DECIDIM_SYSTEM_ADMIN_NAME="$DECIDIM_SYSTEM_ADMIN_NAME"
 DECIDIM_DOMAIN="$DECIDIM_DOMAIN"
 
 SECRET_KEY_BASE=$(openssl rand -hex 64)
