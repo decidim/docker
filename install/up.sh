@@ -10,4 +10,7 @@ if [ "$STORAGE" == 'local' ]; then
   composes+=" -f storage.yml"
 fi
 
-sudo docker compose --env-file .env ${composes} up
+echo "Starting containers..."
+docker compose --env-file .env up -d
+
+docker compose logs --tail=20

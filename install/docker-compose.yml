@@ -1,0 +1,122 @@
+services:
+  app:
+    container_name: decidim
+    image: ${DECIDIM_IMAGE:-"decidim/decidim:latest"}
+    command: ["bin/rails", "server", "-b", "0.0.0.0"]
+    entrypoint: ["/code/entrypoint.sh"]
+    pull_policy: always
+    restart: always
+    depends_on:
+      - cache
+    expose:
+      - 3000
+    volumes:
+      - ${PWD}/Gemfile.wrapper:/code/Gemfile.wrapper
+      - ${PWD}/Gemfile.local:/code/Gemfile.local
+      - ${PWD}/scripts/entrypoint.sh:/code/entrypoint.sh
+      - storage_data:/code/storage
+      - migrations_data:/code/db/migrate
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`$DECIDIM_DOMAIN`)"
+      - "traefik.http.routers.app.entrypoints=web,websecure"
+      - "traefik.http.routers.app.tls=true"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
+    env_file:
+      - .env
+    environment:
+      - BUNDLE_GEMFILE=Gemfile.wrapper
+      - DATABASE_URL
+      - SECRET_KEY_BASE
+      - DECIDIM_FORCE_SSL=${DECIDIM_FORCE_SSL:-false}
+      - QUEUE_ADAPTER=${QUEUE_ADAPTER:-sidekiq}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - WEB_CONCURRENCY=${WEB_CONCURRENCY:-2}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - DECIDIM_ENABLE_HTML_HEADER_SNIPPETS
+      - DECIDIM_ADMIN_PASSWORD_EXPIRATION_DAYS=${DECIDIM_ADMIN_PASSWORD_EXPIRATION_DAYS:-360}
+      - CHANGE_ACTIVE_STEP=${CHANGE_ACTIVE_STEP:-enabled}
+      - SEND_REMINDERS=${SEND_REMINDERS:-enabled}
+      - WEEKLY_NOTIFICATIONS_DIGEST=${WEEKLY_NOTIFICATIONS_DIGEST:-enabled}
+      - DAILY_NOTIFICATIONS_DIGEST=${DAILY_NOTIFICATIONS_DIGEST:-enabled}
+      - HEALTHCHECK_EXCLUDE_CHECKS=${HEALTHCHECK_EXCLUDE_CHECKS:-emailconf}
+      - SMTP_STARTTLS_AUTO=${SMTP_STARTTLS_AUTO:-true}
+      - SMTP_USERNAME
+      - SMTP_PASSWORD
+      - SMTP_ADDRESS
+      - SMTP_DOMAIN
+      - SMTP_PORT
+      - DECIDIM_MAILER_SENDER
+      - MAPS_API_KEY
+      - MAPS_PROVIDER=${MAPS_PROVIDER:-here}
+      - RACK_ATTACK_SECRET
+  worker:
+    image: ${DECIDIM_IMAGE:-decidim/decidim:latest}
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+    entrypoint: ["/code/sidekiq_entrypoint.sh"]
+    pull_policy: always
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ${PWD}/Gemfile.wrapper:/code/Gemfile.wrapper
+      - ${PWD}/Gemfile.local:/code/Gemfile.local
+      - ${PWD}/scripts/sidekiq_entrypoint.sh:/code/sidekiq_entrypoint.sh
+    environment:
+      - BUNDLE_GEMFILE
+      - DATABASE_URL
+      - SECRET_KEY_BASE
+      - DECIDIM_FORCE_SSL=false
+      - QUEUE_ADAPTER=sidekiq
+      - REDIS_URL=redis://redis:6379/1
+      - SMTP_USERNAME
+      - SMTP_PASSWORD
+      - SMTP_ADDRESS
+      - SMTP_DOMAIN
+      - SMTP_PORT
+    links:
+      - cache
+  traefik:
+    image: traefik:v3.6
+    container_name: traefik
+    command:
+      - --api
+      - --providers.docker=true
+      - --log.level=DEBUG
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.traefik.address=:8080
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.service=api@internal"
+  db:
+    image: postgres:17-alpine
+    container_name: decidim_db
+    profiles: ["db"]
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-decidim}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-decidim}
+      POSTGRES_DB: ${DATABASE_NAME:-decidim}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+  cache:
+    image: redis:8-alpine
+    container_name: decidim_cache
+    volumes:
+      - cache_data:/data
+    restart: always
+volumes:
+  pg_data: {}
+  cache_data: {}
+  storage_data: {}
+  migrations_data: {}

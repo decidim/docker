@@ -16,11 +16,14 @@ chgrp -R -h "$USER_GID" "$BUNDLE_PATH"
 # Check all the gems are installed or fails.
 bundle check
 if [ $? -ne 0 ]; then
-  echo "❌ Gems in Gemfile are not installed, aborting..."
+  echo "❌ Gems in Gemfile are not installed. Installing them with \"bundle install\"..."
   bundle install
 else
   echo "✅ Gems in Gemfile are installed"
 fi
+
+# Check to see if there are migrations to install
+bundle exec rake railties:install:migrations
 
 # Check no migrations are pending migrations
 if [ -z "$SKIP_MIGRATIONS" ]; then
