@@ -88,7 +88,7 @@ echo "Starting Decidim..."
 source $REPOSITORY_PATH/up.sh
 
 # Generate the system admin
-source $REPOSITORY_PATH/create_system_admin.sh
+source $REPOSITORY_PATH/dependencies/create_system_admin.sh
 
 # Close up script
 echo "Now you should be able to access ${DECIDIM_DOMAIN}/system and log in with the system you already created."

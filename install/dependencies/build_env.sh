@@ -91,14 +91,14 @@ if [ -f .env ]; then
   yn=${yn:-Y}
 
   case $yn in
-    [Yy]*) 
-      echo "Deleting .env file."
-      rm .env
-      ;;
-    [Nn]*)
-      echo "Can't continue without a new .env file"
-      exit 1;
-      ;;
+  [Yy]*)
+    echo "Deleting .env file."
+    rm .env
+    ;;
+  [Nn]*)
+    echo "Can't continue without a new .env file"
+    exit 1
+    ;;
   esac
 fi
 
@@ -135,7 +135,7 @@ if [ $STORAGE != 'local' ]; then
   AWS_BUCKET="$AWS_SECRET_ACCESS_KEY"
   AWS_REGION="$AWS_SECRET_ACCESS_KEY"
   AWS_ENDPOINT="$AWS_SECRET_ACCESS_KEY"
+EOF
 fi
-
 
 echo "✅ All environment variables saved to .env successfully!"
