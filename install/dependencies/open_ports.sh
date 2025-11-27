@@ -18,6 +18,7 @@ echo "────────────────────────�
 echo "Now we are going to open the necessary ports for Decidim to work ussing UFW."
 echo
 read -p "Can we proceed openning ports 22, 80 and 443? [y/N] " yn </dev/tty
+yn=${yn:-N}
 
 case $yn in
 [Yy]*)
