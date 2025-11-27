@@ -20,6 +20,7 @@ read -p "domain: " DECIDIM_DOMAIN </dev/tty
 echo "───────────────────────────────────────────────"
 echo "To set up the Database we also need some information"
 read -p "Do you have an external database already set up? [y/N] " yn </dev/tty
+yn=${yn:-N}
 
 build_local_database() {
   POSTGRES_USER="user_$(openssl rand -hex 3)"
@@ -48,10 +49,6 @@ case $yn in
   EXTERNAL_DATABASE=false
   build_local_database
   ;;
-*)
-  echo "Please answer yes or no."
-  exit 1
-  ;;
 esac
 
 DATABASE_URL="postgres://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST/$DATABASE_NAME"
@@ -65,21 +62,49 @@ read -p "SMTP_ADDRESS: " SMTP_ADDRESS </dev/tty
 read -p "SMTP_DOMAIN: " SMTP_DOMAIN </dev/tty
 
 echo "───────────────────────────────────────────────"
-echo "To start, we are going to store assets locally"
+echo "To start, we are going to store assets locally, in case you don't have a S3-compatible bucket."
 read -p "Do you have an external bucket already set up? [y/N] " yn </dev/tty
-STORAGE="local"
+yn=${yn:-N}
+
+get_storage_keys() {
+  echo "Now we are going to configure the access to the S3-compatible storage."
+  printf 'To learn more you can go through the Decidim documentation on \e]8;;https://docs.decidim.org/en/develop/services/activestorage#_amazon_s3\e\\Active Storage\e]8;;\\\n'
+  read -p "Access Key ID: " AWS_ACCESS_KEY_ID </dev/tty
+  read -p "Secret Access Key: " AWS_SECRET_ACCESS_KEY </dev/tty
+  read -p "Name of the bucket: " AWS_BUCKET </dev/tty
+  read -p "Region of the bucket (Defaults to auto): " AWS_REGION </dev/tty
+  read -p "Endpoint: " AWS_ENDPOINT </dev/tty
+
+  AWS_REGION=${AWS_REGION:-auto}
+}
+
+case "$yn" in
+[Yy]*)
+  get_storage_keys
+  ;;
+*)
+  STORAGE="local"
+  ;;
+esac
 
 echo "Generate VAPID keys"
 source $REPOSITORY_PATH/dependencies/generate_vapid_keys.sh
 
 if [ -f .env ]; then
   echo "❌ Failing: .env file already exists."
-  read -p "Do you want to delete the .env file and create a new one? You can make a back-up of it before answering." yn </dev/tty
-  if [[ "$yn" == "N" || "$yn" == "n" ]]; then
-    exit 1
-  fi
-  echo "Deleting .env file."
-  rm .env
+  read -p "Do you want to delete the .env file and create a new one? You can make a back-up of it before answering. [Y/n]" yn </dev/tty
+  yn=${yn:-Y}
+
+  case $yn in
+    [Yy]*) 
+      echo "Deleting .env file."
+      rm .env
+      ;;
+    [Nn]*)
+      echo "Can't continue without a new .env file"
+      exit 1;
+      ;;
+  esac
 fi
 
 echo "✅ Writing the environment variables to .env file..."
@@ -107,5 +132,15 @@ SMTP_DOMAIN="$SMTP_DOMAIN"
 VAPID_PUBLIC_KEY="$VAPID_PUBLIC_KEY"
 VAPID_PRIVATE_KEY="$VAPID_PRIVATE_KEY"
 EOF
+
+if [ $STORAGE != 'local' ]; then
+  cat >>.env <<EOF
+  AWS_ACCESS_KEY_ID="$AWS_SECRET_ACCESS_KEY"
+  AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"
+  AWS_BUCKET="$AWS_SECRET_ACCESS_KEY"
+  AWS_REGION="$AWS_SECRET_ACCESS_KEY"
+  AWS_ENDPOINT="$AWS_SECRET_ACCESS_KEY"
+fi
+
 
 echo "✅ All environment variables saved to .env successfully!"
