@@ -68,7 +68,7 @@ yn=${yn:-N}
 
 get_storage_keys() {
   echo "Now we are going to configure the access to the S3-compatible storage."
-  printf 'To learn more you can go through the Decidim documentation on \e]8;;https://docs.decidim.org/en/develop/services/activestorage#_amazon_s3\e\\Active Storage\e]8;;\\\n'
+  echo "To learn more you can go through the Decidim documentation on https://docs.decidim.org/en/develop/services/activestorage#_amazon_s3"
   read -p "Access Key ID: " AWS_ACCESS_KEY_ID </dev/tty
   read -p "Secret Access Key: " AWS_SECRET_ACCESS_KEY </dev/tty
   read -p "Name of the bucket: " AWS_BUCKET </dev/tty
@@ -128,6 +128,8 @@ SMTP_USERNAME="$SMTP_USERNAME"
 SMTP_PASSWORD="$SMTP_PASSWORD"
 SMTP_ADDRESS="$SMTP_ADDRESS"
 SMTP_DOMAIN="$SMTP_DOMAIN"
+
+REDIS_URL="redis://decidim_cache:6379"
 
 VAPID_PUBLIC_KEY="$VAPID_PUBLIC_KEY"
 VAPID_PRIVATE_KEY="$VAPID_PRIVATE_KEY"
