@@ -102,6 +102,9 @@ if [ -f .env ]; then
   esac
 fi
 
+# Variable to handle the let's encrypt email.
+CERTIFICATE_EMAIL="${CERTIFICATE_EMAIL:-postmaster@${DECIDIM_DOMAIN}}"
+
 echo "✅ Writing the environment variables to .env file..."
 cat >.env <<EOF
 BUNDLE_GEMFILE="Gemfile.wrapper"
@@ -126,6 +129,8 @@ REDIS_URL="redis://decidim_cache:6379"
 
 VAPID_PUBLIC_KEY="$VAPID_PUBLIC_KEY"
 VAPID_PRIVATE_KEY="$VAPID_PRIVATE_KEY"
+
+CERTIFICATE_EMAIL="$CERTIFICATE_EMAIL"
 EOF
 
 if [ $STORAGE != 'local' ]; then

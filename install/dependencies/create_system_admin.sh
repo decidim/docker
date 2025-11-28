@@ -14,6 +14,12 @@ if [ -z $EXTERNAL_DATABASE ]; then
   done
 fi
 
+echo "Waiting for decidim application to be running"
+until docker ps --filter "name=decidim" --filter "status=running" --quiet; do
+  echo "Container is not running yet..."
+  sleep 2
+done
+
 generate_system_admin
 
 if [ $? -eq 1 ]; then

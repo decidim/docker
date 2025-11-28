@@ -19,7 +19,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.app.rule=Host(`$DECIDIM_DOMAIN`)"
-      - "traefik.http.routers.app.entrypoints=web,websecure"
+      - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls=true"
       - "traefik.http.services.app.loadbalancer.server.port=3000"
     env_file:
@@ -50,11 +50,20 @@ services:
       - MAPS_API_KEY
       - MAPS_PROVIDER=${MAPS_PROVIDER:-here}
       - RACK_ATTACK_SECRET
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
   worker:
     image: ${DECIDIM_IMAGE:-decidim/decidim:latest}
     command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
     entrypoint: ["/code/sidekiq_entrypoint.sh"]
     pull_policy: always
+    depends_on:
+      app:
+        condition: service_healthy
     restart: always
     env_file:
       - .env
@@ -62,6 +71,8 @@ services:
       - ${PWD}/Gemfile.wrapper:/code/Gemfile.wrapper
       - ${PWD}/Gemfile.local:/code/Gemfile.local
       - ${PWD}/scripts/sidekiq_entrypoint.sh:/code/sidekiq_entrypoint.sh
+      - storage_data:/code/storage
+      - migrations_data:/code/db/migrate
     environment:
       - BUNDLE_GEMFILE
       - DATABASE_URL
@@ -88,11 +99,16 @@ services:
       - --entrypoints.traefik.address=:8080
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
       - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --certificatesresolvers.myresolver.acme.email=${CERTIFICATE_EMAIL}
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.myresolver.acme.httpchallenge=true
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
     ports:
       - "80:80"
       - "443:443"
     restart: unless-stopped
     volumes:
+      - traefik_data:/letsencrypt
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     labels:
       - "traefik.enable=true"
@@ -120,3 +136,4 @@ volumes:
   cache_data: {}
   storage_data: {}
   migrations_data: {}
+  traefik_data: {}
