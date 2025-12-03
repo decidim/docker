@@ -50,20 +50,11 @@ services:
       - MAPS_API_KEY
       - MAPS_PROVIDER=${MAPS_PROVIDER:-here}
       - RACK_ATTACK_SECRET
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
   worker:
     image: ${DECIDIM_IMAGE:-decidim/decidim:latest}
     command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
     entrypoint: ["/code/sidekiq_entrypoint.sh"]
     pull_policy: always
-    depends_on:
-      app:
-        condition: service_healthy
     restart: always
     env_file:
       - .env
