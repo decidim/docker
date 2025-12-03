@@ -54,9 +54,9 @@ cp /tmp/decidim-docker/install/deploy.zip $TMP/deploy.zip
 sudo apt install unzip -y
 
 if [ ! -d $REPOSITORY_PATH ]; then
-  unzip -f $TMP/deploy.zip -d $REPOSITORY_PATH
+  unzip -f $TMP/deploy.zip -d $REPOSITORY_PATH </dev/tty
 else
-  unzip $TMP/deploy.zip -d $REPOSITORY_PATH
+  unzip $TMP/deploy.zip -d $REPOSITORY_PATH </dev/tty
 fi
 
 cd $REPOSITORY_PATH
