@@ -6,7 +6,7 @@ generate_system_admin() {
     bin/rails decidim_system:create_admin </dev/tty
 }
 
-if [ -z $EXTERNAL_DATABASE ]; then
+if [ -z "$EXTERNAL_DATABASE" ]; then
   echo "Checking if database is already running"
   until docker ps --filter "name=decidim-db" --filter "status=running" --quiet; do
     echo "Container not running yet..."
@@ -19,6 +19,8 @@ until docker ps --filter "name=decidim" --filter "status=running" --quiet; do
   echo "Container is not running yet..."
   sleep 2
 done
+
+echo "Container is running correctly... Now we are going to create the system admin."
 
 generate_system_admin
 

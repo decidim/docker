@@ -44,7 +44,7 @@ if [ ! -d "$REPOSITORY_PATH" ]; then
 fi
 
 TMP=/tmp/decidim-docker-files
-if [! -d $TMP]; then
+if [ ! -d $TMP ]; then
   mkdir $TMP
 fi
 
