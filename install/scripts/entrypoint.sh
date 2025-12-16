@@ -14,8 +14,7 @@ chown -R -h "$USER_UID" "$BUNDLE_PATH"
 chgrp -R -h "$USER_GID" "$BUNDLE_PATH"
 
 # Check all the gems are installed or fails.
-bundle check
-if [ $? -ne 0 ]; then
+if ! bundle check; then
   echo "❌ Gems in Gemfile are not installed. Installing them with \"bundle install\"..."
   bundle install
 else
@@ -34,5 +33,5 @@ fi
 
 echo "✅ Migrations are all up"
 
-echo "🚀 $@"
+echo "🚀" "$@"
 exec "$@"

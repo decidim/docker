@@ -40,6 +40,9 @@ REPOSITORY_PATH=${DECIDIM_PATH:-/opt/decidim}
 REPOSITORY_URL="https://github.com/decidim/docker.git"
 REPOSITORY_BRANCH="feat/decidim_install"
 
+export REPOSITORY_URL
+export REPOSITORY_BRANCH
+
 echo "📁 Installation directory: $REPOSITORY_PATH"
 
 trap 'echo "❌ Error occurred at line $LINENO. You can re-run this script to restart the installation."' ERR

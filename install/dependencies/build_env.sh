@@ -26,7 +26,7 @@ echo "💡 Don't worry if you don't have all the details ready!"
 echo "   You can always modify the .env file after installation."
 echo
 echo "Press Enter to continue..."
-read </dev/tty
+read -r </dev/tty
 
 echo "───────────────────────────────────────────────"
 echo "📦 Now we need to get some information about the instance you are building."
@@ -122,6 +122,8 @@ case $yn in
   ;;
 esac
 
+export EXTERNAL_DATABASE
+
 DATABASE_URL="postgres://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST/$DATABASE_NAME"
 
 echo "───────────────────────────────────────────────"
@@ -175,18 +177,7 @@ esac
 echo "───────────────────────────────────────────────"
 echo "🔐 Security Configuration"
 echo "   Generating VAPID keys for secure push notifications..."
-if ! source "$REPOSITORY_PATH"/dependencies/generate_vapid_keys.sh; then
-  echo "❌ Failed to generate VAPID keys"
-  exit 1
-fi
-
-# Verify keys were generated
-if [ -z "${VAPID_PUBLIC_KEY:-}" ] || [ -z "${VAPID_PRIVATE_KEY:-}" ]; then
-  echo "❌ VAPID keys were not properly generated"
-  exit 1
-fi
-
-echo "✅ VAPID keys generated successfully"
+source "$REPOSITORY_PATH/dependencies/generate_vapid_keys.sh"
 
 echo "───────────────────────────────────────────────"
 echo "Maps and Geocoding Configuration"
