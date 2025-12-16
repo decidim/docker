@@ -14,17 +14,25 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+set -e
+set -u
+set -o pipefail
+
 echo -e "***********************************************************************"
-echo -e "* This script will try to install Decidim on this machine.            *"
-echo -e "* Take into account that it will ask for some information that        *"
-echo -e "* you will have to provide. Also it will take care of installing      *"
-echo -e "* all necessary dependencies, such as *docker*, *git*, etc.           *"
+echo -e "* 🚀 Welcome to Decidim Installation Script!                          *"
 echo -e "*                                                                     *"
-echo -e "* You will be guided throughout the script and will be able to        *"
-echo -e "* stop it and restart it if necessary.                                *"
+echo -e "* This script will install Decidim on this machine and guide you      *"
+echo -e "* through the complete configuration process.                         *"
 echo -e "*                                                                     *"
-echo -e "* It's not in a production-ready state. There's not guarantee         *"
-echo -e "* and it's up to you to take care of your systems.                    *"
+echo -e "* You'll need to provide:                                             *"
+echo -e "*   • Instance name and domain                                        *"
+echo -e "*   • Database configuration (local or external)                      *"
+echo -e "*   • SMTP server settings for emails                                 *"
+echo -e "*   • File storage settings (local or S3)                             *"
+echo -e "*                                                                     *"
+echo -e "* 💡 All dependencies (Docker, etc.) will be installed for you        *"
+echo -e "*                                                                     *"
+echo -e "* ⚠️ For production use, review security settings and documentation.  *"
 echo -e "*                                                                     *"
 echo -e "***********************************************************************"
 
@@ -32,64 +40,103 @@ REPOSITORY_PATH=${DECIDIM_PATH:-/opt/decidim}
 REPOSITORY_URL="https://github.com/decidim/docker.git"
 REPOSITORY_BRANCH="feat/decidim_install"
 
-echo $REPOSITORY_PATH
+echo "📁 Installation directory: $REPOSITORY_PATH"
 
-set -e
-
-trap "You can re-run this script to restart the installation", ERR
+trap 'echo "❌ Error occurred at line $LINENO. You can re-run this script to restart the installation."' ERR
 
 if [ ! -d "$REPOSITORY_PATH" ]; then
-  sudo mkdir -p "$REPOSITORY_PATH"
-  sudo chown "$USER":"$USER" "$REPOSITORY_PATH"
+  echo "📁 Creating installation directory: $REPOSITORY_PATH"
+  if ! sudo mkdir -p "$REPOSITORY_PATH"; then
+    echo "❌ Failed to create directory $REPOSITORY_PATH"
+    exit 1
+  fi
+  if ! sudo chown "$USER":"$USER" "$REPOSITORY_PATH"; then
+    echo "❌ Failed to set ownership of $REPOSITORY_PATH"
+    exit 1
+  fi
 fi
 
-TMP=/tmp/decidim-docker-files
-if [ ! -d $TMP ]; then
-  mkdir $TMP
+TMP="/tmp/decidim-docker-files"
+if [ ! -d "$TMP" ]; then
+  mkdir "$TMP"
 fi
 
-echo "Downloading the installation necessary files."
+echo "📥 Downloading the installation necessary files."
 #curl -L -o "$TMP/deploy.tar.gz" "$REPOSITORY_URL/releases/latest/download/deploy_bundle.zip"
-cp /tmp/decidim-docker/install/deploy.zip $TMP/deploy.zip
-sudo apt install unzip -y
+cp /tmp/decidim-docker/install/deploy.zip "$TMP/deploy.zip"
 
-if [ ! -d $REPOSITORY_PATH ]; then
-  unzip -f $TMP/deploy.zip -d $REPOSITORY_PATH </dev/tty
-else
-  unzip $TMP/deploy.zip -d $REPOSITORY_PATH </dev/tty
+echo "📦 Installing unzip package..."
+if ! sudo apt update && sudo apt install unzip -y; then
+  echo "❌ Failed to install unzip package"
+  exit 1
 fi
 
-cd $REPOSITORY_PATH
+echo "📂 Extracting files to $REPOSITORY_PATH..."
+if [ ! -d "$REPOSITORY_PATH" ]; then
+  if ! unzip -u "$TMP/deploy.zip" -d "$REPOSITORY_PATH" </dev/tty; then
+    echo "❌ Failed to extract files to $REPOSITORY_PATH"
+    exit 1
+  fi
+else
+  if ! unzip "$TMP/deploy.zip" -d "$REPOSITORY_PATH" </dev/tty; then
+    echo "❌ Failed to extract files to $REPOSITORY_PATH"
+    exit 1
+  fi
+fi
 
-echo "Checking the OS version"
-source $REPOSITORY_PATH/dependencies/os_version.sh
+if ! cd "$REPOSITORY_PATH"; then
+  echo "❌ Failed to change to directory $REPOSITORY_PATH"
+  exit 1
+fi
+
+echo "🔍 Checking the OS version..."
+source "$REPOSITORY_PATH/dependencies/os_version.sh"
 
 # Check if docker is installed, if not install it
-echo "Checking if docker is installed. If not install it."
-source $REPOSITORY_PATH/dependencies/check_docker.sh
+echo "🐳 Checking if Docker is installed..."
+source "$REPOSITORY_PATH/dependencies/check_docker.sh"
 
 # Checking which Decidim version does the user want
-echo "Checking the Decidim version to use."
-source $REPOSITORY_PATH/dependencies/decidim_version.sh
+echo "📦 Checking the Decidim version to use..."
+source "$REPOSITORY_PATH/dependencies/decidim_version.sh"
 
 # Open necessary ports
-echo "Openning necessary server ports."
-source $REPOSITORY_PATH/dependencies/open_ports.sh
+echo "🔌 Opening necessary server ports..."
+source "$REPOSITORY_PATH/dependencies/open_ports.sh"
 
 # Build environment variables
-echo "Asking for necessary variables."
-source $REPOSITORY_PATH/dependencies/build_env.sh
+source "$REPOSITORY_PATH/dependencies/build_env.sh"
 
-echo "Building dependencies"
-source $REPOSITORY_PATH/dependencies/generate_gemfile.sh
+echo "🔧 Building dependencies..."
+source "$REPOSITORY_PATH/dependencies/generate_gemfile.sh"
 
 # Start decidim
-echo "Starting Decidim..."
-source $REPOSITORY_PATH/up.sh
+echo "🚀 Starting Decidim..."
+source "$REPOSITORY_PATH/up.sh"
 
 # Generate the system admin
-source $REPOSITORY_PATH/dependencies/create_system_admin.sh
+source "$REPOSITORY_PATH/dependencies/create_system_admin.sh"
 
 # Close up script
-echo "Now you should be able to access ${DECIDIM_DOMAIN}/system and log in with the system you already created."
-echo "Have fun using Decidim!"
+echo "───────────────────────────────────────────────"
+echo "🎉 Installation Complete!"
+echo
+echo "📋 Next Steps:"
+echo "   1. Access your admin panel: https://${DECIDIM_DOMAIN}/system"
+echo "   2. Log in with the system admin credentials you just created"
+echo "   3. Configure your organization and start participating!"
+echo
+echo "💡 Important Environment Files:"
+echo "   • .env - Contains all your configuration (database, SMTP, etc.)"
+echo "   • docker-compose.yml - Defines your services"
+echo
+echo "🔧 Useful Commands:"
+echo "   • View logs: docker compose logs -f"
+echo "   • Stop services: docker compose down"
+echo "   • Restart services: docker compose restart"
+echo
+echo "📚 Documentation: https://docs.decidim.org"
+echo "🐛 Issues: https://github.com/decidim/decidim/issues"
+echo "🐛 Installation Issues: https://github.com/decidim/docker/issues"
+echo
+echo "Have fun using Decidim! 🗳️"
