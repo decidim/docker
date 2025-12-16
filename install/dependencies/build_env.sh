@@ -177,6 +177,7 @@ esac
 echo "───────────────────────────────────────────────"
 echo "🔐 Security Configuration"
 echo "   Generating VAPID keys for secure push notifications..."
+# shellcheck disable=SC1091
 source "./dependencies/generate_vapid_keys.sh"
 
 echo "───────────────────────────────────────────────"

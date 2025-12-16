@@ -93,31 +93,39 @@ if ! cd "$REPOSITORY_PATH"; then
 fi
 
 echo "🔍 Checking the OS version..."
+# shellcheck disable=SC1091
 source "./dependencies/os_version.sh"
 
 # Check if docker is installed, if not install it
 echo "🐳 Checking if Docker is installed..."
+# shellcheck disable=SC1091
 source "./dependencies/check_docker.sh"
 
 # Checking which Decidim version does the user want
 echo "📦 Checking the Decidim version to use..."
+# shellcheck disable=SC1091
 source "./dependencies/decidim_version.sh"
 
 # Open necessary ports
 echo "🔌 Opening necessary server ports..."
+# shellcheck disable=SC1091
 source "./dependencies/open_ports.sh"
 
 # Build environment variables
+# shellcheck disable=SC1091
 source "./dependencies/build_env.sh"
 
 echo "🔧 Building dependencies..."
+# shellcheck disable=SC1091
 source "./dependencies/generate_gemfile.sh"
 
 # Start decidim
 echo "🚀 Starting Decidim..."
+# shellcheck disable=SC1091
 source "./up.sh"
 
 # Generate the system admin
+# shellcheck disable=SC1091
 source "./dependencies/create_system_admin.sh"
 
 # Close up script
