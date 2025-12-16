@@ -1,14 +1,22 @@
 #!/bin/bash
 
 echo "───────────────────────────────────────────────"
-echo "📦 What version of Decidim do you want to use?"
+echo "📦 Choose Your Decidim Version"
 echo
-echo "The default image is: decidim/decidim:latest"
+echo "💡 About Decidim versions:"
+echo "   • latest - Most recent stable release (recommended)"
+echo "   • 0.30, 0.28, etc. - Specific stable versions"
+echo "   • Custom images - Your own modified Decidim builds"
 echo
-echo "You can also specify a custom image, for example:"
-echo "  • decidim/decidim:0.30"
-echo "  • ghcr.io/decidim/decidim:0.28"
-echo "  • ghcr.io/my-org/custom-decidim:1.0.0"
+echo "Default image: decidim/decidim:latest"
+echo
+echo "Example options:"
+echo "  • decidim/decidim:latest (official stable)"
+echo "  • decidim/decidim:0.30 (specific version)"
+echo "  • ghcr.io/decidim/decidim:0.28 (GitHub Container Registry)"
+echo "  • ghcr.io/my-org/custom-decidim:1.0.0 (your custom build)"
+echo
+echo "🔍 Want to see available versions? Check: https://hub.docker.com/r/decidim/decidim/tags"
 echo
 
 while true; do
