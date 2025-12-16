@@ -167,4 +167,3 @@ To see the full list of Decidim Environment Variables, and that you can add to y
 | **DECIDIM_FORCE_SSL** | `false` | app | Enforce HTTPS-only traffic. |
 | **MAPS_API_KEY** | — | app | API key for maps provider. |
 | **MAPS_PROVIDER** | `here` | app | Selects map provider (here, mapbox, google, etc). |
-| **RACK_ATTACK_SECRET** | — | app | Secret key used for Rack::Attack throttling. |
