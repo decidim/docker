@@ -1,8 +1,23 @@
 #!/bin/bash
+set -e
+set -u
+set -o pipefail
 
-echo "Starting containers..."
-docker compose --env-file .env up -d
+ENV_FILE="${REPOSITORY_PATH}/.env"
 
-docker compose logs --tail=20
+# Check if .env file exists
+if [ ! -f "$ENV_FILE" ]; then
+  echo "❌ Error: .env file not found at $ENV_FILE"
+  echo "   Please run the installation script first or create the .env file manually."
+  exit 1
+fi
 
-echo "Containers started successfully."
+echo "🚀 Starting Decidim containers..."
+
+docker compose --env-file "$ENV_FILE" up -d
+
+echo "📋 Showing recent container logs..."
+docker compose logs --tail=30
+
+echo "✅ Containers started successfully!"
+echo "🔍 You can monitor logs with: docker compose logs -f"
