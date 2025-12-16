@@ -93,32 +93,32 @@ if ! cd "$REPOSITORY_PATH"; then
 fi
 
 echo "🔍 Checking the OS version..."
-source "$REPOSITORY_PATH/dependencies/os_version.sh"
+source "./dependencies/os_version.sh"
 
 # Check if docker is installed, if not install it
 echo "🐳 Checking if Docker is installed..."
-source "$REPOSITORY_PATH/dependencies/check_docker.sh"
+source "./dependencies/check_docker.sh"
 
 # Checking which Decidim version does the user want
 echo "📦 Checking the Decidim version to use..."
-source "$REPOSITORY_PATH/dependencies/decidim_version.sh"
+source "./dependencies/decidim_version.sh"
 
 # Open necessary ports
 echo "🔌 Opening necessary server ports..."
-source "$REPOSITORY_PATH/dependencies/open_ports.sh"
+source "./dependencies/open_ports.sh"
 
 # Build environment variables
-source "$REPOSITORY_PATH/dependencies/build_env.sh"
+source "./dependencies/build_env.sh"
 
 echo "🔧 Building dependencies..."
-source "$REPOSITORY_PATH/dependencies/generate_gemfile.sh"
+source "./dependencies/generate_gemfile.sh"
 
 # Start decidim
 echo "🚀 Starting Decidim..."
-source "$REPOSITORY_PATH/up.sh"
+source "./up.sh"
 
 # Generate the system admin
-source "$REPOSITORY_PATH/dependencies/create_system_admin.sh"
+source "./dependencies/create_system_admin.sh"
 
 # Close up script
 echo "───────────────────────────────────────────────"

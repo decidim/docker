@@ -177,7 +177,7 @@ esac
 echo "───────────────────────────────────────────────"
 echo "🔐 Security Configuration"
 echo "   Generating VAPID keys for secure push notifications..."
-source "$REPOSITORY_PATH/dependencies/generate_vapid_keys.sh"
+source "./dependencies/generate_vapid_keys.sh"
 
 echo "───────────────────────────────────────────────"
 echo "Maps and Geocoding Configuration"
