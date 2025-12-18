@@ -37,7 +37,7 @@ echo -e "*                                                                     *
 echo -e "***********************************************************************"
 
 REPOSITORY_PATH=${DECIDIM_PATH:-/opt/decidim}
-REPOSITORY_URL="https://github.com/decidim/docker.git"
+REPOSITORY_URL="https://github.com/decidim/docker"
 REPOSITORY_BRANCH="feat/decidim_install"
 
 export REPOSITORY_URL
@@ -65,7 +65,14 @@ if [ ! -d "$TMP" ]; then
 fi
 
 echo "📥 Downloading the installation necessary files."
-curl -L -o "$TMP/deploy.zip" "$REPOSITORY_URL/releases/download/latest/deploy.zip"
+curl -fsSL \
+  --retry 3 \
+  --retry-delay 2 \
+  --connect-timeout 30 \
+  --max-time 300 \
+  --progress-bar \
+  -o "$TMP/deploy.zip" \
+  "$REPOSITORY_URL/releases/download/latest/deploy.zip"
 
 echo "📦 Installing unzip package..."
 if ! (sudo apt update && sudo apt install unzip -y); then
