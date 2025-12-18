@@ -18,9 +18,9 @@ if [ -z "$EXTERNAL_DATABASE" ]; then
 fi
 
 # Simple health check for Rails server
-until docker exec -ti decidim curl -s http://localhost:3000 >/dev/null; do
+until docker exec decidim curl -s http://localhost:3000/up >/dev/null; do
   echo "Waiting for Rails server to start..."
-  sleep 5
+  sleep 10
 done
 
 echo "Container is running correctly... Now we are going to create the system admin."

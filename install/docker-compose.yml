@@ -22,6 +22,7 @@ services:
       - "traefik.http.routers.app.rule=Host(`$DECIDIM_DOMAIN`)"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls=true"
+      - "traefik.http.routers.app.tls.certresolver=myresolver"
       - "traefik.http.services.app.loadbalancer.server.port=3000"
     env_file:
       - .env
@@ -45,6 +46,7 @@ services:
       - MAPS_PROVIDER=${MAPS_PROVIDER:-here}
   worker:
     image: ${DECIDIM_IMAGE:-decidim/decidim:latest}
+    container_name: decidim_worker
     command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
     entrypoint: ["/code/sidekiq_entrypoint.sh"]
     pull_policy: always
