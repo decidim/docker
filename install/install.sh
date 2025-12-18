@@ -65,11 +65,10 @@ if [ ! -d "$TMP" ]; then
 fi
 
 echo "📥 Downloading the installation necessary files."
-#curl -L -o "$TMP/deploy.tar.gz" "$REPOSITORY_URL/releases/latest/download/deploy_bundle.zip"
-cp /tmp/decidim-docker/install/deploy.zip "$TMP/deploy.zip"
+curl -L -o "$TMP/deploy.zip" "$REPOSITORY_URL/releases/download/latest/deploy.zip"
 
 echo "📦 Installing unzip package..."
-if ! sudo apt update && sudo apt install unzip -y; then
+if ! (sudo apt update && sudo apt install unzip -y); then
   echo "❌ Failed to install unzip package"
   exit 1
 fi
