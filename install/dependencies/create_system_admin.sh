@@ -4,9 +4,15 @@ set -u
 set -o pipefail
 
 generate_system_admin() {
+  # docker exec -ti \
+  #   decidim \
+  #   bin/rails decidim_system:create_admin </dev/tty
+  read -r -p "email: " SYSTEM_EMAIL </dev/tty
+  SYSTEM_PASSSWORD="$(openssl rand -hex 12)"
+
   docker exec -ti \
     decidim \
-    bin/rails decidim_system:create_admin </dev/tty
+    bin/rails runner "Decidim::System::Admin.create(email: '${SYSTEM_ADMIN}', password: '${SYSTEM_PASSWORD}', password_confirmation: '${SYSTEM_PASSWORD}')"
 }
 
 if [ -z "$EXTERNAL_DATABASE" ]; then
@@ -37,5 +43,6 @@ if [ $? -eq 1 ]; then
   echo "     docker compose logs decidim"
 else
   echo "✅ System administrator created successfully!"
+  echo "Your password to access is: ${SYSTEM_PASSSWORD}"
   echo "📍 You can now access the admin panel at: https://${DECIDIM_DOMAIN}/system"
 fi
