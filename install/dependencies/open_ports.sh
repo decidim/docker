@@ -18,9 +18,10 @@ open_ports() {
 
 echo "───────────────────────────────────────────────"
 echo "Now we are going to open the necessary ports for Decidim to work ussing UFW."
+echo "This is a standard practice to protect your server."
 echo
-read -r -p "Can we proceed openning ports 22, 80 and 443? [y/N] " yn </dev/tty
-yn=${yn:-N}
+read -r -p "Can we proceed openning ports 22, 80 and 443? [Y/n] " yn </dev/tty
+yn=${yn:-Y}
 
 case $yn in
 [Yy]*)
