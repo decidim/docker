@@ -82,7 +82,7 @@ fi
 
 echo "📂 Extracting files to $REPOSITORY_PATH..."
 if [ ! -d "$REPOSITORY_PATH" ]; then
-  if ! unzip -u "$TMP/deploy.zip" -d "$REPOSITORY_PATH" </dev/tty; then
+  if ! unzip -u -o "$TMP/deploy.zip" -d "$REPOSITORY_PATH" </dev/tty; then
     echo "❌ Failed to extract files to $REPOSITORY_PATH"
     exit 1
   fi
