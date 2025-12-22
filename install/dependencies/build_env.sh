@@ -31,13 +31,13 @@ read -r </dev/tty
 echo "───────────────────────────────────────────────"
 echo "📦 Now we need to get some information about the instance you are building."
 echo
-echo "💡 TIP: The application name will be displayed throughout the interface"
+echo "💡 The application name will be displayed throughout the interface"
 echo "   and used in email subjects. Make it descriptive!"
 echo
-read -r -p "What are you going to name your instance? " DECIDIM_APPLICATION_NAME </dev/tty
+read -r -p "What is the name of your organization? (For example: Decidim Barcelona)" DECIDIM_APPLICATION_NAME </dev/tty
 echo "✅ The name of the instance is: $DECIDIM_APPLICATION_NAME"
 echo
-echo "💡 TIP: This is the domain where users will access your Decidim instance."
+echo "💡 This is the domain where users will access your Decidim instance."
 echo "   Make sure you have DNS configured for this domain."
 echo "   Example: decidim.example.org"
 echo
