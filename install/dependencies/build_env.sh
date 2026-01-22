@@ -77,7 +77,7 @@ build_local_database() {
 build_external_database() {
   echo "📋 External Database Configuration"
   echo "   Please provide your external database details:"
-  echo "   💡 Make sure your database server allows connections from this machine"
+  echo "   💡 Make sure your database server allows connections from this machine."
   echo
 
   while [ -z "${DATABASE_NAME:-}" ]; do
