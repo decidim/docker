@@ -149,4 +149,4 @@ echo "📚 Documentation: https://docs.decidim.org"
 echo "🐛 Issues: https://github.com/decidim/decidim/issues"
 echo "🐛 Installation Issues: https://github.com/decidim/docker/issues"
 echo
-echo "Have fun using Decidim! 🗳️"
+echo "Enjoy using Decidim! 🗳️"
