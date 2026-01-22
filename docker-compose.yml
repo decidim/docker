@@ -1,4 +1,4 @@
-version: '3'
+name: decidim-hello-world
 services:
   decidim:
     image: decidim/decidim:latest
