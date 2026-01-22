@@ -8,7 +8,7 @@ ENV_FILE="${REPOSITORY_PATH}/.env"
 # Check if .env file exists
 if [ ! -f "$ENV_FILE" ]; then
   echo "❌ Error: .env file not found at $ENV_FILE"
-  echo "   Please run the installation script first or create the .env file manually."
+  echo "Please run the installation script first or create the .env file manually."
   exit 1
 fi
 
