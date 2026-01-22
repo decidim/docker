@@ -28,7 +28,7 @@ bundle exec rake railties:install:migrations
 if [ -z "$SKIP_MIGRATIONS" ]; then
   bundle exec rails db:migrate
 else
-  echo "⚠️ Skipping migrations"
+  echo "⚠️ Skipping migrations!"
 fi
 
 echo "✅ Migrations are all up"
