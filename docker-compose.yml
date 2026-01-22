@@ -13,23 +13,37 @@ services:
       # Makes our entrypoint scripts available to the container
       # under /code/vendor
       - ./scripts:/code/vendor
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       - RAILS_ENV=development
-      - DATABASE_HOST=pg
+      - DATABASE_HOST=postgres
       - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
     links:
-      - pg
+      - postgres
       - redis
-  pg:
-    image: postgres
+
+  postgres:
+    image: postgres:16.1
     volumes:
-      - pg-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - default
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   redis:
     image: redis
     volumes:
       - redis-data:/data
 volumes:
-  pg-data: {}
+  postgres-data: {}
   redis-data: {}
