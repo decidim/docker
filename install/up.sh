@@ -16,7 +16,7 @@ echo "🚀 Starting Decidim containers..."
 
 docker compose --env-file "$ENV_FILE" up -d
 
-echo "📋 Showing recent container logs..."
+echo "📋 Displaying recent container logs..."
 docker compose logs --tail=30
 
 echo "✅ Containers started successfully!"
