@@ -3,12 +3,14 @@ set -e
 set -u
 set -o pipefail
 
-BUILD_ENV_PATH="$REPOSITORY_PATH/.env"
-
 if [ -z "${REPOSITORY_PATH:-}" ]; then
   echo "❌ Error: REPOSITORY_PATH is not set"
   exit 1
 fi
+
+BUILD_ENV_PATH="$REPOSITORY_PATH/.env"
+
+COMPOSE_PROFILES=""
 
 echo "───────────────────────────────────────────────"
 echo "🔧 Environment Configuration Phase"
@@ -168,9 +170,10 @@ get_storage_keys() {
 case "$yn" in
 [Yy]*)
   get_storage_keys
+  STORAGE_PROVIDER="s3"
   ;;
 *)
-  STORAGE="local"
+  STORAGE_PROVIDER="local"
   ;;
 esac
 
@@ -189,7 +192,7 @@ echo "   Currently, this installation process only handles HERE Maps."
 echo "   You will need to provide the API KEY provided by HERE."
 echo "   This will be saved in the .env file, but you'll be always able to change it."
 read -r -p "HERE API KEY: " MAPS_API_KEY </dev/tty
-MAPS_API_PROVIDER=${MAPS_API_PROIVDER=-here}
+MAPS_API_PROVIDER=${MAPS_API_PROVIDER=-here}
 
 echo "───────────────────────────────────────────────"
 echo "✍️ Now we are going to create the .env file."
@@ -219,7 +222,7 @@ echo "🎯 Final Configuration Summary:"
 echo "   Instance Name: $DECIDIM_APPLICATION_NAME"
 echo "   Domain: https://$DECIDIM_DOMAIN"
 echo "   Database: $DATABASE_NAME (host: $DATABASE_HOST)"
-echo "   Storage: $([ "$STORAGE" = 'local' ] && echo 'Local filesystem' || echo 'S3-compatible bucket')"
+echo "   Storage: $([ "$STORAGE_PROVIDER" = 'local' ] && echo 'Local filesystem' || echo 'S3-compatible bucket')"
 echo "   Certificate Email: $CERTIFICATE_EMAIL"
 echo
 echo "💡 All configuration will be saved to .env file"
@@ -246,7 +249,7 @@ SMTP_ADDRESS="$SMTP_ADDRESS"
 SMTP_DOMAIN="$SMTP_DOMAIN"
 SMTP_PORT="$SMTP_PORT"
 
-MAPS_API_PROVIDER="$MAPS_API_PROVIDER"
+MAPS_API_PROVIDER="${MAPS_API_PROVIDER:-here}"
 MAPS_API_KEY="$MAPS_API_KEY"
 
 REDIS_URL="redis://decidim_cache:6379"
@@ -260,7 +263,8 @@ COMPOSE_PROFILES=$COMPOSE_PROFILES
 
 EOF
 
-if [ "$STORAGE" != 'local' ]; then
+STORAGE_PROVIDER=${STORAGE_PROVIDER:-local}
+if [ "$STORAGE_PROVIDER" == 's3' ]; then
   cat >>"$BUILD_ENV_PATH" <<EOF
   AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID"
   AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY"

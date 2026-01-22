@@ -16,7 +16,7 @@ jobs:
       - name: Create deployment ZIP
         run: |
           zip -r deploy_bundle.zip \
-            scripts/ \
+            install/ \
 
       - name: Release
         uses: softprops/action-gh-release@v2

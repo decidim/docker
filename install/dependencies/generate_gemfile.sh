@@ -23,6 +23,6 @@ gem "sidekiq"
 gem "sidekiq-cron"
 EOF
 
-if [ "$STORAGE" == "s3" ]; then
+if [ "$STORAGE_PROVIDER" == "s3" ]; then
   echo "gem \"aws-sdk-s3\"" >>Gemfile.local
 fi

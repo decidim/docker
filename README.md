@@ -104,9 +104,9 @@ From here on you can follow the steps on the [Getting Started](https://docs.deci
 
 ## Using a production deploy script
 
-We've been working on a script that you can use to have a fully functional, production ready decidim instance.
+We've been working on a script that you can use to have a fully functional, production-ready decidim instance.
 
-```
+```bash
 curl -fsSL https://decidim.org/install | bash
 ```
 
@@ -116,7 +116,7 @@ It will install the necessary tools to make decidim work on your server.
 - unzip
 - UFW
 
-The application will be hosted in the `/opt/decidim` directory by default, even though you can change it with `REPOSITOIRY_PATH`
+The application will be hosted in the `/opt/decidim` directory by default, even though you can change it with `REPOSITORY_PATH` environment variable.
 
 ## App - Main Decidim Web Application
 The app itself will be the container with the base image you decide (By default is the latest Decidim version: `decidim/decidim:latest`). You can change it with the `DECIDIM_IMAGE` environment variable.
@@ -139,7 +139,7 @@ To configure the application you will have to answer some questions that will, a
 
 ### Environment Variables Reference
 
-To see the full list of Decidim Environment Variables, and that you can add to your generated `.env` file, you can take a look at the oficial [documentation](https://docs.decidim.org/en/develop/configure/environment_variables)
+To see the full list of Decidim Environment Variables, and that you can add to your generated `.env` file, you can take a look at the official [documentation](https://docs.decidim.org/en/develop/configure/environment_variables)
 
 | Variable | Default | Used In | Description |
 |----------|---------|---------|-------------|
