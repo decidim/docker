@@ -192,7 +192,7 @@ read -r -p "HERE API KEY: " MAPS_API_KEY </dev/tty
 MAPS_API_PROVIDER=${MAPS_API_PROIVDER=-here}
 
 echo "───────────────────────────────────────────────"
-echo "Now we are going to create the .env file."
+echo "✍️ Now we are going to create the .env file."
 
 if [ -f "$BUILD_ENV_PATH" ]; then
   echo "❌ Failing: .env file already exists."
