@@ -25,4 +25,4 @@ VAPID_PRIVATE_KEY=$(echo "$output" | grep 'VAPID_PRIVATE_KEY' | cut -d'=' -f2)
 export VAPID_PUBLIC_KEY
 export VAPID_PRIVATE_KEY
 
-echo "🔑 Keys successfully extracted"
+echo "🔑 Keys successfully extracted!"
