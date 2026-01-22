@@ -64,7 +64,7 @@ if [ ! -d "$TMP" ]; then
   mkdir "$TMP"
 fi
 
-echo "📥 Downloading the installation necessary files."
+echo "📥 Downloading the necessary installation files."
 curl -fsSL \
   --retry 3 \
   --retry-delay 2 \
