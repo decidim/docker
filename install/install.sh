@@ -30,7 +30,7 @@ echo -e "*   • Database configuration (local or external)                     
 echo -e "*   • SMTP server settings for emails                                 *"
 echo -e "*   • File storage settings (local or S3)                             *"
 echo -e "*                                                                     *"
-echo -e "* 💡 All dependencies (Docker, etc.) will be installed for you        *"
+echo -e "* 💡 All dependencies (Docker, etc) will be installed for you.        *"
 echo -e "*                                                                     *"
 echo -e "* ⚠️ For production use, review security settings and documentation.  *"
 echo -e "*                                                                     *"
