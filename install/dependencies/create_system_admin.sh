@@ -5,7 +5,7 @@ set -o pipefail
 
 generate_system_admin() {
   read -r -p "email: " SYSTEM_EMAIL </dev/tty
-  SYSTEM_PASSSWORD="$(openssl rand -hex 12)"
+  SYSTEM_PASSWORD="$(openssl rand -hex 12)"
 
   docker exec -ti \
     decidim \
