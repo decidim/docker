@@ -14,4 +14,4 @@ if ! lsb_release -d 2>/dev/null | grep -Eq "Ubuntu|Debian"; then
   exit 1
 fi
 
-echo "Correct distribution."
+echo "✅ Correct distribution."
