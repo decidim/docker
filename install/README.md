@@ -10,12 +10,13 @@ This guide will help you install Decidim on your own server, even with minimal t
 4. [Step 3: Configure DNS](#step-3-configure-dns)
 5. [Step 4: Install Decidim](#step-4-install-decidim)
 6. [Step 5: Configure Email (SMTP)](#step-5-configure-email-smtp)
-7. [Step 6: Complete Setup](#step-6-complete-setup)
+7. [Step 6: Security & Firewall Setup](#step-6-security--firewall-setup)
+8. [Step 7: Complete Setup](#step-7-complete-setup)
 8. [Troubleshooting](#troubleshooting)
 
 ---
 
-## 🎯 Prerequisites
+## Prerequisites
 
 Before you start, you'll need:
 
@@ -26,7 +27,7 @@ Before you start, you'll need:
 
 **Minimum specifications:**
 - **RAM**: 2GB minimum (4GB+ recommended for production)
-- **Storage**: 20GB+ 
+- **Storage**: 20GB+
 - **OS**: Ubuntu 24.04 (required)
 
 **Recommended providers:**
@@ -36,7 +37,7 @@ Before you start, you'll need:
 
 ---
 
-## 📦 Step 1: Create a Server (Hetzner Example)
+## Step 1: Create a Server
 
 We recommend using Hetzner for affordable, reliable hosting. Here's how to set up a server:
 
@@ -52,7 +53,7 @@ This process might take some time until Hetzner verifies your account.
 1. Log into your Hetzner account
 2. Click "Servers" → "Create Server"
 3. **Server Location**: Choose a location near your users
-4. **Server Type**: 
+4. **Server Type**:
    - Click "Shared" (cheaper option, perfect for small organizations)
    - Choose "CAX21"
 5. **Image**: Select **Ubuntu 24.04** (important! or a newer LTS if available)
@@ -67,7 +68,7 @@ This process might take some time until Hetzner verifies your account.
 If you don't have an SSH key, create one on your local machine:
 
   ```bash
-  ssh-keygen -t rsa -b 4096 -C "
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
   ```
 
 This will generate a public/private key pair. Copy the contents of `~/.ssh/id_rsa.pub` and paste it into Hetzner's SSH key field.
@@ -82,7 +83,7 @@ Your server will be ready in 1-2 minutes. You'll see:
 
 ---
 
-## 🔐 Step 2: Connect to Your Server
+## Step 2: Connect to Your Server
 
 ### Option A: Using SSH Key (More Secure)
 
@@ -102,7 +103,7 @@ If you created an SSH key:
 
 ---
 
-## 🌐 Step 3: Configure DNS
+## Step 3: Configure DNS
 
 Before installing Decidim, you need to point your domain to your server.
 
@@ -131,7 +132,7 @@ ping decidim.example.org
 
 ---
 
-## 🚀 Step 4: Install Decidim
+## Step 4: Install Decidim
 
 Now for the main installation! Run these commands one by one on your server.
 
@@ -173,7 +174,7 @@ The installer will ask for:
 
 ---
 
-## 📧 Step 5: Configure Email (SMTP)
+## Step 5: Configure Email (SMTP)
 
 Email is crucial for user notifications and password resets. You'll need an SMTP provider.
 
@@ -207,7 +208,7 @@ When the installer asks for email settings, enter:
 
 ---
 
-## 🔒 Step 6: Security & Firewall Setup
+## Step 6: Security & Firewall Setup
 
 ### 6.1 Firewall Configuration
 
@@ -254,16 +255,16 @@ For better email deliverability, configure these DNS records (advanced):
 - **DKIM**: Generate keys from your email provider
 - **DMARC**: `v=DMARC1; p=quarantine; rua=mailto:dmarc@decidim.example.org`
 
-## ✅ Step 7: Complete Setup
+## Step 7: Complete Setup
 
-### 6.1 Create System Administrator
+### 7.1 Create System Administrator
 
 During installation, you'll be prompted to create a system admin:
 - **Email**: Use your admin email
 - **Password**: The installer will auto-generate a secure password
 - **Save the password!** You'll need it to log in
 
-### 6.2 Access Your Decidim Instance
+### 7.2 Access Your Decidim Instance
 
 1. Open your web browser
 2. Go to `https://decidim.example.org/system`
@@ -271,18 +272,18 @@ During installation, you'll be prompted to create a system admin:
    - Email: Your system admin email
    - Password: The password shown during installation
 
-### 6.3 Configure Your Organization
+### 7.3 Configure Your Organization
 
 Once logged in, you'll need to:
 1. Set up your organization details
 2. Create your first participatory space
 3. Configure user registration settings
 
-### 6.4 Background Jobs & Maintenance
+### 7.4 Background Jobs & Maintenance
 
 The Docker setup includes automatic background job processing using Sidekiq. Here's what's running:
 
-**Background Processing**: 
+**Background Processing**:
 - Sidekiq handles email sending and other background tasks
 - Automatically restarts if it crashes
 - Monitored and managed through Docker Compose
@@ -333,7 +334,7 @@ docker compose up -d
 
 ---
 
-## 🆘 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -393,7 +394,7 @@ For mapping features (meeting locations, proposals with addresses):
    ```bash
    # Edit environment file
    nano /opt/decidim/.env
-   # Add: 
+   # Add:
    # MAPS_API_KEY=your-here-api-key
    # MAPS_PROVIDER=here
    ```
@@ -410,7 +411,7 @@ After installation, your configuration is stored in:
 - `/opt/decidim/docker-compose.yml` - Service definitions
 - `/opt/decidim/storage/` - Persistent data (database, uploads, logs)
 
-**🚨 Security Warning**: 
+**🚨 Security Warning**:
 - **Never commit `.env` to version control**
 - **Keep backup of `.env` file in secure location**
 - **Contains database passwords, SMTP credentials, and secret keys**
@@ -433,7 +434,7 @@ docker compose logs -f
 
 ## 🎉 Congratulations!
 
-You now have a fully functional Decidim instance running on your own server! 
+You now have a fully functional Decidim instance running on your own server!
 
 Your democracy platform is ready to:
 - Accept user registrations
