@@ -12,7 +12,7 @@ This guide will help you install Decidim on your own server, even with minimal t
 6. [Step 5: Configure Email (SMTP)](#step-5-configure-email-smtp)
 7. [Step 6: Security & Firewall Setup](#step-6-security--firewall-setup)
 8. [Step 7: Complete Setup](#step-7-complete-setup)
-8. [Troubleshooting](#troubleshooting)
+9. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -357,7 +357,7 @@ docker compose up -d
 - Check for IPv6 conflicts (installer handles this automatically)
 
 **Installation fails:**
-- Run `./install.sh` again
+- Run `curl -fsSL https://decidim.org/install | bash` again
 - Check the error message carefully
 - Check available disk space
 - Verify internet connection
