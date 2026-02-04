@@ -377,8 +377,7 @@ docker compose up -d
 
 - **Documentation**: [docs.decidim.org](https://docs.decidim.org)
 - **Installation Issues**: [GitHub Issues](https://github.com/decidim/docker/issues)
-- **Community**: [Decidim Community Forum](https://meta.decidim.org)
-- **Alternative Installation**: [Platoniq Manual Guide](https://platoniq.github.io/decidim-install/) (comprehensive traditional setup)
+- **Community**: [MetaDecidim](https://meta.decidim.org)
 
 ## 🎯 Advanced Configuration Options
 
