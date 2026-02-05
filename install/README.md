@@ -1,6 +1,6 @@
 # Decidim Installation Guide 🗳️
 
-This guide will help you install Decidim on your own server, even with minimal technical knowledge. We'll walk through everything from setting up a server to launching your democracy platform.
+This guide will help you install Decidim on your own server, even with minimal technical knowledge. We'll walk you through everything needed from, setting up a server to launching your digital democratic platform.
 
 ## 📋 Table of Contents
 
