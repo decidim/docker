@@ -3,7 +3,7 @@
 set -e
 
 echo "───────────────────────────────────────────────"
-echo "Now we are going to generate some Gemfiles so that we can track gem dependencies"
+echo "Now we are going to generate some Gemfiles, in order to track gem dependencies."
 echo
 echo "You will find everything in the Gemfile.wrapper and Gemfile.local"
 

@@ -13,7 +13,7 @@ generate_system_admin() {
 }
 
 if [ -z "$EXTERNAL_DATABASE" ]; then
-  echo "Checking if database is already running"
+  echo "Checking if database is already running..."
   until docker ps --filter "name=decidim-db" --filter "status=running" --quiet; do
     echo "Container not running yet..."
     sleep 2

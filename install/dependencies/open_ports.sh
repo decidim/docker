@@ -2,7 +2,7 @@
 
 open_ports() {
   echo
-  echo "To handle the SSL certificate we will have to open the port 80 and the port 443"
+  echo "To handle the SSL certificate, we will have to open the port 80 and the port 443."
   echo
 
   if ! command -v ufw; then

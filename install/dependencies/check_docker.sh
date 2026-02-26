@@ -38,5 +38,5 @@ else
     exit 1
   fi
   
-  echo "✅ Docker is accessible for current user"
+  echo "✅ Docker is accessible for current user!"
 fi

@@ -18,7 +18,7 @@ if ! bundle check; then
   echo "❌ Gems in Gemfile are not installed. Installing them with \"bundle install\"..."
   bundle install
 else
-  echo "✅ Gems in Gemfile are installed"
+  echo "✅ Gems in Gemfile are installed!"
 fi
 
 # Check to see if there are migrations to install
