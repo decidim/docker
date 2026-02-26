@@ -227,6 +227,7 @@ fi
 
 # Variable to handle the let's encrypt email.
 CERTIFICATE_EMAIL="${CERTIFICATE_EMAIL:-postmaster@${DECIDIM_DOMAIN}}"
+DECIDIM_MAILER_SENDER="${DECIDIM_MAILER_SENDER:-noreply@${DECIDIM_DOMAIN}}"
 
 echo "───────────────────────────────────────────────"
 echo "🎯 Final Configuration Summary:"
@@ -258,6 +259,8 @@ SMTP_PASSWORD="$SMTP_PASSWORD"
 SMTP_ADDRESS="$SMTP_ADDRESS"
 SMTP_DOMAIN="$SMTP_DOMAIN"
 SMTP_PORT="$SMTP_PORT"
+
+DECIDIM_MAILER_SENDER="$DECIDIM_MAILER_SENDER"
 
 MAPS_API_KEY="$MAPS_API_KEY"
 
