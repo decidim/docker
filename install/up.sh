@@ -3,6 +3,9 @@ set -e
 set -u
 set -o pipefail
 
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPOSITORY_PATH="${REPOSITORY_PATH:-$SCRIPT_DIR}"
 ENV_FILE="${REPOSITORY_PATH}/.env"
 
 # Check if .env file exists

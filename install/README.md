@@ -20,8 +20,8 @@ This guide will help you install Decidim on your own server, even with minimal t
 
 Before you start, you'll need:
 
-- **A domain name** (like `example.org`) - you can buy one from any domain registrar
-- **Patience** - the installation takes about 20-30 minutes
+- **A domain name** (like `example.org`) - You can buy one from any domain registrar
+- **Patience** - The installation can take about 20-30 minutes
 
 ### Server Requirements
 
@@ -32,7 +32,7 @@ Before you start, you'll need:
 
 **Recommended providers:**
 - **Hetzner** - Used in this guide
-- **Here Maps** - For geolocation features
+- **Here Maps** - For geo-location features
 - **SMTP Email Provider** - For sending emails (Gmail, Scaleway, Rapidmail, etc.)
 
 ---
@@ -79,7 +79,7 @@ Your server will be ready in 1-2 minutes. You'll see:
 - Server IP address (e.g., `123.45.67.89`)
 - Root password (if you chose password instead of SSH key)
 
-**Save this information! You'll need it immediately.**
+**PLEASE SAVE THIS INFORMATION!! You'll need it immediately!!**
 
 ---
 
@@ -294,7 +294,7 @@ The Docker setup includes automatic background job processing using Sidekiq. Her
 docker compose logs worker
 
 # Restart Sidekiq if needed
-docker compose restart sidekiq
+docker compose restart worker
 ```
 
 ---
@@ -325,12 +325,16 @@ docker compose ps
 
 ### Updating Decidim
 
+To update to the latest docker image available you can execute the following commands.
+
 ```bash
-cd /opt/decidim
-git pull
-docker compose pull
-docker compose up -d
++# Pull the latest Docker images
++docker compose pull
++# Restart with updated images
++docker compose up -d
 ```
+
+In case there were new files and configurations in a release of the decidim installer, then you would have to execute the script again.
 
 ---
 
@@ -420,10 +424,13 @@ After installation, your configuration is stored in:
 For troubleshooting, check these logs:
 ```bash
 # Application logs
-docker compose logs -f decidim
+docker compose logs -f app
 
 # Database logs
 docker compose logs -f db
+
+# Worker logs
+docker compose logs -f worker
 
 # All services
 docker compose logs -f

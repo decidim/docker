@@ -103,7 +103,6 @@ sudo chown -R $(whoami): ${APP_NAME}
 From here on you can follow the steps on the [Getting Started](https://docs.decidim.org/en/install/) guide.
 
 ## Using a production deploy script
-
 We've been working on a script that you can use to have a fully functional, production-ready decidim instance.
 
 ```bash
@@ -130,15 +129,12 @@ The worker will be the one responsible for all the background jobs that the appl
 The app needs a cache server. This will be a `redis:8-alpine` instance. This cache will be used both by the app and the worker.
 
 ## Database
-
 The application needs a database to run. Through the installation process you will be asked if you have an already working database, if not, you will have a postgres container with all the schema and migrations run (It will be a `postgres:17-alpine`)
 
 ## Configuration
-
 To configure the application you will have to answer some questions that will, at the end, generate a `.env` file. 
 
 ### Environment Variables Reference
-
 To see the full list of Decidim Environment Variables, and that you can add to your generated `.env` file, you can take a look at the official [documentation](https://docs.decidim.org/en/develop/configure/environment_variables)
 
 | Variable | Default | Used In | Description |
@@ -158,7 +154,7 @@ To see the full list of Decidim Environment Variables, and that you can add to y
 | **SMTP_DOMAIN** | — | app, worker | SMTP domain. |
 | **SMTP_PORT** | — | app, worker | SMTP port. |
 | **SMTP_STARTTLS_AUTO** | `true` | app | Enables STARTTLS automatically. |
-| **REDIS_URL** | `redis://decidim_cache:6379/0` | app | Redis URL for cache + sessions. |
+| **REDIS_URL** | `redis://cache:6379/0` | app | Redis URL for cache + sessions. |
 | **VAPID_PUBLIC_KEY** | — | app | Web Push public key for browser notifications. |
 | **VAPID_PRIVATE_KEY** | — | app | Web Push private key (keep secret). |
 | **CERTIFICATE_EMAIL** | — | traefik | Email used by Let's Encrypt for certificate issues/renewals. |

@@ -36,12 +36,10 @@ echo -e "* ⚠️ For production use, review security settings and documentation
 echo -e "*                                                                     *"
 echo -e "***********************************************************************"
 
-REPOSITORY_PATH=${DECIDIM_PATH:-/opt/decidim}
+REPOSITORY_PATH=${REPOSITORY_PATH:-/opt/decidim}
 REPOSITORY_URL="https://github.com/decidim/docker"
-REPOSITORY_BRANCH="feat/decidim_install"
 
 export REPOSITORY_URL
-export REPOSITORY_BRANCH
 
 echo "📁 Installation directory: $REPOSITORY_PATH"
 

@@ -36,14 +36,26 @@ echo
 echo "💡 The application name will be displayed throughout the interface."
 echo "   and used in email subjects. Make it descriptive!"
 echo
-read -r -p "What is the name of your organization? (For example: Decidim Barcelona)" DECIDIM_APPLICATION_NAME </dev/tty
+
+while [ -z "${DECIDIM_APPLICATION_NAME:-}" ]; do
+  read -r -p "What is the name of your organization? (For example: Decidim Barcelona) " DECIDIM_APPLICATION_NAME </dev/tty
+  if [ -z "$DECIDIM_APPLICATION_NAME" ]; then
+    echo "❌ Application name cannot be empty"
+  fi
+done
+
 echo "✅ The name of the instance is: $DECIDIM_APPLICATION_NAME"
 echo
 echo "💡 This is the domain where users will access your Decidim instance."
 echo "   Make sure you have DNS configured for this domain."
 echo "   Example: decidim.example.org"
 echo
-read -r -p "domain: " DECIDIM_DOMAIN </dev/tty
+while [ -z "${DECIDIM_DOMAIN:-}" ]; do
+  read -r -p "domain: " DECIDIM_DOMAIN </dev/tty
+  if [ -z "$DECIDIM_DOMAIN" ]; then
+    echo "❌ Domain cannot be empty"
+  fi
+done
 echo "✅ Your instance will be accessible at: https://$DECIDIM_DOMAIN"
 
 echo "───────────────────────────────────────────────"
@@ -118,7 +130,7 @@ case $yn in
   EXTERNAL_DATABASE=true
   build_external_database
   ;;
-[Nn]*)
+*)
   EXTERNAL_DATABASE=false
   build_local_database
   ;;
@@ -192,7 +204,6 @@ echo "   Currently, this installation process only handles HERE Maps."
 echo "   You will need to provide the API KEY provided by HERE."
 echo "   This will be saved in the .env file, but you'll be always able to change it."
 read -r -p "HERE API KEY: " MAPS_API_KEY </dev/tty
-MAPS_API_PROVIDER=${MAPS_API_PROVIDER=-here}
 
 echo "───────────────────────────────────────────────"
 echo "✍️ Now we are going to create the .env file."
@@ -230,7 +241,6 @@ echo "   These values can modified later if needed."
 echo
 echo "Writing the environment variables to .env file..."
 cat >"$BUILD_ENV_PATH" <<EOF
-BUNDLE_GEMFILE="Gemfile.wrapper"
 DECIDIM_IMAGE=$DECIDIM_IMAGE
 DECIDIM_APPLICATION_NAME="$DECIDIM_APPLICATION_NAME"
 DECIDIM_DOMAIN="$DECIDIM_DOMAIN"
@@ -249,10 +259,9 @@ SMTP_ADDRESS="$SMTP_ADDRESS"
 SMTP_DOMAIN="$SMTP_DOMAIN"
 SMTP_PORT="$SMTP_PORT"
 
-MAPS_API_PROVIDER="${MAPS_API_PROVIDER:-here}"
 MAPS_API_KEY="$MAPS_API_KEY"
 
-REDIS_URL="redis://decidim_cache:6379"
+REDIS_URL="redis://cache:6379"
 
 VAPID_PUBLIC_KEY="$VAPID_PUBLIC_KEY"
 VAPID_PRIVATE_KEY="$VAPID_PRIVATE_KEY"

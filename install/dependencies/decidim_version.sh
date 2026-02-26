@@ -13,7 +13,7 @@ echo "Default image: decidim/decidim:latest"
 echo
 
 while true; do
-  read -r -p "👉 Click Enter to continue with the download of the Decidim image" </dev/tty
+  read -r -p "👉 Press enter to continue with the download of the Decidim image" </dev/tty
 
   DECIDIM_IMAGE=${DECIDIM_IMAGE:-decidim/decidim:latest}
 
