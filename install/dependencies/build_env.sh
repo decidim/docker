@@ -4,7 +4,7 @@ set -u
 set -o pipefail
 
 if [ -z "${REPOSITORY_PATH:-}" ]; then
-  echo "❌ Error: REPOSITORY_PATH is not set"
+  echo "❌ Error: REPOSITORY_PATH is not set."
   exit 1
 fi
 
@@ -33,7 +33,7 @@ read -r </dev/tty
 echo "───────────────────────────────────────────────"
 echo "📦 Now we need to get some information about the instance you are building."
 echo
-echo "💡 The application name will be displayed throughout the interface"
+echo "💡 The application name will be displayed throughout the interface."
 echo "   and used in email subjects. Make it descriptive!"
 echo
 read -r -p "What is the name of your organization? (For example: Decidim Barcelona)" DECIDIM_APPLICATION_NAME </dev/tty
@@ -49,7 +49,7 @@ echo "✅ Your instance will be accessible at: https://$DECIDIM_DOMAIN"
 echo "───────────────────────────────────────────────"
 echo "🗄️  Database Configuration"
 echo "   We need to set up your Decidim database."
-echo "   💡 You can use our built-in PostgreSQL database (recommended for beginners)"
+echo "   💡 You can use our built-in PostgreSQL database (recommended for beginners)."
 echo "      or connect to an existing external database."
 echo
 read -r -p "Do you have an external database already set up? [y/N] " yn </dev/tty
@@ -208,7 +208,7 @@ if [ -f "$BUILD_ENV_PATH" ]; then
     rm "$BUILD_ENV_PATH"
     ;;
   [Nn]*)
-    echo "Can't continue without a new .env file"
+    echo "Can't continue without a new .env file."
     exit 1
     ;;
   esac
@@ -226,9 +226,9 @@ echo "   Storage: $([ "$STORAGE_PROVIDER" = 'local' ] && echo 'Local filesystem'
 echo "   Certificate Email: $CERTIFICATE_EMAIL"
 echo
 echo "💡 All configuration will be saved to .env file"
-echo "   You can modify these values later if needed."
+echo "   These values can modified later if needed."
 echo
-echo "✅ Writing the environment variables to .env file..."
+echo "Writing the environment variables to .env file..."
 cat >"$BUILD_ENV_PATH" <<EOF
 BUNDLE_GEMFILE="Gemfile.wrapper"
 DECIDIM_IMAGE=$DECIDIM_IMAGE
