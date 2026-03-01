@@ -4,24 +4,34 @@ FROM $base_image
 LABEL maintainer="hola@decidim.org"
 
 ARG decidim_version=0.30.2
+ARG TARGETARCH
 
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-  && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-  && apt-get update \
-  && apt-get install -y google-chrome-stable \
-  && apt-get clean
+# Install Chrome + ChromeDriver (amd64) or Chromium + chromium-driver (arm64)
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+      apt-get update \
+      && apt-get install -y chromium chromium-driver \
+      && apt-get clean; \
+    else \
+      wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+      && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
+      && apt-get update \
+      && apt-get install -y google-chrome-stable \
+      && apt-get clean \
+      && apt-get install -y unzip curl \
+      && CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+') \
+      && CHROMEDRIVER_URL="https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}/linux64/chromedriver-linux64.zip" \
+      && curl -sL -o /tmp/chromedriver.zip "$CHROMEDRIVER_URL" \
+      && unzip -j /tmp/chromedriver.zip '*/chromedriver' -d /usr/local/bin \
+      && rm /tmp/chromedriver.zip \
+      && apt-get clean; \
+    fi
 
-RUN CHROMEDRIVER_RELEASE=85.0.4183.87 \
-  && CHROMEDRIVER_URL="http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_RELEASE/chromedriver_linux64.zip" \
-  && apt-get install unzip \
-  && curl --silent --show-error --location --fail --retry 3 --output /tmp/chromedriver_linux64.zip $CHROMEDRIVER_URL \
-  && unzip /tmp/chromedriver_linux64.zip chromedriver -d /usr/local/bin \
-  && rm /tmp/chromedriver_linux64.zip
-
-RUN DOCKERIZE_VERSION=v0.6.1 \
-  && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-  && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-  && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+# Install dockerize (arch-aware, v0.8.0 for arm64 support)
+RUN DOCKERIZE_VERSION=v0.8.0 \
+    && DOCKERIZE_ARCH=$([ "$TARGETARCH" = "arm64" ] && echo "linux-arm64" || echo "linux-amd64") \
+    && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-${DOCKERIZE_ARCH}-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-${DOCKERIZE_ARCH}-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-${DOCKERIZE_ARCH}-$DOCKERIZE_VERSION.tar.gz
 
 RUN gem install decidim-dev:${decidim_version} --force
 

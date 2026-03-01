@@ -3,8 +3,8 @@ services:
   decidim:
     image: decidim/decidim:latest
     entrypoint: ["/code/vendor/hello-world.sh"]
-    # The entrypoint override above wipes out the CMD 
-    # on the Dockerfile-deploy, so we need to declare it 
+    # The entrypoint override above wipes out the CMD
+    # on the Dockerfile-deploy, so we need to declare it
     # again here (https://github.com/docker/compose/issues/3140)
     command: ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]
     ports:

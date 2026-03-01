@@ -12,17 +12,20 @@ on:
     - 'Dockerfile-generator'
     - '.github/workflows/dockerhub.yml'
 
-jobs:
-  build-publish:
-    name: Build & Publish Docker Images
-    runs-on: ubuntu-latest
-    env:
-      GENERATOR_IMAGE_NAME: decidim/decidim-generator
-      TEST_IMAGE_NAME: decidim/decidim-test
-      DEV_IMAGE_NAME: decidim/decidim-dev
-      APP_IMAGE_NAME: decidim/decidim
-      TAG: ${{ github.sha }}
+env:
+  GENERATOR_IMAGE_NAME: decidim/decidim-generator
+  TEST_IMAGE_NAME: decidim/decidim-test
+  DEV_IMAGE_NAME: decidim/decidim-dev
+  APP_IMAGE_NAME: decidim/decidim
 
+jobs:
+  # ─── Prepare: fetch versions ───────────────────────────────────────
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      decidim_version: ${{ steps.decidim-version.outputs.version }}
+      ruby_version: ${{ steps.ruby-version.outputs.version }}
+      node_version: ${{ steps.node-version.outputs.version }}
     steps:
     - name: Fetch Decidim Tag
       id: decidim-tag
@@ -35,150 +38,590 @@ jobs:
       id: ruby-version
       env:
         RUBY_VERSION_URL: https://raw.githubusercontent.com/decidim/decidim/${{ steps.decidim-tag.outputs.tag }}/.ruby-version
-      run: |
-        echo "version=$(curl -s $RUBY_VERSION_URL)" >> $GITHUB_OUTPUT
+      run: echo "version=$(curl -s $RUBY_VERSION_URL)" >> $GITHUB_OUTPUT
 
     - name: Set Decidim Version
       id: decidim-version
-      run: echo ::set-output name=version::$(echo ${{ steps.decidim-tag.outputs.tag }} | cut -c2-)
+      run: echo "version=$(echo ${{ steps.decidim-tag.outputs.tag }} | cut -c2-)" >> $GITHUB_OUTPUT
 
     - name: Set Node Version
       id: node-version
       env:
         NODE_VERSION_URL: https://raw.githubusercontent.com/decidim/decidim/${{ steps.decidim-tag.outputs.tag }}/.node-version
-      run:
-        echo "version=$(curl -s $NODE_VERSION_URL | cut -d. -f1)" >> $GITHUB_OUTPUT
+      run: echo "version=$(curl -s $NODE_VERSION_URL | cut -d. -f1)" >> $GITHUB_OUTPUT
 
-    - name: Checkout Our Repo
-      uses: actions/checkout@v2
+  # ─── Build: decidim-generator (per-arch) ───────────────────────────
+  build-generator:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - linux/amd64
+        - linux/arm64
+    runs-on: ${{ contains(matrix.platform, 'arm64') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    outputs:
+      image_name: ${{ env.GENERATOR_IMAGE_NAME }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
 
-    - name: Build decidim-generator Image
-      env:
-        RUBY_VERSION: ${{ steps.ruby-version.outputs.version }}
-        NODE_VERSION: ${{ steps.node-version.outputs.version }}
-        DECIDIM_VERSION: ${{ steps.decidim-version.outputs.version }}
-      run: |
-        docker build \
-        --build-arg ruby_version=$RUBY_VERSION \
-        --build-arg decidim_version=$DECIDIM_VERSION \
-        --build-arg node_version=$NODE_VERSION \
-        --file Dockerfile-generator \
-        -t $GENERATOR_IMAGE_NAME .
-        docker tag $GENERATOR_IMAGE_NAME $GENERATOR_IMAGE_NAME:$TAG
-        docker tag $GENERATOR_IMAGE_NAME ghcr.io/$GENERATOR_IMAGE_NAME:$TAG
-        docker tag $GENERATOR_IMAGE_NAME $GENERATOR_IMAGE_NAME:$DECIDIM_VERSION
-        docker tag $GENERATOR_IMAGE_NAME ghcr.io/$GENERATOR_IMAGE_NAME:$DECIDIM_VERSION
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-    - name: Publish decidim-generator Image to Docker Hub
-      uses: docker/login-action@v1
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
       with:
         username: decidimbot
         password: ${{ secrets.DOCKERHUB_PAT }}
-    - run: |
-        docker push --all-tags $GENERATOR_IMAGE_NAME
 
-    - name: Publish decidim-generator Image to GitHub Registry
-      uses: azure/docker-login@v1
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
       with:
-        login-server: ghcr.io
+        registry: ghcr.io
         username: decidim-bot
         password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
-    - run: |
-        docker push --all-tags ghcr.io/$GENERATOR_IMAGE_NAME
 
-    - name: Build decidim-test Image
-      env:
-        RUBY_VERSION: ${{ steps.ruby-version.outputs.version }}
-        NODE_VERSION: ${{ steps.node-version.outputs.version }}
-        DECIDIM_VERSION: ${{ steps.decidim-version.outputs.version }}
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: |
+          ${{ env.GENERATOR_IMAGE_NAME }}
+          ghcr.io/${{ env.GENERATOR_IMAGE_NAME }}
+
+    - name: Build and push by digest (Docker Hub)
+      id: build-dockerhub
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: Dockerfile-generator
+        platforms: ${{ matrix.platform }}
+        build-args: |
+          ruby_version=${{ needs.prepare.outputs.ruby_version }}
+          decidim_version=${{ needs.prepare.outputs.decidim_version }}
+          node_version=${{ needs.prepare.outputs.node_version }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha,scope=generator-${{ matrix.platform }}
+        cache-to: type=gha,scope=generator-${{ matrix.platform }},mode=max
+        outputs: type=image,name=${{ env.GENERATOR_IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+
+    - name: Build and push by digest (GHCR)
+      id: build-ghcr
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: Dockerfile-generator
+        platforms: ${{ matrix.platform }}
+        build-args: |
+          ruby_version=${{ needs.prepare.outputs.ruby_version }}
+          decidim_version=${{ needs.prepare.outputs.decidim_version }}
+          node_version=${{ needs.prepare.outputs.node_version }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha,scope=generator-${{ matrix.platform }}
+        outputs: type=image,name=ghcr.io/${{ env.GENERATOR_IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+
+    - name: Export digests
       run: |
-        docker build \
-        --build-arg base_image=ghcr.io/$GENERATOR_IMAGE_NAME:$TAG \
-        --build-arg decidim_version=$DECIDIM_VERSION \
-        --build-arg node_version=$NODE_VERSION \
-        --file Dockerfile-test \
-        -t $TEST_IMAGE_NAME .
-        docker tag $TEST_IMAGE_NAME $TEST_IMAGE_NAME:$TAG
-        docker tag $TEST_IMAGE_NAME $TEST_IMAGE_NAME:$DECIDIM_VERSION
-        docker tag $TEST_IMAGE_NAME ghcr.io/$TEST_IMAGE_NAME:$TAG
-        docker tag $TEST_IMAGE_NAME ghcr.io/$TEST_IMAGE_NAME:$DECIDIM_VERSION
+        mkdir -p /tmp/digests/dockerhub /tmp/digests/ghcr
+        digest_dh="${{ steps.build-dockerhub.outputs.digest }}"
+        digest_ghcr="${{ steps.build-ghcr.outputs.digest }}"
+        touch "/tmp/digests/dockerhub/${digest_dh#sha256:}"
+        touch "/tmp/digests/ghcr/${digest_ghcr#sha256:}"
 
-    - name: Publish decidim-test Image to Docker Hub
-      uses: docker/login-action@v1
+    - name: Upload digest (Docker Hub)
+      uses: actions/upload-artifact@v4
+      with:
+        name: generator-digests-dockerhub-${{ contains(matrix.platform, 'arm64') && 'arm64' || 'amd64' }}
+        path: /tmp/digests/dockerhub/*
+        if-no-files-found: error
+        retention-days: 1
+
+    - name: Upload digest (GHCR)
+      uses: actions/upload-artifact@v4
+      with:
+        name: generator-digests-ghcr-${{ contains(matrix.platform, 'arm64') && 'arm64' || 'amd64' }}
+        path: /tmp/digests/ghcr/*
+        if-no-files-found: error
+        retention-days: 1
+
+  # ─── Merge: decidim-generator manifest ─────────────────────────────
+  merge-generator:
+    needs: [prepare, build-generator]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Docker Hub digests
+      uses: actions/download-artifact@v4
+      with:
+        path: /tmp/digests/dockerhub
+        pattern: generator-digests-dockerhub-*
+        merge-multiple: true
+
+    - name: Download GHCR digests
+      uses: actions/download-artifact@v4
+      with:
+        path: /tmp/digests/ghcr
+        pattern: generator-digests-ghcr-*
+        merge-multiple: true
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
       with:
         username: decidimbot
         password: ${{ secrets.DOCKERHUB_PAT }}
-    - run: |
-        docker push --all-tags $TEST_IMAGE_NAME
 
-    - name: Publish decidim-test Image to GitHub Registry
-      uses: azure/docker-login@v1
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
       with:
-        login-server: ghcr.io
+        registry: ghcr.io
         username: decidim-bot
         password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
-    - run: |
-        docker push --all-tags ghcr.io/$TEST_IMAGE_NAME
 
-    - name: Build decidim-dev Image
-      env:
-        RUBY_VERSION: ${{ steps.ruby-version.outputs.version }}
-        NODE_VERSION: ${{ steps.node-version.outputs.version }}
-        DECIDIM_VERSION: ${{ steps.decidim-version.outputs.version }}
+    - name: Create manifest list (Docker Hub)
+      working-directory: /tmp/digests/dockerhub
       run: |
-        docker build \
-        --build-arg base_image=ghcr.io/$TEST_IMAGE_NAME:$TAG \
-        --file Dockerfile-dev \
-        -t $DEV_IMAGE_NAME .
-        docker tag $DEV_IMAGE_NAME $DEV_IMAGE_NAME:$TAG
-        docker tag $DEV_IMAGE_NAME $DEV_IMAGE_NAME:$DECIDIM_VERSION
-        docker tag $DEV_IMAGE_NAME ghcr.io/$DEV_IMAGE_NAME:$TAG
-        docker tag $DEV_IMAGE_NAME ghcr.io/$DEV_IMAGE_NAME:$DECIDIM_VERSION
+        TAGS="-t ${{ env.GENERATOR_IMAGE_NAME }}:latest \
+              -t ${{ env.GENERATOR_IMAGE_NAME }}:${{ needs.prepare.outputs.decidim_version }} \
+              -t ${{ env.GENERATOR_IMAGE_NAME }}:${{ github.sha }}"
+        docker buildx imagetools create $TAGS \
+          $(printf '${{ env.GENERATOR_IMAGE_NAME }}@sha256:%s ' *)
 
-    - name: Publish decidim-dev Image to Docker Hub
-      uses: docker/login-action@v1
+    - name: Create manifest list (GHCR)
+      working-directory: /tmp/digests/ghcr
+      run: |
+        TAGS="-t ghcr.io/${{ env.GENERATOR_IMAGE_NAME }}:latest \
+              -t ghcr.io/${{ env.GENERATOR_IMAGE_NAME }}:${{ needs.prepare.outputs.decidim_version }} \
+              -t ghcr.io/${{ env.GENERATOR_IMAGE_NAME }}:${{ github.sha }}"
+        docker buildx imagetools create $TAGS \
+          $(printf 'ghcr.io/${{ env.GENERATOR_IMAGE_NAME }}@sha256:%s ' *)
+
+  # ─── Build: decidim (app) (per-arch) ───────────────────────────────
+  build-app:
+    needs: [prepare, merge-generator]
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - linux/amd64
+        - linux/arm64
+    runs-on: ${{ contains(matrix.platform, 'arm64') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
       with:
         username: decidimbot
         password: ${{ secrets.DOCKERHUB_PAT }}
-    - run: |
-        docker push --all-tags $DEV_IMAGE_NAME
 
-    - name: Publish decidim-dev Image to GitHub Registry
-      uses: azure/docker-login@v1
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
       with:
-        login-server: ghcr.io
+        registry: ghcr.io
         username: decidim-bot
         password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
-    - run: |
-        docker push --all-tags ghcr.io/$DEV_IMAGE_NAME
 
-    - name: Build decidim (app) Image
-      env:
-        RUBY_VERSION: ${{ steps.ruby-version.outputs.version }}
-        NODE_VERSION: ${{ steps.node-version.outputs.version }}
-        DECIDIM_VERSION: ${{ steps.decidim-version.outputs.version }}
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: |
+          ${{ env.APP_IMAGE_NAME }}
+          ghcr.io/${{ env.APP_IMAGE_NAME }}
+
+    - name: Build and push by digest (Docker Hub)
+      id: build-dockerhub
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: Dockerfile
+        platforms: ${{ matrix.platform }}
+        build-args: |
+          base_image=${{ env.GENERATOR_IMAGE_NAME }}:${{ github.sha }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha,scope=app-${{ matrix.platform }}
+        cache-to: type=gha,scope=app-${{ matrix.platform }},mode=max
+        outputs: type=image,name=${{ env.APP_IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+
+    - name: Build and push by digest (GHCR)
+      id: build-ghcr
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: Dockerfile
+        platforms: ${{ matrix.platform }}
+        build-args: |
+          base_image=ghcr.io/${{ env.GENERATOR_IMAGE_NAME }}:${{ github.sha }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha,scope=app-${{ matrix.platform }}
+        outputs: type=image,name=ghcr.io/${{ env.APP_IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+
+    - name: Export digests
       run: |
-        docker build \
-        --build-arg base_image=ghcr.io/$GENERATOR_IMAGE_NAME:$TAG \
-        -t $APP_IMAGE_NAME .
-        docker tag $APP_IMAGE_NAME $APP_IMAGE_NAME:$TAG
-        docker tag $APP_IMAGE_NAME $APP_IMAGE_NAME:$DECIDIM_VERSION
-        docker tag $APP_IMAGE_NAME ghcr.io/$APP_IMAGE_NAME:$TAG
-        docker tag $APP_IMAGE_NAME ghcr.io/$APP_IMAGE_NAME:$DECIDIM_VERSION
+        mkdir -p /tmp/digests/dockerhub /tmp/digests/ghcr
+        digest_dh="${{ steps.build-dockerhub.outputs.digest }}"
+        digest_ghcr="${{ steps.build-ghcr.outputs.digest }}"
+        touch "/tmp/digests/dockerhub/${digest_dh#sha256:}"
+        touch "/tmp/digests/ghcr/${digest_ghcr#sha256:}"
 
-    - name: Publish decidim Image to Docker Hub
-      uses: docker/login-action@v1
+    - name: Upload digest (Docker Hub)
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-digests-dockerhub-${{ contains(matrix.platform, 'arm64') && 'arm64' || 'amd64' }}
+        path: /tmp/digests/dockerhub/*
+        if-no-files-found: error
+        retention-days: 1
+
+    - name: Upload digest (GHCR)
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-digests-ghcr-${{ contains(matrix.platform, 'arm64') && 'arm64' || 'amd64' }}
+        path: /tmp/digests/ghcr/*
+        if-no-files-found: error
+        retention-days: 1
+
+  # ─── Merge: decidim (app) manifest ─────────────────────────────────
+  merge-app:
+    needs: [prepare, build-app]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Docker Hub digests
+      uses: actions/download-artifact@v4
+      with:
+        path: /tmp/digests/dockerhub
+        pattern: app-digests-dockerhub-*
+        merge-multiple: true
+
+    - name: Download GHCR digests
+      uses: actions/download-artifact@v4
+      with:
+        path: /tmp/digests/ghcr
+        pattern: app-digests-ghcr-*
+        merge-multiple: true
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
       with:
         username: decidimbot
         password: ${{ secrets.DOCKERHUB_PAT }}
-    - run: |
-        docker push --all-tags $APP_IMAGE_NAME
 
-    - name: Publish decidim Image to GitHub Registry
-      uses: azure/docker-login@v1
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
       with:
-        login-server: ghcr.io
+        registry: ghcr.io
         username: decidim-bot
         password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
-    - run: |
-        docker push --all-tags ghcr.io/$APP_IMAGE_NAME
+
+    - name: Create manifest list (Docker Hub)
+      working-directory: /tmp/digests/dockerhub
+      run: |
+        TAGS="-t ${{ env.APP_IMAGE_NAME }}:latest \
+              -t ${{ env.APP_IMAGE_NAME }}:${{ needs.prepare.outputs.decidim_version }} \
+              -t ${{ env.APP_IMAGE_NAME }}:${{ github.sha }}"
+        docker buildx imagetools create $TAGS \
+          $(printf '${{ env.APP_IMAGE_NAME }}@sha256:%s ' *)
+
+    - name: Create manifest list (GHCR)
+      working-directory: /tmp/digests/ghcr
+      run: |
+        TAGS="-t ghcr.io/${{ env.APP_IMAGE_NAME }}:latest \
+              -t ghcr.io/${{ env.APP_IMAGE_NAME }}:${{ needs.prepare.outputs.decidim_version }} \
+              -t ghcr.io/${{ env.APP_IMAGE_NAME }}:${{ github.sha }}"
+        docker buildx imagetools create $TAGS \
+          $(printf 'ghcr.io/${{ env.APP_IMAGE_NAME }}@sha256:%s ' *)
+
+  # ─── Build: decidim-test (per-arch) ────────────────────────────────
+  build-test:
+    needs: [prepare, merge-generator]
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - linux/amd64
+        - linux/arm64
+    runs-on: ${{ contains(matrix.platform, 'arm64') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: decidimbot
+        password: ${{ secrets.DOCKERHUB_PAT }}
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
+
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: |
+          ${{ env.TEST_IMAGE_NAME }}
+          ghcr.io/${{ env.TEST_IMAGE_NAME }}
+
+    - name: Build and push by digest (Docker Hub)
+      id: build-dockerhub
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: Dockerfile-test
+        platforms: ${{ matrix.platform }}
+        build-args: |
+          base_image=${{ env.GENERATOR_IMAGE_NAME }}:${{ github.sha }}
+          decidim_version=${{ needs.prepare.outputs.decidim_version }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha,scope=test-${{ matrix.platform }}
+        cache-to: type=gha,scope=test-${{ matrix.platform }},mode=max
+        outputs: type=image,name=${{ env.TEST_IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+
+    - name: Build and push by digest (GHCR)
+      id: build-ghcr
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: Dockerfile-test
+        platforms: ${{ matrix.platform }}
+        build-args: |
+          base_image=ghcr.io/${{ env.GENERATOR_IMAGE_NAME }}:${{ github.sha }}
+          decidim_version=${{ needs.prepare.outputs.decidim_version }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha,scope=test-${{ matrix.platform }}
+        outputs: type=image,name=ghcr.io/${{ env.TEST_IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+
+    - name: Export digests
+      run: |
+        mkdir -p /tmp/digests/dockerhub /tmp/digests/ghcr
+        digest_dh="${{ steps.build-dockerhub.outputs.digest }}"
+        digest_ghcr="${{ steps.build-ghcr.outputs.digest }}"
+        touch "/tmp/digests/dockerhub/${digest_dh#sha256:}"
+        touch "/tmp/digests/ghcr/${digest_ghcr#sha256:}"
+
+    - name: Upload digest (Docker Hub)
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-digests-dockerhub-${{ contains(matrix.platform, 'arm64') && 'arm64' || 'amd64' }}
+        path: /tmp/digests/dockerhub/*
+        if-no-files-found: error
+        retention-days: 1
+
+    - name: Upload digest (GHCR)
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-digests-ghcr-${{ contains(matrix.platform, 'arm64') && 'arm64' || 'amd64' }}
+        path: /tmp/digests/ghcr/*
+        if-no-files-found: error
+        retention-days: 1
+
+  # ─── Merge: decidim-test manifest ──────────────────────────────────
+  merge-test:
+    needs: [prepare, build-test]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Docker Hub digests
+      uses: actions/download-artifact@v4
+      with:
+        path: /tmp/digests/dockerhub
+        pattern: test-digests-dockerhub-*
+        merge-multiple: true
+
+    - name: Download GHCR digests
+      uses: actions/download-artifact@v4
+      with:
+        path: /tmp/digests/ghcr
+        pattern: test-digests-ghcr-*
+        merge-multiple: true
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: decidimbot
+        password: ${{ secrets.DOCKERHUB_PAT }}
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
+
+    - name: Create manifest list (Docker Hub)
+      working-directory: /tmp/digests/dockerhub
+      run: |
+        TAGS="-t ${{ env.TEST_IMAGE_NAME }}:latest \
+              -t ${{ env.TEST_IMAGE_NAME }}:${{ needs.prepare.outputs.decidim_version }} \
+              -t ${{ env.TEST_IMAGE_NAME }}:${{ github.sha }}"
+        docker buildx imagetools create $TAGS \
+          $(printf '${{ env.TEST_IMAGE_NAME }}@sha256:%s ' *)
+
+    - name: Create manifest list (GHCR)
+      working-directory: /tmp/digests/ghcr
+      run: |
+        TAGS="-t ghcr.io/${{ env.TEST_IMAGE_NAME }}:latest \
+              -t ghcr.io/${{ env.TEST_IMAGE_NAME }}:${{ needs.prepare.outputs.decidim_version }} \
+              -t ghcr.io/${{ env.TEST_IMAGE_NAME }}:${{ github.sha }}"
+        docker buildx imagetools create $TAGS \
+          $(printf 'ghcr.io/${{ env.TEST_IMAGE_NAME }}@sha256:%s ' *)
+
+  # ─── Build: decidim-dev (per-arch) ─────────────────────────────────
+  build-dev:
+    needs: [prepare, merge-test]
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - linux/amd64
+        - linux/arm64
+    runs-on: ${{ contains(matrix.platform, 'arm64') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: decidimbot
+        password: ${{ secrets.DOCKERHUB_PAT }}
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
+
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: |
+          ${{ env.DEV_IMAGE_NAME }}
+          ghcr.io/${{ env.DEV_IMAGE_NAME }}
+
+    - name: Build and push by digest (Docker Hub)
+      id: build-dockerhub
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: Dockerfile-dev
+        platforms: ${{ matrix.platform }}
+        build-args: |
+          base_image=${{ env.TEST_IMAGE_NAME }}:${{ github.sha }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha,scope=dev-${{ matrix.platform }}
+        cache-to: type=gha,scope=dev-${{ matrix.platform }},mode=max
+        outputs: type=image,name=${{ env.DEV_IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+
+    - name: Build and push by digest (GHCR)
+      id: build-ghcr
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: Dockerfile-dev
+        platforms: ${{ matrix.platform }}
+        build-args: |
+          base_image=ghcr.io/${{ env.TEST_IMAGE_NAME }}:${{ github.sha }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha,scope=dev-${{ matrix.platform }}
+        outputs: type=image,name=ghcr.io/${{ env.DEV_IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+
+    - name: Export digests
+      run: |
+        mkdir -p /tmp/digests/dockerhub /tmp/digests/ghcr
+        digest_dh="${{ steps.build-dockerhub.outputs.digest }}"
+        digest_ghcr="${{ steps.build-ghcr.outputs.digest }}"
+        touch "/tmp/digests/dockerhub/${digest_dh#sha256:}"
+        touch "/tmp/digests/ghcr/${digest_ghcr#sha256:}"
+
+    - name: Upload digest (Docker Hub)
+      uses: actions/upload-artifact@v4
+      with:
+        name: dev-digests-dockerhub-${{ contains(matrix.platform, 'arm64') && 'arm64' || 'amd64' }}
+        path: /tmp/digests/dockerhub/*
+        if-no-files-found: error
+        retention-days: 1
+
+    - name: Upload digest (GHCR)
+      uses: actions/upload-artifact@v4
+      with:
+        name: dev-digests-ghcr-${{ contains(matrix.platform, 'arm64') && 'arm64' || 'amd64' }}
+        path: /tmp/digests/ghcr/*
+        if-no-files-found: error
+        retention-days: 1
+
+  # ─── Merge: decidim-dev manifest ───────────────────────────────────
+  merge-dev:
+    needs: [prepare, build-dev]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download Docker Hub digests
+      uses: actions/download-artifact@v4
+      with:
+        path: /tmp/digests/dockerhub
+        pattern: dev-digests-dockerhub-*
+        merge-multiple: true
+
+    - name: Download GHCR digests
+      uses: actions/download-artifact@v4
+      with:
+        path: /tmp/digests/ghcr
+        pattern: dev-digests-ghcr-*
+        merge-multiple: true
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: decidimbot
+        password: ${{ secrets.DOCKERHUB_PAT }}
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: decidim-bot
+        password: ${{ secrets.CONTAINER_REGISTRY_PAT }}
+
+    - name: Create manifest list (Docker Hub)
+      working-directory: /tmp/digests/dockerhub
+      run: |
+        TAGS="-t ${{ env.DEV_IMAGE_NAME }}:latest \
+              -t ${{ env.DEV_IMAGE_NAME }}:${{ needs.prepare.outputs.decidim_version }} \
+              -t ${{ env.DEV_IMAGE_NAME }}:${{ github.sha }}"
+        docker buildx imagetools create $TAGS \
+          $(printf '${{ env.DEV_IMAGE_NAME }}@sha256:%s ' *)
+
+    - name: Create manifest list (GHCR)
+      working-directory: /tmp/digests/ghcr
+      run: |
+        TAGS="-t ghcr.io/${{ env.DEV_IMAGE_NAME }}:latest \
+              -t ghcr.io/${{ env.DEV_IMAGE_NAME }}:${{ needs.prepare.outputs.decidim_version }} \
+              -t ghcr.io/${{ env.DEV_IMAGE_NAME }}:${{ github.sha }}"
+        docker buildx imagetools create $TAGS \
+          $(printf 'ghcr.io/${{ env.DEV_IMAGE_NAME }}@sha256:%s ' *)
