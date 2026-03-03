@@ -1,0 +1,26 @@
+#!/bin/bash
+set -e
+set -u
+set -o pipefail
+
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPOSITORY_PATH="${REPOSITORY_PATH:-$SCRIPT_DIR}"
+ENV_FILE="${REPOSITORY_PATH}/.env"
+
+# Check if .env file exists
+if [ ! -f "$ENV_FILE" ]; then
+  echo "❌ Error: .env file not found at $ENV_FILE"
+  echo "Please run the installation script first or create the .env file manually."
+  exit 1
+fi
+
+echo "🚀 Starting Decidim containers..."
+
+docker compose --env-file "$ENV_FILE" up -d
+
+echo "📋 Displaying recent container logs..."
+docker compose logs --tail=30
+
+echo "✅ Containers started successfully!"
+echo "🔍 You can monitor logs with: docker compose logs -f"

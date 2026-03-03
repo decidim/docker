@@ -1,0 +1,64 @@
+hourly_active_step_job:
+  cron: "0 * * * *"
+  class: "InvokeRakeTaskJob"
+  queue: default
+  status: <%= ENV.fetch("CHANGE_ACTIVE_STEP", "enabled") %> # enabled by default
+  args:
+    task: decidim_participatory_processes:change_active_step
+
+daily_open_data_job:
+  cron: "3 3 * * *"
+  class: "InvokeRakeTaskJob"
+  queue: default
+  status: <%= ENV.fetch("EXPORT_OPEN_DATA", "enabled") %> # enabled by default
+  args:
+    task: decidim:open_data:export
+
+daily_delete_download_your_data_files_job:
+  cron: "33 3 * * *"
+  class: "InvokeRakeTaskJob"
+  queue: default
+  status: <%= ENV.fetch("DELETE_DOWNLOAD_YOUR_DATA_FILES", "enabled") %> # enabled by default
+  args:
+    task: decidim:delete_download_your_data_files
+
+daily_notifications_digest_job:
+  cron: "5 18 * * *"
+  class: "InvokeRakeTaskJob"
+  queue: mailers
+  status: <%= ENV.fetch("DAILY_NOTIFICATIONS_DIGEST", "enabled") %> # enabled by default
+  args:
+    task: decidim:mailers:notifications_digest_daily
+
+daily_reminders_job:
+  cron: "1 11 * * *"
+  class: "InvokeRakeTaskJob"
+  queue: default
+  status: <%= ENV.fetch("SEND_REMINDERS", "enabled") %> # enabled by default
+  args:
+    task: decidim:reminders:all
+
+daily_delete_inactive_participants_job:
+  cron: "30 1 * * *"
+  class: "InvokeRakeTaskJob"
+  queue: default
+  status: <%= ENV.fetch("DELETE_INACTIVE_PARTICIPANTS", "enabled") %>
+  args:
+    task: decidim:participants:delete_inactive_participants
+
+weekly_clean_registration_forms_job:
+  cron: "0 3 * * 0"
+  class: "InvokeRakeTaskJob"
+  queue: default
+  status: <%= ENV.fetch("CLEAN_REGISTRATION_FORMS", "enabled") %> # enabled by default
+  args:
+    task: decidim_meetings:clean_registration_forms
+
+weekly_notifications_digest_job:
+  cron: "5 18 * * 0"
+  class: "InvokeRakeTaskJob"
+  queue: mailers
+  status: <%= ENV.fetch("WEEKLY_NOTIFICATIONS_DIGEST", "enabled") %> # enabled by default
+  args:
+    task: decidim:mailers:notifications_digest_weekly
+

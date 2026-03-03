@@ -1,0 +1,128 @@
+services:
+  app:
+    image: ${DECIDIM_IMAGE:-decidim/decidim:latest}
+    command: ["bin/rails", "server", "-b", "0.0.0.0"]
+    entrypoint: ["/code/entrypoint.sh"]
+    restart: always
+    depends_on:
+      - cache
+    expose:
+      - 3000
+    volumes:
+      - ${PWD}/Gemfile.wrapper:/code/Gemfile.wrapper
+      - ${PWD}/Gemfile.local:/code/Gemfile.local
+      - ${PWD}/scripts/entrypoint.sh:/code/entrypoint.sh
+      - app_gems:/usr/local/bundle
+      - storage_data:/code/storage
+      - migrations_data:/code/db/migrate
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`$$DECIDIM_DOMAIN`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls=true"
+      - "traefik.http.routers.app.tls.certresolver=myresolver"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
+    env_file:
+      - .env
+    environment:
+      - BUNDLE_GEMFILE=Gemfile.wrapper
+      - DATABASE_URL
+      - SECRET_KEY_BASE
+      - DECIDIM_FORCE_SSL=${DECIDIM_FORCE_SSL:-false}
+      - REDIS_URL=${REDIS_URL:-redis://cache:6379/0}
+      - WEB_CONCURRENCY=${WEB_CONCURRENCY:-2}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - DECIDIM_ENABLE_HTML_HEADER_SNIPPETS
+      - SMTP_STARTTLS_AUTO=${SMTP_STARTTLS_AUTO:-true}
+      - QUEUE_ADAPTER=sidekiq
+      - SMTP_USERNAME
+      - SMTP_PASSWORD
+      - SMTP_ADDRESS
+      - SMTP_DOMAIN
+      - SMTP_PORT
+      - DECIDIM_MAILER_SENDER
+      - MAPS_API_KEY
+      - MAPS_PROVIDER=here
+  worker:
+    image: ${DECIDIM_IMAGE:-decidim/decidim:latest}
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+    entrypoint: ["/code/sidekiq_entrypoint.sh"]
+    pull_policy: always
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ${PWD}/Gemfile.wrapper:/code/Gemfile.wrapper
+      - ${PWD}/Gemfile.local:/code/Gemfile.local
+      - ${PWD}/scripts/sidekiq_entrypoint.sh:/code/sidekiq_entrypoint.sh
+      - ${PWD}/config/sidekiq.yml:/code/config/sidekiq.yml
+      - ${PWD}/config/schedule.yml:/code/config/schedule.yml
+      - ${PWD}/jobs/invoke_rake_task_job.rb:/code/app/jobs/invoke_rake_task_job.rb
+      - worker_gems:/usr/local/bundle
+      - storage_data:/code/storage
+      - migrations_data:/code/db/migrate
+    environment:
+      - BUNDLE_GEMFILE=Gemfile.wrapper
+      - DATABASE_URL
+      - SECRET_KEY_BASE
+      - DECIDIM_FORCE_SSL=false
+      - QUEUE_ADAPTER=sidekiq
+      - REDIS_URL=${REDIS_URL:-redis://cache:6379/0}
+      - SMTP_USERNAME
+      - SMTP_PASSWORD
+      - SMTP_ADDRESS
+      - SMTP_DOMAIN
+      - SMTP_PORT
+      - DECIDIM_MAILER_SENDER
+    links:
+      - cache
+  traefik:
+    image: traefik:v3.6
+    command:
+      - --api
+      - --api.dashboard=false
+      - --providers.docker=true
+      - --log.level=DEBUG
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.traefik.address=:8080
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --certificatesresolvers.myresolver.acme.email=${CERTIFICATE_EMAIL}
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.myresolver.acme.httpchallenge=true
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    volumes:
+      - traefik_data:/letsencrypt
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.service=api@internal"
+  db:
+    image: postgres:17-alpine
+    profiles: ["db"]
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-decidim}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-decidim}
+      POSTGRES_DB: ${DATABASE_NAME:-decidim}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+  cache:
+    image: redis:8-alpine
+    volumes:
+      - cache_data:/data
+    restart: always
+volumes:
+  app_gems: {}
+  worker_gems:  {}
+  pg_data: {}
+  cache_data: {}
+  storage_data: {}
+  migrations_data: {}
+  traefik_data: {}
