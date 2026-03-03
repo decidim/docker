@@ -297,6 +297,17 @@ docker compose logs worker
 docker compose restart worker
 ```
 
+To have a perfectly functional decidim instance, it's necessary to run some commands in a periodic way. To do so we have provided the installer with a `config/schedule.yml` that will be used by the worker and the `sidekiq-cron` gem. There you will see all the tasks that need to run. Here's a list of some of them:
+
+- decidim_participatory_processes:change_active_step
+- decidim:open_data:export
+- decidim:delete_download_your_data_files
+- decidim:metrics:all
+
+In the `schedule.yml` you will find some environment variables that you can configure if you want to disable the execution of some of those jobs. They will be executed thanks to the job in `jobs/invoke_rake_task_job.rb`.
+
+You can modify the `schedule.yml` file if you want to include some other jobs to be executed, or if there are some new ones. It will still be taken care of from this repository.
+
 ---
 
 ## 🔧 Useful Commands
