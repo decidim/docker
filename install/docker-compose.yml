@@ -56,6 +56,8 @@ services:
       - ${PWD}/Gemfile.local:/code/Gemfile.local
       - ${PWD}/scripts/sidekiq_entrypoint.sh:/code/sidekiq_entrypoint.sh
       - ${PWD}/config/sidekiq.yml:/code/config/sidekiq.yml
+      - ${PWD}/config/schedule.yml:/code/config/schedule.yml
+      - ${PWD}/jobs/invoke_rake_task_job.rb:/code/app/jobs/invoke_rake_task_job.rb
       - worker_gems:/usr/local/bundle
       - storage_data:/code/storage
       - migrations_data:/code/db/migrate
