@@ -19,7 +19,6 @@ source "https://rubygems.org"
 
 ruby RUBY_VERSION
 
-gem "sidekiq"
 gem "sidekiq-cron"
 EOF
 
