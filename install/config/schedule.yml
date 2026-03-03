@@ -22,14 +22,6 @@ daily_delete_download_your_data_files_job:
   args:
     task: decidim:delete_download_your_data_files
 
-daily_metrics_job:
-  cron: "30 1 * * *"
-  class: "InvokeRakeTaskJob"
-  queue: metrics
-  status: <%= ENV.fetch("GENERATE_METRICS", "enabled") %> # enabled by default
-  args:
-    task: decidim:metrics:all
-
 daily_notifications_digest_job:
   cron: "5 18 * * *"
   class: "InvokeRakeTaskJob"
@@ -45,6 +37,14 @@ daily_reminders_job:
   status: <%= ENV.fetch("SEND_REMINDERS", "enabled") %> # enabled by default
   args:
     task: decidim:reminders:all
+
+daily_delete_inactive_participants_job:
+  cron: "30 1 * * *"
+  class: "InvokeRakeTaskJob"
+  queue: default
+  status: <%= ENV.fetch("DELETE_INACTIVE_PARTICIPANTS", "enabled") %>
+  args:
+    task: decidim:participants:delete_inactive_participants
 
 weekly_clean_registration_forms_job:
   cron: "0 3 * * 0"
