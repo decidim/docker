@@ -12,7 +12,7 @@ services:
     volumes:
       # Makes our entrypoint scripts available to the container
       # under /code/vendor
-      - ./scripts:/code/vendor
+      - ./scripts:/code/vendor:z
     environment:
       - RAILS_ENV=development
       - DATABASE_HOST=pg
