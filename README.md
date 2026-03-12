@@ -89,6 +89,12 @@ docker run -it --rm \
   ghcr.io/decidim/decidim:latest
 ```
 
+Alternatively, use our production compose setup:
+- `docker-compose.prod.yml` - Production-ready compose file
+- `.env.example` - Example environment variables
+
+Copy `.env.example` to `.env` and configure your database credentials before running `docker-compose -f docker-compose.prod.yml up`.
+
 ## Using the decidim-generator image
 
 With this image you can generate a new Decidim application:
