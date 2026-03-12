@@ -21,7 +21,7 @@ services:
       - pg
       - redis
   pg:
-    image: postgres
+    image: postgres:17
     volumes:
       - pg-data:/var/lib/postgresql/data
     environment:
