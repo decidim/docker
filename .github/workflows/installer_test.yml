@@ -1,0 +1,36 @@
+name: Installer Integration Test
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+          working-directory: spec
+
+      - name: Pre-pull Decidim image from GHCR
+        run: docker pull ghcr.io/decidim/decidim:latest
+
+      - name: Build deploy.zip
+        run: |
+          cd install
+          zip -r ../deploy.zip .
+
+      - name: Run installer integration tests
+        working-directory: spec
+        run: bundle exec rspec
+        timeout-minutes: 30
