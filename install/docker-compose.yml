@@ -1,6 +1,7 @@
 services:
   app:
     image: ${DECIDIM_IMAGE:-decidim/decidim:latest}
+    container_name: decidim
     command: ["bin/rails", "server", "-b", "0.0.0.0"]
     entrypoint: ["/code/entrypoint.sh"]
     restart: always
@@ -17,7 +18,7 @@ services:
       - migrations_data:/code/db/migrate
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`$$DECIDIM_DOMAIN`)"
+      - "traefik.http.routers.app.rule=Host(`$DECIDIM_DOMAIN`)"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls=true"
       - "traefik.http.routers.app.tls.certresolver=myresolver"
@@ -29,7 +30,7 @@ services:
       - DATABASE_URL
       - SECRET_KEY_BASE
       - DECIDIM_FORCE_SSL=${DECIDIM_FORCE_SSL:-false}
-      - REDIS_URL=${REDIS_URL:-redis://cache:6379/0}
+      - REDIS_URL=${REDIS_URL:-redis://decidim-cache:6379/0}
       - WEB_CONCURRENCY=${WEB_CONCURRENCY:-2}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - DECIDIM_ENABLE_HTML_HEADER_SNIPPETS
@@ -67,7 +68,7 @@ services:
       - SECRET_KEY_BASE
       - DECIDIM_FORCE_SSL=false
       - QUEUE_ADAPTER=sidekiq
-      - REDIS_URL=${REDIS_URL:-redis://cache:6379/0}
+      - REDIS_URL=${REDIS_URL:-redis://decidim-cache:6379/0}
       - SMTP_USERNAME
       - SMTP_PASSWORD
       - SMTP_ADDRESS
@@ -103,6 +104,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.service=api@internal"
   db:
+    container_name: decidim-db
     image: postgres:17-alpine
     profiles: ["db"]
     env_file:
@@ -115,6 +117,7 @@ services:
       - pg_data:/var/lib/postgresql/data
   cache:
     image: redis:8-alpine
+    container_name: decidim-cache
     volumes:
       - cache_data:/data
     restart: always
