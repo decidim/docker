@@ -7,7 +7,7 @@ generate_system_admin() {
   read -r -p "email: " SYSTEM_EMAIL </dev/tty
   SYSTEM_PASSWORD="$(openssl rand -hex 12)"
 
-  docker exec -ti \
+  docker exec \
     decidim \
     bin/rails runner "Decidim::System::Admin.create(email: '${SYSTEM_EMAIL}', password: '${SYSTEM_PASSWORD}', password_confirmation: '${SYSTEM_PASSWORD}')"
 }
