@@ -69,17 +69,11 @@ curl -fsSL \
   --connect-timeout 30 \
   --max-time 300 \
   --progress-bar \
-  -o "$TMP/deploy.zip" \
-  "$REPOSITORY_URL/releases/download/latest/deploy.zip"
-
-echo "📦 Installing unzip package..."
-if ! (sudo apt update && sudo apt install unzip -y); then
-  echo "❌ Failed to install unzip package"
-  exit 1
-fi
+  -o "$TMP/deploy.tar.gz" \
+  "$REPOSITORY_URL/releases/download/latest/deploy.tar.gz"
 
 echo "📂 Extracting files to $REPOSITORY_PATH..."
-if ! unzip -u -o "$TMP/deploy.zip" -d "$REPOSITORY_PATH" </dev/tty; then
+if ! tar -xzf "$TMP/deploy.tar.gz" -C "$REPOSITORY_PATH"; then
   echo "❌ Failed to extract files to $REPOSITORY_PATH"
   exit 1
 fi
