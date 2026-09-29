@@ -42,7 +42,7 @@ daily_delete_inactive_participants_job:
   cron: "30 1 * * *"
   class: "InvokeRakeTaskJob"
   queue: default
-  status: <%= ENV.fetch("DELETE_INACTIVE_PARTICIPANTS", "enabled") %>
+  status: <%= ENV.fetch("DELETE_INACTIVE_PARTICIPANTS", "enabled") %> # enabled by default
   args:
     task: decidim:participants:delete_inactive_participants
 
