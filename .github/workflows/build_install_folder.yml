@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create deployment ZIP
+      - name: Create deployment file
         run: |
           cd install
           tar -cvzf ../deploy.tar.gz .
