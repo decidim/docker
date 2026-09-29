@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y git imagemagick p7zip wget \
   && apt-get clean
 
 RUN curl -sL https://deb.nodesource.com/setup_${node_version}.x | bash - \
-  && apt-get install -y nodejs \
+  && apt-get install -y nodejs libclang-dev \
   && apt-get clean
 
 RUN npm install -g yarn@1.22.18
